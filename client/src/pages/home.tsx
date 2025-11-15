@@ -24,6 +24,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -116,6 +122,10 @@ export default function Home() {
   const [generatedSlipper45, setGeneratedSlipper45] = useState<string | null>(null);
   const [generatedModelImage, setGeneratedModelImage] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<"top" | "45degree">("top");
+  
+  // Image zoom modal state
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [zoomedImageAlt, setZoomedImageAlt] = useState<string>("");
 
   const designFormSchema = useMemo(() => createDesignFormSchema(t), [t]);
   const modelFormSchema = useMemo(() => createModelFormSchema(t), [t]);
@@ -978,7 +988,11 @@ export default function Home() {
                       <img
                         src={generatedSlipperTop}
                         alt={t('altTopViewDesign')}
-                        className="w-full rounded-2xl shadow-sm"
+                        className="w-full rounded-2xl shadow-sm cursor-pointer hover-elevate transition-all"
+                        onClick={() => {
+                          setZoomedImage(generatedSlipperTop);
+                          setZoomedImageAlt(t('altTopViewDesign'));
+                        }}
                         data-testid="img-design-top"
                       />
                       <Button
@@ -999,7 +1013,11 @@ export default function Home() {
                       <img
                         src={generatedSlipper45}
                         alt={t('alt45ViewDesign')}
-                        className="w-full rounded-2xl shadow-sm"
+                        className="w-full rounded-2xl shadow-sm cursor-pointer hover-elevate transition-all"
+                        onClick={() => {
+                          setZoomedImage(generatedSlipper45);
+                          setZoomedImageAlt(t('alt45ViewDesign'));
+                        }}
                         data-testid="img-design-45"
                       />
                       <Button
@@ -1022,7 +1040,11 @@ export default function Home() {
                         <img
                           src={generatedModelImage}
                           alt={t('altModelWearing')}
-                          className="w-full rounded-2xl shadow-sm"
+                          className="w-full rounded-2xl shadow-sm cursor-pointer hover-elevate transition-all"
+                          onClick={() => {
+                            setZoomedImage(generatedModelImage);
+                            setZoomedImageAlt(t('altModelWearing'));
+                          }}
                           data-testid="img-model-scene"
                         />
                         <Button
@@ -1044,6 +1066,25 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Image Zoom Modal */}
+      <Dialog open={!!zoomedImage} onOpenChange={() => setZoomedImage(null)}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden rounded-2xl" data-testid="dialog-image-zoom">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{t('imageZoomTitle')}</DialogTitle>
+          </DialogHeader>
+          <div className="relative w-full h-full flex items-center justify-center bg-background/95 backdrop-blur-sm p-4">
+            {zoomedImage && (
+              <img
+                src={zoomedImage}
+                alt={zoomedImageAlt}
+                className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
+                data-testid="img-zoomed"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

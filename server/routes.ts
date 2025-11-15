@@ -50,27 +50,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const results: { topView?: string; view45?: string } = {};
 
-      // Generate both angles first
-      if (anglesArray.includes("top")) {
-        console.log("Generating top view design...");
-        results.topView = await generateSlipperDesign(
-          templateFile.buffer,
-          templateFile.mimetype,
-          theme,
-          style,
-          color,
-          material,
-          "top",
-          referenceImageFile?.buffer,
-          referenceImageFile?.mimetype,
-          brandLogoFile?.buffer,
-          brandLogoFile?.mimetype,
-          designDescription
-        );
-      }
+      // STEP 1: Generate top view as canonical design (always generate this first)
+      console.log("Generating canonical design (top view)...");
+      results.topView = await generateSlipperDesign(
+        templateFile.buffer,
+        templateFile.mimetype,
+        theme,
+        style,
+        color,
+        material,
+        "top",
+        referenceImageFile?.buffer,
+        referenceImageFile?.mimetype,
+        brandLogoFile?.buffer,
+        brandLogoFile?.mimetype,
+        designDescription
+      );
 
+      // STEP 2: If 45° view is needed, use top view as reference for consistency
       if (anglesArray.includes("45degree")) {
-        console.log("Generating 45-degree view design...");
+        console.log("Generating 45° view with design consistency enforcement...");
+        
+        // Extract buffer from top view data URL
+        const topViewBase64 = results.topView.split(',')[1];
+        const topViewBuffer = Buffer.from(topViewBase64, 'base64');
+        const topViewMimeType = results.topView.match(/data:([^;]+);/)?.[1] || 'image/png';
+        
         results.view45 = await generateSlipperDesign(
           templateFile.buffer,
           templateFile.mimetype,
@@ -83,7 +88,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           referenceImageFile?.mimetype,
           brandLogoFile?.buffer,
           brandLogoFile?.mimetype,
-          designDescription
+          designDescription,
+          topViewBuffer,
+          topViewMimeType
         );
       }
 

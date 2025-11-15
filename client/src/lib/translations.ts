@@ -101,6 +101,7 @@ export const translations = {
     emptyStateTitle: 'Upload template to begin',
     emptyStateSubtitle: 'Your AI-generated designs will appear here',
     downloadPNG: 'Download PNG',
+    imageZoomTitle: 'View Image',
     modelWearingSceneTitle: 'Model Wearing Scene',
     
     // Themes
@@ -296,6 +297,7 @@ export const translations = {
     emptyStateTitle: '上傳模板開始',
     emptyStateSubtitle: '您的 AI 生成設計將在此處顯示',
     downloadPNG: '下載 PNG',
+    imageZoomTitle: '檢視圖片',
     modelWearingSceneTitle: '模特兒穿著場景',
     
     // Themes
@@ -491,6 +493,7 @@ export const translations = {
     emptyStateTitle: 'Tải lên mẫu để bắt đầu',
     emptyStateSubtitle: 'Các thiết kế AI của bạn sẽ xuất hiện ở đây',
     downloadPNG: 'Tải Xuống PNG',
+    imageZoomTitle: 'Xem Hình Ảnh',
     modelWearingSceneTitle: 'Cảnh Người Mẫu Đang Đi Dép',
     
     // Themes
