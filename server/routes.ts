@@ -134,7 +134,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         imageUrl: modelImage,
         metadata: {
           nationality,
+          familyCombination,
           scenario,
+          location,
+          presentationStyle,
         },
       });
 
