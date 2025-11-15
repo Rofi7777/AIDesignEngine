@@ -87,6 +87,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
       }
 
+      // Convert optional images to data URLs for storage
+      let referenceImageUrl: string | null = null;
+      if (referenceImageFile) {
+        referenceImageUrl = `data:${referenceImageFile.mimetype};base64,${referenceImageFile.buffer.toString('base64')}`;
+      }
+
+      let brandLogoUrl: string | null = null;
+      if (brandLogoFile) {
+        brandLogoUrl = `data:${brandLogoFile.mimetype};base64,${brandLogoFile.buffer.toString('base64')}`;
+      }
+
       // Save both angles as a single design record
       await storage.saveCompleteDesign({
         topViewUrl: results.topView || null,
@@ -96,6 +107,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         color,
         material,
         designDescription: designDescription || null,
+        referenceImageUrl,
+        brandLogoUrl,
       });
 
       res.json(results);
