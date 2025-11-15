@@ -1,37 +1,31 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { type GeneratedImage } from "@shared/schema";
 import { randomUUID } from "crypto";
 
-// modify the interface with any CRUD methods
-// you might need
-
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  saveGeneratedImage(image: Omit<GeneratedImage, 'id' | 'timestamp'>): Promise<GeneratedImage>;
+  getGeneratedImages(): Promise<GeneratedImage[]>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private images: Map<string, GeneratedImage>;
 
   constructor() {
-    this.users = new Map();
+    this.images = new Map();
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async saveGeneratedImage(imageData: Omit<GeneratedImage, 'id' | 'timestamp'>): Promise<GeneratedImage> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const image: GeneratedImage = {
+      ...imageData,
+      id,
+      timestamp: Date.now(),
+    };
+    this.images.set(id, image);
+    return image;
+  }
+
+  async getGeneratedImages(): Promise<GeneratedImage[]> {
+    return Array.from(this.images.values()).sort((a, b) => b.timestamp - a.timestamp);
   }
 }
 
