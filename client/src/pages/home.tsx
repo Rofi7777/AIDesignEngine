@@ -354,10 +354,10 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground" data-testid="logo-icon">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary" data-testid="logo-icon">
               <Sparkles className="h-5 w-5" />
             </div>
-            <h1 className="text-xl font-semibold tracking-tight" data-testid="text-app-title">{t('appTitle')}</h1>
+            <h1 className="text-2xl font-light tracking-wide" data-testid="text-app-title">{t('appTitle')}</h1>
           </div>
           <div className="flex items-center gap-2">
             <LanguageSelector />
@@ -366,35 +366,19 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-12">
-        <div className="mb-12 text-center">
-          <h2 className="mb-3 text-3xl font-semibold tracking-tight" data-testid="text-hero-title">
+      <div className="container mx-auto px-6 py-16">
+        <div className="mb-16 text-center space-y-4">
+          <h2 className="text-4xl font-light tracking-wide text-foreground" data-testid="text-hero-title">
             {t('heroTitle')}
           </h2>
-          <p className="mx-auto max-w-2xl text-muted-foreground" data-testid="text-hero-subtitle">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground leading-relaxed" data-testid="text-hero-subtitle">
             {t('heroSubtitle')}
           </p>
-          <div className="mt-6 flex items-center justify-center gap-8 text-sm">
-            <div className="flex flex-col items-center gap-1">
-              <div className="text-2xl font-bold text-primary" data-testid="text-stat-faster">{t('statFaster')}</div>
-              <div className="text-muted-foreground">{t('statFasterLabel')}</div>
-            </div>
-            <Separator orientation="vertical" className="h-12" />
-            <div className="flex flex-col items-center gap-1">
-              <div className="text-2xl font-bold text-primary" data-testid="text-stat-concepts">{t('statConcepts')}</div>
-              <div className="text-muted-foreground">{t('statConceptsLabel')}</div>
-            </div>
-            <Separator orientation="vertical" className="h-12" />
-            <div className="flex flex-col items-center gap-1">
-              <div className="text-2xl font-bold text-primary" data-testid="text-stat-approval">{t('statApproval')}</div>
-              <div className="text-muted-foreground">{t('statApprovalLabel')}</div>
-            </div>
-          </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[2fr,3fr]">
-          <div className="space-y-8">
-            <Card className="p-6">
+        <div className="grid gap-12 lg:grid-cols-[2fr,3fr]">
+          <div className="space-y-10">
+            <Card className="p-8 rounded-2xl shadow-sm border-border/50">
               <h3 className="mb-4 text-xl font-semibold" data-testid="text-section-upload">{t('sectionUpload')}</h3>
               <div
                 className="group relative cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-border bg-muted/30 transition-colors hover-elevate"
@@ -614,7 +598,7 @@ export default function Home() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full"
+                    className="w-full rounded-xl mt-6"
                     disabled={generateDesignMutation.isPending}
                     data-testid="button-generate-design"
                   >
@@ -634,9 +618,7 @@ export default function Home() {
               </Form>
             </Card>
 
-            <Separator className="my-8" />
-
-            <Card className="p-6">
+            <Card className="p-8 rounded-2xl shadow-sm border-border/50">
               <h3 className="mb-4 text-xl font-semibold" data-testid="text-section-model">{t('sectionModelConfig')}</h3>
               <Form {...modelForm}>
                 <form onSubmit={modelForm.handleSubmit(onModelSubmit)} className="space-y-4">

@@ -3,19 +3,13 @@ export type Language = 'en' | 'zh-TW' | 'vi';
 export const translations = {
   en: {
     // Header
-    appTitle: 'AI Slipper Design Studio',
+    appTitle: 'Craft AI Studio',
     version: 'MVP v1.0',
     language: 'Language',
     
     // Hero
-    heroTitle: 'Accelerate Seasonal Slipper Design with AI',
+    heroTitle: 'Craft Design Ideas with AI',
     heroSubtitle: 'Generate stunning slipper concepts and model-wearing scenes in seconds',
-    statFaster: '70%',
-    statFasterLabel: 'Faster',
-    statConcepts: '3×',
-    statConceptsLabel: 'More Concepts',
-    statApproval: '80%',
-    statApprovalLabel: 'Approval Rate',
     
     // Upload Section
     sectionUpload: '1. Upload Template',
@@ -193,19 +187,13 @@ export const translations = {
   },
   'zh-TW': {
     // Header
-    appTitle: 'AI 拖鞋設計工作室',
+    appTitle: 'Craft AI Studio',
     version: 'MVP v1.0',
     language: '語言',
     
     // Hero
-    heroTitle: '用AI加速季節性拖鞋設計',
+    heroTitle: '用AI創作設計靈感',
     heroSubtitle: '在幾秒鐘內生成令人驚艷的拖鞋概念和模特兒穿著場景',
-    statFaster: '70%',
-    statFasterLabel: '更快',
-    statConcepts: '3×',
-    statConceptsLabel: '更多概念',
-    statApproval: '80%',
-    statApprovalLabel: '通過率',
     
     // Upload Section
     sectionUpload: '1. 上傳模板',
@@ -383,19 +371,13 @@ export const translations = {
   },
   vi: {
     // Header
-    appTitle: 'Studio Thiết Kế Dép AI',
+    appTitle: 'Craft AI Studio',
     version: 'MVP v1.0',
     language: 'Ngôn ngữ',
     
     // Hero
-    heroTitle: 'Tăng Tốc Thiết Kế Dép Theo Mùa Với AI',
+    heroTitle: 'Sáng Tạo Ý Tưởng Thiết Kế Với AI',
     heroSubtitle: 'Tạo ra các khái niệm dép tuyệt đẹp và cảnh người mẫu đeo trong vài giây',
-    statFaster: '70%',
-    statFasterLabel: 'Nhanh Hơn',
-    statConcepts: '3×',
-    statConceptsLabel: 'Nhiều Khái Niệm Hơn',
-    statApproval: '80%',
-    statApprovalLabel: 'Tỷ Lệ Chấp Thuận',
     
     // Upload Section
     sectionUpload: '1. Tải Lên Mẫu',

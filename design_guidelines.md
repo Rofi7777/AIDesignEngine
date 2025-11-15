@@ -1,15 +1,38 @@
-# Design Guidelines: Seasonal Slipper Design AI Web App
+# Design Guidelines: Craft AI Studio - La Letter Inspired Design
 
 ## Design Approach
 
-**Selected Approach:** Design System (Material Design) with Linear-inspired refinements
+**Design Philosophy:** Elegant, minimal, product-focused aesthetic inspired by Japanese cosmetics brands (La Letter)
 
-**Rationale:** This is a professional productivity tool for designers that requires clean, efficient workflows with emphasis on generated visual outputs. Material Design provides robust form patterns and data display components, while Linear's typography and spacing principles add polish.
+**Rationale:** Create a serene, sophisticated environment that lets AI-generated designs shine while providing an intuitive, calming user experience. The soft purple/lavender palette evokes creativity and elegance.
 
 **Key Principles:**
-- Content-first: UI recedes, generated designs shine
-- Efficient workflow: Clear visual hierarchy guides users through upload → configure → generate → download
-- Professional polish: Clean, modern aesthetic builds designer confidence
+- **Serenity & Space:** Generous white space, soft shadows, calming color palette
+- **Product-first:** Generated designs are the hero; UI recedes gracefully
+- **Elegant Refinement:** Soft rounded corners, subtle transitions, polished typography
+- **Calming Workflow:** Gentle color transitions, minimal visual noise
+
+---
+
+## Color Palette
+
+**Primary Palette:** Soft Purple/Lavender Theme
+
+**Colors:**
+- **Primary Purple:** hsl(260, 45%, 75%) - Soft lavender for accents and CTAs
+- **Light Purple:** hsl(260, 60%, 95%) - Very light lavender for backgrounds
+- **Muted Purple:** hsl(260, 30%, 85%) - Muted lavender for subtle elements
+- **Deep Purple:** hsl(260, 50%, 30%) - Rich purple for text/headings
+- **White:** Pure white for cards and main background
+- **Soft Gray:** hsl(240, 10%, 96%) - Barely-there gray for subtle backgrounds
+- **Text Primary:** hsl(260, 40%, 20%) - Deep purple-gray for main text
+- **Text Secondary:** hsl(260, 20%, 50%) - Medium purple-gray for secondary text
+- **Border:** hsl(260, 20%, 90%) - Very light purple-gray for borders
+
+**Dark Mode:**
+- Soft dark purple backgrounds
+- Maintain elegant, calming aesthetic
+- Reduce contrast for comfort
 
 ---
 
@@ -18,161 +41,186 @@
 **Font Stack:** Inter (via Google Fonts CDN)
 
 **Hierarchy:**
-- Page Title: text-3xl, font-semibold, tracking-tight
-- Section Headers: text-xl, font-semibold
-- Subsection Labels: text-sm, font-medium, uppercase, tracking-wide (subtle hierarchy)
-- Input Labels: text-sm, font-medium
-- Body/Descriptions: text-base, font-normal
-- Helper Text: text-sm, text-gray-600
+- **Brand Name:** text-2xl, font-light, tracking-wide (elegant, spacious)
+- **Page Title:** text-3xl, font-light, tracking-tight (soft, refined)
+- **Section Headers:** text-xl, font-normal
+- **Subsection Labels:** text-sm, font-medium
+- **Input Labels:** text-sm, font-medium
+- **Body Text:** text-base, font-normal, leading-relaxed (generous line height)
+- **Helper Text:** text-sm, text-muted-foreground
+
+**Character:** Light, spacious, refined - avoiding heavy weights for elegance
 
 ---
 
 ## Layout System
 
-**Spacing Primitives:** Tailwind units of 2, 4, 6, 8, 12, 16, 24
+**Spacing Primitives:** Generous spacing - 4, 6, 8, 12, 16, 24, 32
 
 **Grid Structure:**
-- Two-column layout for main workflow (desktop): 
-  - Left column (40%): Input controls, configuration panel
+- Two-column layout for main workflow (desktop):
+  - Left column (40%): Configuration panel with generous padding
   - Right column (60%): Image gallery, preview area
 - Single column stack on tablet/mobile
-- Container: max-w-7xl, mx-auto, px-6
+- Container: max-w-7xl, mx-auto, px-8
 
 **Vertical Rhythm:**
-- Section spacing: space-y-8 to space-y-12
-- Form group spacing: space-y-6
-- Input spacing: space-y-4
-- Component internal padding: p-6 to p-8
+- Section spacing: space-y-12 to space-y-16 (generous)
+- Form group spacing: space-y-8
+- Input spacing: space-y-6
+- Component internal padding: p-8 to p-10 (luxurious)
+
+**White Space Philosophy:**
+- "Breathe" - every element needs space around it
+- Avoid cramped layouts
+- Use negative space as design element
 
 ---
 
 ## Component Library
 
+### Header
+- Clean, minimal navigation bar
+- Brand name: "Craft AI Studio" (left) with light, elegant typography
+- Language selector (right) with subtle styling
+- No background color - let it float on page background
+- Subtle bottom border only
+
+### Hero Section
+- Large, calming headline: "Craft Design Ideas with AI"
+- Light, spacious typography
+- NO KPI stats/numbers (removed for elegance)
+- Soft purple gradient background or solid light purple
+- Generous vertical padding (py-16 to py-20)
+
 ### Upload Zone
-- Large dropzone area with dashed border (border-2, border-dashed, rounded-lg)
-- Prominent upload icon (via Heroicons - cloud-arrow-up)
-- Primary text: "Upload Slipper Template" + helper text with supported formats
-- Drag-and-drop active state with subtle background change
-- Uploaded file preview with thumbnail + filename + remove button
+- Large, elegant dropzone with soft rounded corners (rounded-2xl)
+- Soft border (border, not border-2) with light purple tint
+- Delicate upload icon in light purple
+- Soft text: "Upload Your Template" with gentle helper text
+- Subtle hover state (soft glow, not harsh transform)
+- Preview cards with generous padding and soft shadows
 
 ### Form Controls
-- **Dropdowns:** Full-width select elements with chevron-down icon, rounded-lg, border, p-3
-- **Text Inputs:** Clean text fields with focus ring, rounded-lg, border, p-3
-- **Color/Material Chips:** Horizontal scrollable row of selectable chips (rounded-full, px-4, py-2)
-- **Labels:** Above inputs, consistent text-sm, font-medium, mb-2
+- **Dropdowns:** Soft rounded (rounded-xl), light borders, generous padding (p-4)
+- **Text Inputs:** Clean with soft focus ring in light purple
+- **Labels:** Gentle, not bold - text-sm, font-medium
+- **Spacing:** Generous between inputs (space-y-6)
 
-### Generation Controls
-- **Primary CTA:** Large, prominent button - "Generate Slipper Design" with arrow-right icon
-- **Secondary CTA:** "Generate Model Scene" with slightly less visual weight
-- Full-width on mobile, auto-width on desktop
-- Loading states with spinner icon during AI generation
+### Cards
+- Soft rounded corners (rounded-2xl)
+- Very subtle shadows (shadow-sm to shadow-md, never shadow-lg)
+- Generous internal padding (p-8)
+- Light backgrounds (white or very light purple)
+- Delicate borders if needed
+
+### Buttons
+- **Primary:** Soft purple background, white text, rounded-xl
+- **Secondary:** White background, purple border, rounded-xl  
+- **Hover:** Subtle brightness increase, gentle shadow
+- NO harsh scale transforms
+- Generous padding (px-6 py-3 for medium size)
 
 ### Image Gallery
-- Masonry grid layout (2 columns on mobile, 3-4 on desktop)
-- Each image card: rounded-xl, shadow-lg, overflow-hidden
-- Hover state: subtle scale transform, shadow increases
-- Download button overlay (bottom-right) with arrow-down icon
-- View toggle: Top View / 45° View tabs above gallery
+- Grid layout with generous gaps (gap-8)
+- Each image card: rounded-2xl, shadow-sm
+- Soft hover: subtle shadow increase, NO scale
+- Download button: soft styling, not aggressive
+- View toggle tabs: soft active state in light purple
 
-### Navigation
-- Top header with app logo/name (left), minimal utility nav (right)
-- Sticky position during scroll
-- Clean horizontal divider below (border-b)
-
----
-
-## Page Structure
-
-**Main Workflow Page:**
-
-1. **Header Section** (py-6)
-   - App branding + tagline
-   - Minimal navigation (if future phases)
-
-2. **Hero/Introduction** (py-12)
-   - Brief value statement: "Accelerate seasonal slipper design with AI"
-   - Stat highlights in horizontal row: "70% faster" | "3× more concepts" | "80% approval rate"
-
-3. **Two-Column Workspace** (py-8)
-   
-   **Left Column: Configuration Panel**
-   - Upload Template section
-   - Theme Selection dropdown
-   - Style Selection dropdown  
-   - Color Palette selector (chip-based)
-   - Material Input (dropdown + text)
-   - Angle Requirements (checkboxes: Top View, 45° View)
-   - Generate Design CTA
-   - Divider (my-8)
-   - Model Scene Configuration (collapsible/expandable):
-     - Nationality dropdown
-     - Family Combination dropdown
-     - Scenario dropdown
-     - Location dropdown
-     - Presentation Style selector
-   - Generate Model Scene CTA
-
-   **Right Column: Results Gallery**
-   - Generated Designs section header
-   - View toggle tabs
-   - Image grid with download functionality
-   - Empty state: Placeholder illustration with "Upload template to begin"
+### Separators
+- Use sparingly
+- Very light color (border-purple-100)
+- Prefer white space over visual dividers
 
 ---
 
-## Icons
+## Shadows & Depth
 
-**Library:** Heroicons (via CDN)
+**Shadow Philosophy:** Soft, subtle, never harsh
 
-**Usage:**
-- Upload: cloud-arrow-up
-- Download: arrow-down-tray
-- Generate: sparkles or arrow-right
-- Dropdowns: chevron-down
-- Remove/Close: x-mark
-- Success: check-circle
-- Loading: spinner (animated)
-
----
-
-## Accessibility
-
-- All form inputs have associated labels (for/id)
-- Focus states use visible ring (ring-2, ring-offset-2)
-- Sufficient color contrast for all text
-- Alt text for all generated images
-- Keyboard navigation for all interactive elements
-- ARIA labels for icon-only buttons
-
----
-
-## Images
-
-**No decorative hero image required** - This is a utility tool where the workflow starts immediately.
-
-**Generated Output Images:**
-- User-uploaded slipper templates (displayed as thumbnails)
-- AI-generated slipper designs (top view + 45° view) - primary content
-- AI-generated model wearing scenes - primary content
-- Empty state placeholder illustration (simple line-art showing upload concept)
-
-**Image Treatment:**
-- All generated images displayed at high quality
-- Subtle shadow for depth (shadow-md to shadow-lg)
-- Rounded corners for polish (rounded-lg to rounded-xl)
-- Responsive sizing with object-fit: cover for consistency
+- **Minimal:** shadow-sm (barely visible)
+- **Card:** shadow-md (soft, diffused)
+- **Never use:** shadow-lg, shadow-xl (too harsh for this aesthetic)
+- **Hover:** Slight increase, not dramatic jump
 
 ---
 
 ## Animations
 
-**Minimal, purposeful animations only:**
-- Button hover: subtle scale (scale-105) + shadow increase
-- Image card hover: scale-102 + shadow increase  
-- Loading spinner: rotate animation during AI generation
-- Dropdown open/close: smooth height transition
-- No scroll-based animations or complex micro-interactions
+**Principle:** Gentle, refined, never jarring
+
+- **Hover transitions:** opacity changes, subtle brightness shifts
+- **NO scale transforms** on hover (too playful for elegant aesthetic)
+- **Loading:** Soft, slow-paced spinners in light purple
+- **Page transitions:** Gentle fades
+- **Duration:** transition-300 to transition-500 (slower, more elegant)
 
 ---
 
-This utility-first design ensures designers can efficiently navigate the workflow while keeping focus on their creative output—the AI-generated slipper designs themselves.
+## Visual Refinements
+
+### Rounded Corners
+- **Cards:** rounded-2xl (generous)
+- **Buttons:** rounded-xl
+- **Inputs:** rounded-xl
+- **Images:** rounded-xl
+
+### Borders
+- Use very sparingly
+- When used: thin (border, not border-2) in light purple/gray
+- Prefer shadows over borders for depth
+
+### Backgrounds
+- **Page:** Soft light purple or white
+- **Cards:** Pure white on light purple page, or very light purple on white page
+- **Alternating sections:** Very subtle purple tints
+- **Never:** Harsh color blocks or high contrast sections
+
+---
+
+## Accessibility
+
+- Maintain WCAG AA contrast ratios (challenge with light purples - test carefully)
+- Clear focus states in purple
+- Alt text for all images
+- Keyboard navigation
+- Sufficient touch targets (min 44x44px)
+
+---
+
+## Images
+
+**Treatment:**
+- Soft rounded corners (rounded-xl)
+- Very subtle shadows (shadow-sm)
+- Generous spacing between images
+- Clean, minimal download/action buttons
+
+**Empty States:**
+- Light, elegant illustrations or simple icons
+- Encouraging, gentle text
+- Light purple accent colors
+
+---
+
+## Overall Aesthetic
+
+**Mood:** Serene, sophisticated, refined
+**Feel:** Japanese minimalism meets European elegance  
+**Goal:** Create a calming creative workspace where AI designs can shine
+
+**Avoid:**
+- Harsh shadows or borders
+- Aggressive animations
+- Cramped layouts
+- Heavy typography
+- Bright, saturated colors
+- Visual noise
+
+**Embrace:**
+- White space
+- Soft colors
+- Gentle transitions
+- Refined typography
+- Elegant simplicity
