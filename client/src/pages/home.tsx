@@ -379,9 +379,9 @@ export default function Home() {
         <div className="grid gap-12 lg:grid-cols-[2fr,3fr]">
           <div className="space-y-10">
             <Card className="p-8 rounded-2xl shadow-sm border-border/50">
-              <h3 className="mb-4 text-xl font-semibold" data-testid="text-section-upload">{t('sectionUpload')}</h3>
+              <h3 className="mb-6 text-xl font-light tracking-wide" data-testid="text-section-upload">{t('sectionUpload')}</h3>
               <div
-                className="group relative cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-border bg-muted/30 transition-colors hover-elevate"
+                className="group relative cursor-pointer overflow-hidden rounded-2xl border border-dashed border-border/60 bg-muted/20 transition-colors hover-elevate"
                 onDrop={handleDrop}
                 onDragOver={(e) => e.preventDefault()}
                 onClick={() => document.getElementById("file-upload")?.click()}
@@ -435,10 +435,10 @@ export default function Home() {
               )}
             </Card>
 
-            <Card className="p-6">
-              <h3 className="mb-4 text-xl font-semibold" data-testid="text-section-theme">{t('sectionDesignConfig')}</h3>
+            <Card className="p-8 rounded-2xl shadow-sm border-border/50">
+              <h3 className="mb-6 text-xl font-light tracking-wide" data-testid="text-section-theme">{t('sectionDesignConfig')}</h3>
               <Form {...designForm}>
-                <form onSubmit={designForm.handleSubmit(onDesignSubmit)} className="space-y-4">
+                <form onSubmit={designForm.handleSubmit(onDesignSubmit)} className="space-y-6">
                   <FormField
                     control={designForm.control}
                     name="theme"
@@ -619,9 +619,9 @@ export default function Home() {
             </Card>
 
             <Card className="p-8 rounded-2xl shadow-sm border-border/50">
-              <h3 className="mb-4 text-xl font-semibold" data-testid="text-section-model">{t('sectionModelConfig')}</h3>
+              <h3 className="mb-6 text-xl font-light tracking-wide" data-testid="text-section-model">{t('sectionModelConfig')}</h3>
               <Form {...modelForm}>
-                <form onSubmit={modelForm.handleSubmit(onModelSubmit)} className="space-y-4">
+                <form onSubmit={modelForm.handleSubmit(onModelSubmit)} className="space-y-6">
                   <FormField
                     control={modelForm.control}
                     name="nationality"
@@ -771,7 +771,7 @@ export default function Home() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full"
+                    className="w-full rounded-xl mt-6"
                     disabled={generateModelMutation.isPending}
                     data-testid="button-generate-model"
                   >
@@ -792,8 +792,8 @@ export default function Home() {
             </Card>
           </div>
 
-          <div className="space-y-6">
-            <Card className="p-6">
+          <div className="space-y-8">
+            <Card className="p-8 rounded-2xl shadow-sm border-border/50">
               <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-xl font-semibold" data-testid="text-section-results">{t('sectionGallery')}</h3>
                 {(generatedSlipperTop || generatedSlipper45) && (
@@ -807,28 +807,29 @@ export default function Home() {
               </div>
 
               {!generatedSlipperTop && !generatedSlipper45 && !generatedModelImage ? (
-                <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border py-24" data-testid="empty-state">
-                  <ImageIcon className="mb-3 h-16 w-16 text-muted-foreground/50" data-testid="icon-empty-state" />
-                  <p className="text-lg font-medium text-muted-foreground" data-testid="text-empty-title">
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/50 py-32" data-testid="empty-state">
+                  <ImageIcon className="mb-4 h-20 w-20 text-primary/20" data-testid="icon-empty-state" />
+                  <p className="text-xl font-light text-muted-foreground" data-testid="text-empty-title">
                     {t('emptyStateTitle')}
                   </p>
-                  <p className="mt-1 text-sm text-muted-foreground" data-testid="text-empty-subtitle">
+                  <p className="mt-2 text-sm text-muted-foreground/70" data-testid="text-empty-subtitle">
                     {t('emptyStateSubtitle')}
                   </p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {activeView === "top" && generatedSlipperTop && (
-                    <div className="group relative overflow-hidden rounded-lg" data-testid="card-design-top">
+                    <div className="group relative overflow-hidden rounded-2xl" data-testid="card-design-top">
                       <img
                         src={generatedSlipperTop}
                         alt={t('altTopViewDesign')}
-                        className="w-full rounded-lg shadow-lg"
+                        className="w-full rounded-2xl shadow-sm"
                         data-testid="img-design-top"
                       />
                       <Button
                         size="sm"
-                        className="absolute bottom-4 right-4 opacity-0 transition-opacity group-hover:opacity-100"
+                        variant="secondary"
+                        className="absolute bottom-4 right-4 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
                         onClick={() => downloadImage(generatedSlipperTop, "slipper-design-top-view.png")}
                         data-testid="button-download-top"
                       >
@@ -839,16 +840,17 @@ export default function Home() {
                   )}
 
                   {activeView === "45degree" && generatedSlipper45 && (
-                    <div className="group relative overflow-hidden rounded-lg" data-testid="card-design-45">
+                    <div className="group relative overflow-hidden rounded-2xl" data-testid="card-design-45">
                       <img
                         src={generatedSlipper45}
                         alt={t('alt45ViewDesign')}
-                        className="w-full rounded-lg shadow-lg"
+                        className="w-full rounded-2xl shadow-sm"
                         data-testid="img-design-45"
                       />
                       <Button
                         size="sm"
-                        className="absolute bottom-4 right-4 opacity-0 transition-opacity group-hover:opacity-100"
+                        variant="secondary"
+                        className="absolute bottom-4 right-4 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
                         onClick={() => downloadImage(generatedSlipper45, "slipper-design-45-view.png")}
                         data-testid="button-download-45"
                       >
@@ -859,29 +861,27 @@ export default function Home() {
                   )}
 
                   {generatedModelImage && (
-                    <>
-                      <Separator />
-                      <div>
-                        <h4 className="mb-4 text-lg font-semibold" data-testid="text-model-title">{t('modelWearingSceneTitle')}</h4>
-                        <div className="group relative overflow-hidden rounded-lg" data-testid="card-model-scene">
-                          <img
-                            src={generatedModelImage}
-                            alt={t('altModelWearing')}
-                            className="w-full rounded-lg shadow-lg"
-                            data-testid="img-model-scene"
-                          />
-                          <Button
-                            size="sm"
-                            className="absolute bottom-4 right-4 opacity-0 transition-opacity group-hover:opacity-100"
-                            onClick={() => downloadImage(generatedModelImage, "model-wearing-scene.png")}
-                            data-testid="button-download-model"
-                          >
-                            <Download className="mr-2 h-4 w-4" />
-                            {t('downloadPNG')}
-                          </Button>
-                        </div>
+                    <div className="pt-6 border-t border-border/50">
+                      <h4 className="mb-6 text-lg font-light tracking-wide" data-testid="text-model-title">{t('modelWearingSceneTitle')}</h4>
+                      <div className="group relative overflow-hidden rounded-2xl" data-testid="card-model-scene">
+                        <img
+                          src={generatedModelImage}
+                          alt={t('altModelWearing')}
+                          className="w-full rounded-2xl shadow-sm"
+                          data-testid="img-model-scene"
+                        />
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="absolute bottom-4 right-4 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
+                          onClick={() => downloadImage(generatedModelImage, "model-wearing-scene.png")}
+                          data-testid="button-download-model"
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          {t('downloadPNG')}
+                        </Button>
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               )}

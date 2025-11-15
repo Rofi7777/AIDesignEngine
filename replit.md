@@ -1,14 +1,23 @@
-# AI-Powered Seasonal Slipper Design Engine
+# Craft AI Studio
 
 ## Overview
-AI-powered seasonal slipper design application using Google Gemini 2.5 Flash Image Preview. Users upload slipper templates, configure design parameters, generate AI-created slipper designs (top and 45° views), and create model-wearing scenes with customizable options. All generated images support high-resolution PNG downloads.
+**Craft AI Studio** is an elegant AI-powered design application for creating seasonal slipper concepts using Google Gemini 2.5 Flash Image Preview. Users upload slipper templates, configure design parameters, and generate AI-created slipper designs (top and 45° views) with model-wearing scenes. All generated images support high-resolution PNG downloads.
+
+**Tagline:** "Craft Design Ideas with AI"
 
 ## Project Status
-**Current State:** MVP Complete - Production Ready
+**Current State:** MVP Complete - Production Ready with La Letter-Inspired UI
 
 **Last Updated:** November 15, 2025
 
 ## Recent Changes
+- ✅ **Complete UI Redesign:** Implemented La Letter-inspired aesthetic with soft purple/lavender color palette
+- ✅ **New Branding:** Changed from "AI Slipper Design Studio" to "Craft AI Studio"
+- ✅ **Refined Typography:** Light, spacious typography (font-light, tracking-wide) throughout UI
+- ✅ **Elegant Components:** Rounded-2xl cards, rounded-xl buttons, generous padding (p-8), softer shadows (shadow-sm)
+- ✅ **Color Palette:** Soft purple theme (hsl(260, 45%, 75%)), light backgrounds, refined borders
+- ✅ **Removed KPI Stats:** Cleaner, more focused hero section without statistics
+- ✅ **Enhanced Spacing:** More white space, generous gaps (gap-12, space-y-10), luxurious padding
 - ✅ Implemented Gemini 2.5 Flash Image Preview integration using Replit AI Integrations
 - ✅ Built complete frontend with React Hook Form + zodResolver validation
 - ✅ Implemented backend API with Multer file upload and Buffer-to-Gemini pipeline
@@ -65,7 +74,7 @@ All schemas defined in `shared/schema.ts`:
 5. **Custom Options:** Users can specify custom colors, materials, and presentation styles with validation
 6. **Multi-Language Interface:** Full i18n support for English, Traditional Chinese (繁體中文), and Vietnamese (Tiếng Việt) with language selector in header
 7. **Database Persistence:** PostgreSQL database stores all generated designs with proper pairing of top and 45° views
-8. **Responsive Design:** Material Design principles with Inter font and polished UI components
+8. **Elegant La Letter-Inspired Design:** Soft purple/lavender theme, generous white space, refined typography, polished UI components
 
 ## Critical Implementation Details
 
