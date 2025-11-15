@@ -49,14 +49,14 @@ export type ModelWearingRequest = z.infer<typeof modelWearingRequestSchema>;
 export type GeneratedImage = z.infer<typeof generatedImageSchema>;
 
 export const THEMES = [
-  "Spring/Summer",
-  "Fall/Winter",
-  "Holiday Season",
-  "Beach/Resort",
-  "Urban Contemporary",
+  "SpringSummer",
+  "FallWinter",
+  "HolidaySeason",
+  "BeachResort",
+  "UrbanContemporary",
   "Minimalist",
   "Bohemian",
-  "Athletic/Sporty",
+  "AthleticSporty",
 ] as const;
 
 export const STYLES = [
@@ -66,18 +66,19 @@ export const STYLES = [
   "Elegant",
   "Casual",
   "Luxury",
-  "Eco-Friendly",
+  "EcoFriendly",
   "Futuristic",
 ] as const;
 
 export const COLOR_PALETTES = [
   "Pastel",
-  "Earth Tones",
+  "EarthTones",
   "Neon",
   "Monochrome",
   "Vibrant",
   "Muted",
   "Metallic",
+  "Custom",
 ] as const;
 
 export const MATERIALS = [
@@ -85,58 +86,59 @@ export const MATERIALS = [
   "Canvas",
   "Synthetic",
   "Wool",
-  "Recycled Materials",
+  "RecycledMaterials",
   "Rubber",
   "Cork",
   "Textile",
+  "Custom",
 ] as const;
 
 export const NATIONALITIES = [
   "American",
   "European",
   "Asian",
-  "Latin American",
+  "LatinAmerican",
   "African",
-  "Middle Eastern",
+  "MiddleEastern",
   "Australian",
   "Nordic",
 ] as const;
 
 export const FAMILY_COMBINATIONS = [
-  "Mother + Child",
-  "Father + Child",
-  "Parents + Child",
-  "Single Adult",
+  "MotherChild",
+  "FatherChild",
+  "ParentsChild",
+  "SingleAdult",
   "Couple",
-  "Multi-Generational",
+  "MultiGenerational",
   "Siblings",
 ] as const;
 
 export const SCENARIOS = [
-  "Parent-Child Play",
-  "Solo Relaxation",
-  "Travel Adventure",
-  "Home Comfort",
-  "Beach Day",
-  "Garden Party",
-  "Morning Routine",
-  "Evening Walk",
+  "ParentChildPlay",
+  "SoloRelaxation",
+  "TravelAdventure",
+  "HomeComfort",
+  "BeachDay",
+  "GardenParty",
+  "MorningRoutine",
+  "EveningWalk",
 ] as const;
 
 export const LOCATIONS = [
-  "City Street",
-  "Home Interior",
-  "Outdoor Park",
+  "CityStreet",
+  "HomeInterior",
+  "OutdoorPark",
   "Beach",
   "Garden",
-  "Modern Apartment",
-  "Coffee Shop",
-  "Vacation Resort",
+  "ModernApartment",
+  "CoffeeShop",
+  "VacationResort",
 ] as const;
 
 export const PRESENTATION_STYLES = [
-  "Realistic Photography",
-  "Product Mockup",
+  "RealisticPhotography",
+  "ProductMockup",
   "Custom",
 ] as const;
 

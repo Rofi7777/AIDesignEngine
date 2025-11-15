@@ -40,6 +40,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const results: { topView?: string; view45?: string } = {};
 
+      // Generate both angles first
       if (anglesArray.includes("top")) {
         console.log("Generating top view design...");
         results.topView = await generateSlipperDesign(
@@ -51,13 +52,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           material,
           "top"
         );
-
-        await storage.saveGeneratedImage({
-          type: "slipper_design",
-          imageUrl: results.topView,
-          angle: "top",
-          metadata: { theme, style, color, material },
-        });
       }
 
       if (anglesArray.includes("45degree")) {
@@ -71,14 +65,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           material,
           "45degree"
         );
-
-        await storage.saveGeneratedImage({
-          type: "slipper_design",
-          imageUrl: results.view45,
-          angle: "45degree",
-          metadata: { theme, style, color, material },
-        });
       }
+
+      // Save both angles as a single design record
+      await storage.saveCompleteDesign({
+        topViewUrl: results.topView || null,
+        view45Url: results.view45 || null,
+        theme,
+        style,
+        color,
+        material,
+      });
 
       res.json(results);
     } catch (error: any) {

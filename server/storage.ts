@@ -24,6 +24,18 @@ export interface IStorage {
   saveGeneratedImage(image: Omit<GeneratedImage, 'id' | 'timestamp'>): Promise<GeneratedImage>;
   getGeneratedImages(): Promise<GeneratedImage[]>;
   
+  // Save both angles as a single design record
+  saveCompleteDesign(params: {
+    topViewUrl: string | null;
+    view45Url: string | null;
+    theme: string;
+    style: string;
+    color: string;
+    material: string;
+    projectId?: number | null;
+    templateUrl?: string | null;
+  }): Promise<Design>;
+  
   // Projects
   createProject(project: InsertProject): Promise<Project>;
   getProjects(): Promise<Project[]>;
@@ -165,6 +177,36 @@ export class DatabaseStorage implements IStorage {
     
     // Sort all images by timestamp (newest first)
     return images.sort((a, b) => b.timestamp - a.timestamp);
+  }
+
+  // Save both angles as a single design record
+  async saveCompleteDesign(params: {
+    topViewUrl: string | null;
+    view45Url: string | null;
+    theme: string;
+    style: string;
+    color: string;
+    material: string;
+    projectId?: number | null;
+    templateUrl?: string | null;
+  }): Promise<Design> {
+    // Validate that at least one URL is present
+    if (!params.topViewUrl && !params.view45Url) {
+      throw new Error('At least one view (top or 45°) must be generated');
+    }
+    
+    const design = await this.createDesign({
+      projectId: params.projectId || null,
+      templateUrl: params.templateUrl || null,
+      theme: params.theme,
+      style: params.style,
+      color: params.color,
+      material: params.material,
+      topViewUrl: params.topViewUrl,
+      view45Url: params.view45Url,
+    });
+    
+    return design;
   }
 
   // Projects
