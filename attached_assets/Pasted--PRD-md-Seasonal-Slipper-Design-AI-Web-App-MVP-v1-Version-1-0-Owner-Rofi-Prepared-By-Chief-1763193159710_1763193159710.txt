@@ -1,0 +1,161 @@
+📘 PRD.md — Seasonal Slipper Design AI Web App (MVP v1)
+
+Version: 1.0
+Owner: Rofi
+Prepared By: Chief Software Product Designer (AI)
+Development Stack: Replit + Next.js + React + Gemini 2.5 Flash Image Preview
+
+⸻
+
+1. Product Overview
+
+This web application enables footwear designers to rapidly generate seasonal slipper design concepts and model-wearing scenes using AI.
+It replaces the traditional, time-consuming 0→1 design ideation process and assists designers in creating high-quality concept visuals based on uploaded templates, selected seasonal themes, colors, materials, and style preferences.
+
+The system also supports generating model wearing scenes, where the AI applies the generated slipper design onto a realistic model image.
+
+This tool is primarily intended for internal use by designers, without user login or account management in the MVP phase.
+
+⸻
+
+2. Problem Statement
+
+Footwear designers spend substantial time conceptualizing seasonal designs—theme ideation, color palettes, material direction, and pattern exploration.
+The early design stage is slow, subjective, and requires multiple rounds of alignment with merchandising and branding teams.
+
+Additionally, generating “model wearing scenes” is extremely time-consuming and often requires photographers or external mockup resources.
+
+⸻
+
+3. Goals & Success Metrics
+
+🎯 Primary Goals
+	1.	Accelerate the creation of seasonal slipper design concepts.
+	2.	Enable designers to instantly visualize patterns, colors, materials on uploaded templates.
+	3.	Generate realistic model-wearing images with the AI-applied slipper design.
+	4.	Reduce back-and-forth communication during early concept development.
+
+📌 Success Metrics (KPI)
+	•	Reduce concept creation time by 50–70%.
+	•	Increase number of concepts generated per season by 2–3×.
+	•	Achieve >80% “first-round approval alignment” during internal review.
+	•	Designers frequently use the tool as part of their seasonal workflow.
+
+⸻
+
+4. Target Users
+
+👤 Primary User
+	•	Footwear / Slipper Designers
+
+👤 Secondary Users (future versions)
+	•	Merchandising teams
+	•	Brand creative teams
+	•	Product managers
+
+(MVP focuses ONLY on designers.)
+10. AI Image Generation Specification
+
+10.1 Slipper Design Generation
+
+Model: gemini-2.5-flash-image-preview
+Input:
+	•	Uploaded slipper template
+	•	Theme
+	•	Style
+	•	Color
+	•	Material
+	•	Angle requirement (top view + 45° view)
+
+Output:
+	•	High-resolution PNG
+	•	Two angles: top + 45° view
+
+⸻
+
+10.2 Model Wearing Generation
+
+Model: gemini-2.5-flash-image-preview
+Input:
+	•	The generated slipper design
+	•	Model nationality
+	•	Family combination
+	•	Scenario
+	•	Location
+	•	Presentation style (realistic / mockup / custom text)
+
+Output:
+	•	High-resolution PNG (model directly wearing the AI-applied slipper design)
+	•	Consistent lighting / shadow / foot posture
+12. Technical Architecture
+
+Frontend
+	•	Next.js
+	•	React
+	•	Tailwind CSS
+	•	File upload UI
+	•	Dropdown UI
+	•	Image gallery
+
+Backend (Replit server)
+	•	Node.js
+	•	Handles Gemini API calls
+	•	Stores temporary image files
+	•	Returns PNG outputs
+
+AI Engine
+	•	Gemini 2.5 Flash Image Preview
+
+⸻
+
+13. MVP Acceptance Criteria
+
+Slipper Design
+	•	User can upload template
+	•	AI returns top + 45° design images
+	•	Images match theme/color/style description
+	•	Downloadable PNG working
+
+Model Wearing
+	•	User chooses all model options
+	•	AI output shows the exact generated slipper on model’s feet
+	•	Lighting and shadows appear natural
+	•	PNG downloadable
+
+System
+	•	No login required
+	•	Full flow works end-to-end
+	•	Works on desktop + tablet
+
+⸻
+
+14. Future Roadmap
+
+v1.1
+	•	Save project (SS26 / FW26)
+	•	Simple template library
+	•	Style history
+
+v2
+	•	Internal brand color/material database
+	•	BOM integration
+	•	Multiple user accounts
+
+v3
+	•	“AI recommends next season theme” engine
+	•	Multi-product support (sandals, bags, accessories)
+	•	Predictive trend analysis
+
+⸻
+
+✅ End of PRD.md
+
+⸻
+
+如果你需要，我可以也幫你產生：
+
+✅ UI component spec
+✅ Prompt templates for Gemini
+✅ Database schema (if adding v2 features)
+✅ API error handling spec
+✅ UX copywriting
