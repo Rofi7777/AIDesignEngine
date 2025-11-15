@@ -20,6 +20,10 @@ export async function generateSlipperDesign(
   material: string,
   angle: "top" | "45degree"
 ): Promise<string> {
+  if (templateBuffer.length < 100) {
+    throw new Error("Image file is too small or invalid. Please upload a valid slipper template image.");
+  }
+
   const angleDescription = angle === "top" 
     ? "top-down view showing the upper surface of the slipper" 
     : "45-degree angled view showing both the top and side profile of the slipper";
@@ -45,36 +49,43 @@ REQUIREMENTS:
 
 Create a stunning, market-ready slipper design that a footwear designer would be proud to present.`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-image",
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: prompt },
-          {
-            inlineData: {
-              mimeType,
-              data: templateBuffer.toString("base64"),
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-image",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: prompt },
+            {
+              inlineData: {
+                mimeType,
+                data: templateBuffer.toString("base64"),
+              },
             },
-          },
-        ],
+          ],
+        },
+      ],
+      config: {
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
       },
-    ],
-    config: {
-      responseModalities: [Modality.TEXT, Modality.IMAGE],
-    },
-  });
+    });
 
-  const candidate = response.candidates?.[0];
-  const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
+    const candidate = response.candidates?.[0];
+    const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
 
-  if (!imagePart?.inlineData?.data) {
-    throw new Error("No image data in response from Gemini");
+    if (!imagePart?.inlineData?.data) {
+      throw new Error("No image data in response from Gemini");
+    }
+
+    const resultMimeType = imagePart.inlineData.mimeType || "image/png";
+    return `data:${resultMimeType};base64,${imagePart.inlineData.data}`;
+  } catch (error: any) {
+    if (error.message?.includes("INVALID_ARGUMENT") || error.message?.includes("not valid")) {
+      throw new Error("The uploaded image is not valid or supported. Please upload a clear, high-quality slipper template image (PNG or JPG).");
+    }
+    throw error;
   }
-
-  const resultMimeType = imagePart.inlineData.mimeType || "image/png";
-  return `data:${resultMimeType};base64,${imagePart.inlineData.data}`;
 }
 
 export async function generateModelWearingScene(
@@ -86,6 +97,10 @@ export async function generateModelWearingScene(
   location: string,
   presentationStyle: string
 ): Promise<string> {
+  if (slipperImageBuffer.length < 100) {
+    throw new Error("Slipper image is too small or invalid. Please use a valid generated slipper design.");
+  }
+
   const prompt = `Create a professional model-wearing scene showing this slipper design being worn in a realistic setting.
 
 SCENE SPECIFICATIONS:
@@ -109,34 +124,41 @@ REQUIREMENTS:
 
 Create a stunning, photorealistic image that demonstrates how beautiful these slippers look when worn in real life.`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-image",
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: prompt },
-          {
-            inlineData: {
-              mimeType,
-              data: slipperImageBuffer.toString("base64"),
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-image",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: prompt },
+            {
+              inlineData: {
+                mimeType,
+                data: slipperImageBuffer.toString("base64"),
+              },
             },
-          },
-        ],
+          ],
+        },
+      ],
+      config: {
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
       },
-    ],
-    config: {
-      responseModalities: [Modality.TEXT, Modality.IMAGE],
-    },
-  });
+    });
 
-  const candidate = response.candidates?.[0];
-  const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
+    const candidate = response.candidates?.[0];
+    const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
 
-  if (!imagePart?.inlineData?.data) {
-    throw new Error("No image data in response from Gemini");
+    if (!imagePart?.inlineData?.data) {
+      throw new Error("No image data in response from Gemini");
+    }
+
+    const resultMimeType = imagePart.inlineData.mimeType || "image/png";
+    return `data:${resultMimeType};base64,${imagePart.inlineData.data}`;
+  } catch (error: any) {
+    if (error.message?.includes("INVALID_ARGUMENT") || error.message?.includes("not valid")) {
+      throw new Error("The slipper image is not valid or supported. Please use a generated slipper design image.");
+    }
+    throw error;
   }
-
-  const resultMimeType = imagePart.inlineData.mimeType || "image/png";
-  return `data:${resultMimeType};base64,${imagePart.inlineData.data}`;
 }

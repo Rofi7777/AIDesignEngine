@@ -83,8 +83,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(results);
     } catch (error: any) {
       console.error("Error generating design:", error);
-      res.status(500).json({
-        error: "Failed to generate slipper design",
+      
+      const isClientError = 
+        error.message?.includes("not valid") || 
+        error.message?.includes("too small") ||
+        error.message?.includes("INVALID_ARGUMENT");
+      
+      res.status(isClientError ? 400 : 500).json({
+        error: isClientError ? error.message : "Failed to generate slipper design",
         message: error.message,
       });
     }
@@ -135,8 +141,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ modelImage });
     } catch (error: any) {
       console.error("Error generating model scene:", error);
-      res.status(500).json({
-        error: "Failed to generate model wearing scene",
+      
+      const isClientError = 
+        error.message?.includes("not valid") || 
+        error.message?.includes("too small") ||
+        error.message?.includes("INVALID_ARGUMENT");
+      
+      res.status(isClientError ? 400 : 500).json({
+        error: isClientError ? error.message : "Failed to generate model wearing scene",
         message: error.message,
       });
     }
