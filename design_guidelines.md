@@ -20,14 +20,14 @@
 
 **Colors:**
 - **Primary Purple:** hsl(260, 45%, 75%) - Soft lavender for accents and CTAs
-- **Light Purple:** hsl(260, 60%, 95%) - Very light lavender for backgrounds
+- **Background Purple:** hsl(260, 40%, 90%) - Deeper lavender/purple background (updated for more visible purple tone)
 - **Muted Purple:** hsl(260, 30%, 85%) - Muted lavender for subtle elements
-- **Deep Purple:** hsl(260, 50%, 30%) - Rich purple for text/headings
-- **White:** Pure white for cards and main background
+- **Deep Purple:** hsl(260, 50%, 15%) - Rich purple for text/headings (updated for better contrast)
+- **White:** Pure white for cards (stands out beautifully against purple background)
 - **Soft Gray:** hsl(240, 10%, 96%) - Barely-there gray for subtle backgrounds
-- **Text Primary:** hsl(260, 40%, 20%) - Deep purple-gray for main text
+- **Text Primary:** hsl(260, 50%, 15%) - Deep purple-gray for main text
 - **Text Secondary:** hsl(260, 20%, 50%) - Medium purple-gray for secondary text
-- **Border:** hsl(260, 20%, 90%) - Very light purple-gray for borders
+- **Border:** hsl(260, 25%, 85%) - Subtle purple-tinted borders
 
 **Dark Mode:**
 - Soft dark purple backgrounds
