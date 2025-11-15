@@ -10,6 +10,9 @@ export const slipperDesignRequestSchema = z.object({
   color: z.string().min(1, "Color is required"),
   material: z.string().min(1, "Material is required"),
   angles: z.array(z.enum(["top", "45degree"])),
+  referenceImage: z.string().optional(),
+  designDescription: z.string().optional(),
+  brandLogo: z.string().optional(),
 });
 
 export const modelWearingRequestSchema = z.object({
@@ -158,6 +161,9 @@ export const designs = pgTable("designs", {
   style: varchar("style", { length: 100 }).notNull(),
   color: varchar("color", { length: 100 }).notNull(),
   material: varchar("material", { length: 100 }).notNull(),
+  referenceImageUrl: text("reference_image_url"),
+  designDescription: text("design_description"),
+  brandLogoUrl: text("brand_logo_url"),
   topViewUrl: text("top_view_url"),
   view45Url: text("view_45_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
