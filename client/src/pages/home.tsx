@@ -57,6 +57,7 @@ const createDesignFormSchema = (t: (key: any) => string) =>
   slipperDesignRequestSchema.omit({ templateImage: true, angles: true }).extend({
     customColor: z.string().optional(),
     customMaterial: z.string().optional(),
+    designDescription: z.string().optional(),
   }).refine(
     (data) => {
       if (data.color === "Custom") {

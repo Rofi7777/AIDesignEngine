@@ -11,6 +11,12 @@
 **Last Updated:** November 15, 2025
 
 ## Recent Changes
+- ✅ **Enhanced Design Input Capabilities:** Added three new optional fields to improve AI-generated design quality:
+  - **Reference Image Upload:** Users can upload inspiration/style reference images
+  - **Design Description:** Free-form text input for detailed design requirements
+  - **Brand Logo Upload:** Users can upload brand logos for incorporation into designs
+- ✅ **Multi-Image Gemini API Integration:** Updated Gemini calls to accept multiple images (template + reference + logo) in a single request
+- ✅ **Enhanced AI Prompts:** Dynamically builds prompts based on provided inputs for more accurate and customized designs
 - ✅ **Complete UI Redesign:** Implemented La Letter-inspired aesthetic with soft purple/lavender color palette
 - ✅ **New Branding:** Changed from "AI Slipper Design Studio" to "Craft AI Studio"
 - ✅ **Refined Typography:** Light, spacious typography (font-light, tracking-wide) throughout UI
@@ -59,31 +65,38 @@ All schemas defined in `shared/schema.ts`:
 - **All UI text translated:** Headers, labels, placeholders, buttons, toast messages, form options
 
 ### Backend Structure
-- **Database:** PostgreSQL with Drizzle ORM, tables for projects, designs, modelScenes, brandColors, bomMaterials
+- **Database:** PostgreSQL with Drizzle ORM, tables for projects, designs (with designDescription field), modelScenes, brandColors, bomMaterials
 - **Storage Interface:** `server/storage.ts` with DatabaseStorage implementation
-- **API Routes:** `server/routes.ts` with `/api/generate-design` and `/api/generate-model`
-- **Gemini Integration:** `server/gemini.ts` with functions for slipper design and model scene generation
-- **File Handling:** Multer for multipart/form-data with Buffer objects passed directly to Gemini
-- **Design Pairing:** saveCompleteDesign method ensures top and 45° views are stored in single database row
+- **API Routes:** `server/routes.ts` with `/api/generate-design` (supports multiple file uploads: template, referenceImage, brandLogo) and `/api/generate-model`
+- **Gemini Integration:** `server/gemini.ts` with enhanced multi-image support for slipper design and model scene generation
+- **File Handling:** Multer configured for multiple file uploads with Buffer objects passed directly to Gemini
+- **Design Pairing:** saveCompleteDesign method ensures top and 45° views are stored in single database row with optional design description
 
 ### Key Features
 1. **Slipper Template Upload:** PNG/JPG up to 10MB with preview and remove functionality
-2. **Design Generation:** AI creates top and 45° view slipper designs based on theme, style, color, and material
-3. **Model Scene Generation:** AI creates model wearing scenes with configurable nationality, family, scenario, location, and presentation
-4. **Download Functionality:** High-resolution PNG download for all generated images
-5. **Custom Options:** Users can specify custom colors, materials, and presentation styles with validation
-6. **Multi-Language Interface:** Full i18n support for English, Traditional Chinese (繁體中文), and Vietnamese (Tiếng Việt) with language selector in header
-7. **Database Persistence:** PostgreSQL database stores all generated designs with proper pairing of top and 45° views
-8. **Elegant La Letter-Inspired Design:** Soft purple/lavender theme, generous white space, refined typography, polished UI components
+2. **Enhanced Design Input Options (NEW):**
+   - **Reference Image Upload:** Optional inspiration images to guide AI design generation
+   - **Design Description:** Free-form text input for detailed design requirements and specifications
+   - **Brand Logo Upload:** Optional brand logo integration into slipper designs
+3. **Design Generation:** AI creates top and 45° view slipper designs based on theme, style, color, material, and optional reference inputs
+4. **Model Scene Generation:** AI creates model wearing scenes with configurable nationality, family, scenario, location, and presentation
+5. **Download Functionality:** High-resolution PNG download for all generated images
+6. **Custom Options:** Users can specify custom colors, materials, and presentation styles with validation
+7. **Multi-Language Interface:** Full i18n support for English, Traditional Chinese (繁體中文), and Vietnamese (Tiếng Việt) with language selector in header
+8. **Database Persistence:** PostgreSQL database stores all generated designs with proper pairing of top and 45° views
+9. **Elegant La Letter-Inspired Design:** Soft purple/lavender theme, generous white space, refined typography, polished UI components
 
 ## Critical Implementation Details
 
 ### File Upload Flow
-1. User uploads template → Frontend validates size/type → Preview displayed
-2. On design submit → File converted to FormData → Posted to `/api/generate-design`
-3. Backend receives multipart/form-data → Multer extracts file as Buffer
-4. Buffer passed directly to Gemini (no base64 conversion required)
-5. Generated images stored in memory → Returned as data URLs to frontend
+1. User uploads template (required), reference image (optional), brand logo (optional) → Frontend validates size/type → Previews displayed
+2. User optionally fills design description text field
+3. On design submit → All files + form data converted to FormData → Posted to `/api/generate-design`
+4. Backend receives multipart/form-data → Multer extracts multiple files as Buffers
+5. All buffers and text description passed to Gemini with enhanced multi-part prompt
+6. Gemini processes template + optional reference images + optional logo to generate designs
+7. Generated images stored in memory → Returned as data URLs to frontend
+8. Design description saved to database alongside generated images
 
 ### Custom Field Validation
 - **Color/Material:** When "custom" is selected, customColor/customMaterial fields become required
