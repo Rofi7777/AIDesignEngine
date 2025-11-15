@@ -20,15 +20,25 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  app.post("/api/generate-design", upload.single("template"), async (req, res) => {
+  app.post("/api/generate-design", upload.fields([
+    { name: "template", maxCount: 1 },
+    { name: "referenceImage", maxCount: 1 },
+    { name: "brandLogo", maxCount: 1 },
+  ]), async (req, res) => {
     try {
-      if (!req.file) {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      
+      if (!files || !files.template || files.template.length === 0) {
         return res.status(400).json({
           error: "No template file uploaded",
         });
       }
 
-      const { theme, style, color, material, angles } = req.body;
+      const templateFile = files.template[0];
+      const referenceImageFile = files.referenceImage?.[0];
+      const brandLogoFile = files.brandLogo?.[0];
+
+      const { theme, style, color, material, angles, designDescription } = req.body;
 
       if (!theme || !style || !color || !material) {
         return res.status(400).json({
@@ -44,26 +54,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (anglesArray.includes("top")) {
         console.log("Generating top view design...");
         results.topView = await generateSlipperDesign(
-          req.file.buffer,
-          req.file.mimetype,
+          templateFile.buffer,
+          templateFile.mimetype,
           theme,
           style,
           color,
           material,
-          "top"
+          "top",
+          referenceImageFile?.buffer,
+          referenceImageFile?.mimetype,
+          brandLogoFile?.buffer,
+          brandLogoFile?.mimetype,
+          designDescription
         );
       }
 
       if (anglesArray.includes("45degree")) {
         console.log("Generating 45-degree view design...");
         results.view45 = await generateSlipperDesign(
-          req.file.buffer,
-          req.file.mimetype,
+          templateFile.buffer,
+          templateFile.mimetype,
           theme,
           style,
           color,
           material,
-          "45degree"
+          "45degree",
+          referenceImageFile?.buffer,
+          referenceImageFile?.mimetype,
+          brandLogoFile?.buffer,
+          brandLogoFile?.mimetype,
+          designDescription
         );
       }
 
@@ -75,6 +95,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         style,
         color,
         material,
+        designDescription: designDescription || null,
       });
 
       res.json(results);

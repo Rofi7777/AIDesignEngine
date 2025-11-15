@@ -104,6 +104,12 @@ export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
+  // New design enhancement files
+  const [referenceImageFile, setReferenceImageFile] = useState<File | null>(null);
+  const [referenceImagePreview, setReferenceImagePreview] = useState<string | null>(null);
+  const [brandLogoFile, setBrandLogoFile] = useState<File | null>(null);
+  const [brandLogoPreview, setBrandLogoPreview] = useState<string | null>(null);
 
   const [generatedSlipperTop, setGeneratedSlipperTop] = useState<string | null>(null);
   const [generatedSlipper45, setGeneratedSlipper45] = useState<string | null>(null);
@@ -122,6 +128,7 @@ export default function Home() {
       material: "",
       customColor: "",
       customMaterial: "",
+      designDescription: "",
     },
   });
 
@@ -257,6 +264,17 @@ export default function Home() {
     formData.append("color", data.color === "Custom" ? data.customColor! : data.color);
     formData.append("material", data.material === "Custom" ? data.customMaterial! : data.material);
     formData.append("angles", JSON.stringify(["top", "45degree"]));
+    
+    // Add new optional fields
+    if (referenceImageFile) {
+      formData.append("referenceImage", referenceImageFile);
+    }
+    if (data.designDescription && data.designDescription.trim()) {
+      formData.append("designDescription", data.designDescription);
+    }
+    if (brandLogoFile) {
+      formData.append("brandLogo", brandLogoFile);
+    }
 
     generateDesignMutation.mutate(formData);
   };
@@ -594,6 +612,142 @@ export default function Home() {
                       )}
                     />
                   )}
+
+                  {/* Reference Image Upload */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" data-testid="label-reference-image">
+                      {t('referenceImageLabel')}
+                    </label>
+                    <div
+                      className="group relative cursor-pointer overflow-hidden rounded-xl border border-dashed border-border/60 bg-muted/20 transition-colors hover-elevate"
+                      onClick={() => document.getElementById("reference-image-upload")?.click()}
+                      data-testid="dropzone-reference"
+                    >
+                      <input
+                        id="reference-image-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/png,image/jpeg,image/jpg"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setReferenceImageFile(file);
+                            const reader = new FileReader();
+                            reader.onloadend = () => setReferenceImagePreview(reader.result as string);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        data-testid="input-reference-image"
+                      />
+                      {referenceImagePreview ? (
+                        <div className="relative aspect-video">
+                          <img
+                            src={referenceImagePreview}
+                            alt={t('referenceImage')}
+                            className="h-full w-full object-contain"
+                            data-testid="img-reference-preview"
+                          />
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            className="absolute right-2 top-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setReferenceImageFile(null);
+                              setReferenceImagePreview(null);
+                            }}
+                            data-testid="button-remove-reference"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-8">
+                          <Upload className="mb-2 h-8 w-8 text-muted-foreground" data-testid="icon-upload-reference" />
+                          <p className="text-sm font-medium" data-testid="text-upload-reference">{t('uploadReferenceArea')}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{t('referenceImageHint')}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Design Description */}
+                  <FormField
+                    control={designForm.control}
+                    name="designDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel data-testid="label-design-description">{t('designDescriptionLabel')}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder={t('designDescriptionPlaceholder')}
+                            rows={4}
+                            {...field}
+                            data-testid="textarea-design-description"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Brand Logo Upload */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" data-testid="label-brand-logo">
+                      {t('brandLogoLabel')}
+                    </label>
+                    <div
+                      className="group relative cursor-pointer overflow-hidden rounded-xl border border-dashed border-border/60 bg-muted/20 transition-colors hover-elevate"
+                      onClick={() => document.getElementById("brand-logo-upload")?.click()}
+                      data-testid="dropzone-logo"
+                    >
+                      <input
+                        id="brand-logo-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/png,image/jpeg,image/jpg"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setBrandLogoFile(file);
+                            const reader = new FileReader();
+                            reader.onloadend = () => setBrandLogoPreview(reader.result as string);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        data-testid="input-brand-logo"
+                      />
+                      {brandLogoPreview ? (
+                        <div className="relative aspect-video">
+                          <img
+                            src={brandLogoPreview}
+                            alt={t('brandLogo')}
+                            className="h-full w-full object-contain"
+                            data-testid="img-logo-preview"
+                          />
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            className="absolute right-2 top-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setBrandLogoFile(null);
+                              setBrandLogoPreview(null);
+                            }}
+                            data-testid="button-remove-logo"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-8">
+                          <Upload className="mb-2 h-8 w-8 text-muted-foreground" data-testid="icon-upload-logo" />
+                          <p className="text-sm font-medium" data-testid="text-upload-logo">{t('uploadLogoArea')}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{t('brandLogoHint')}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
                   <Button
                     type="submit"

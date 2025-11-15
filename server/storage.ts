@@ -32,6 +32,7 @@ export interface IStorage {
     style: string;
     color: string;
     material: string;
+    designDescription?: string | null;
     projectId?: number | null;
     templateUrl?: string | null;
   }): Promise<Design>;
@@ -187,6 +188,7 @@ export class DatabaseStorage implements IStorage {
     style: string;
     color: string;
     material: string;
+    designDescription?: string | null;
     projectId?: number | null;
     templateUrl?: string | null;
   }): Promise<Design> {
@@ -202,6 +204,7 @@ export class DatabaseStorage implements IStorage {
       style: params.style,
       color: params.color,
       material: params.material,
+      designDescription: params.designDescription || null,
       topViewUrl: params.topViewUrl,
       view45Url: params.view45Url,
     });

@@ -18,7 +18,12 @@ export async function generateSlipperDesign(
   style: string,
   color: string,
   material: string,
-  angle: "top" | "45degree"
+  angle: "top" | "45degree",
+  referenceImageBuffer?: Buffer,
+  referenceImageMimeType?: string,
+  brandLogoBuffer?: Buffer,
+  brandLogoMimeType?: string,
+  designDescription?: string
 ): Promise<string> {
   if (templateBuffer.length < 100) {
     throw new Error("Image file is too small or invalid. Please upload a valid slipper template image.");
@@ -28,16 +33,35 @@ export async function generateSlipperDesign(
     ? "top-down view showing the upper surface of the slipper" 
     : "45-degree angled view showing both the top and side profile of the slipper";
 
-  const prompt = `Create a professional slipper design concept based on this template.
+  // Build enhanced prompt with optional fields
+  let prompt = `Create a professional slipper design concept based on this template.
 
 DESIGN SPECIFICATIONS:
 - Seasonal Theme: ${theme}
 - Design Style: ${style}
 - Color Palette: ${color}
 - Material: ${material}
-- View Angle: ${angleDescription}
+- View Angle: ${angleDescription}`;
 
-REQUIREMENTS:
+  // Add design description if provided
+  if (designDescription && designDescription.trim()) {
+    prompt += `\n\nADDITIONAL DESIGN REQUIREMENTS:
+${designDescription}`;
+  }
+
+  // Add reference image instructions if provided
+  if (referenceImageBuffer) {
+    prompt += `\n\nSTYLE REFERENCE:
+A reference image is provided showing the desired design aesthetic, patterns, colors, or style inspiration. Please incorporate elements from this reference image into the slipper design while maintaining the template's basic structure.`;
+  }
+
+  // Add brand logo instructions if provided
+  if (brandLogoBuffer) {
+    prompt += `\n\nBRAND IDENTITY:
+A brand logo is provided. Please tastefully incorporate this logo into the slipper design in an appropriate location (such as the side, heel area, or top surface). The logo should be clearly visible but integrated naturally into the overall design.`;
+  }
+
+  prompt += `\n\nREQUIREMENTS:
 1. Apply the specified theme, style, colors, and materials to the slipper template
 2. Maintain the basic shape and structure from the template
 3. Create a photorealistic, high-quality product visualization
@@ -50,20 +74,43 @@ REQUIREMENTS:
 Create a stunning, market-ready slipper design that a footwear designer would be proud to present.`;
 
   try {
+    // Build parts array with template and optional images
+    const parts: any[] = [
+      { text: prompt },
+      {
+        inlineData: {
+          mimeType,
+          data: templateBuffer.toString("base64"),
+        },
+      },
+    ];
+
+    // Add reference image if provided
+    if (referenceImageBuffer && referenceImageMimeType) {
+      parts.push({
+        inlineData: {
+          mimeType: referenceImageMimeType,
+          data: referenceImageBuffer.toString("base64"),
+        },
+      });
+    }
+
+    // Add brand logo if provided
+    if (brandLogoBuffer && brandLogoMimeType) {
+      parts.push({
+        inlineData: {
+          mimeType: brandLogoMimeType,
+          data: brandLogoBuffer.toString("base64"),
+        },
+      });
+    }
+
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-image",
       contents: [
         {
           role: "user",
-          parts: [
-            { text: prompt },
-            {
-              inlineData: {
-                mimeType,
-                data: templateBuffer.toString("base64"),
-              },
-            },
-          ],
+          parts,
         },
       ],
       config: {
