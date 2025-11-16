@@ -3,20 +3,47 @@ import { pgTable, serial, varchar, text, timestamp, integer } from "drizzle-orm/
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 
+// Product Types
+export const PRODUCT_TYPES = [
+  "shoes",
+  "slippers",
+  "clothes",
+  "bags",
+  "custom",
+] as const;
+
+// Angle types for different products
+export const PRODUCT_ANGLES = {
+  shoes: ["top", "45degree"] as const,
+  slippers: ["top", "45degree"] as const,
+  clothes: ["front", "back"] as const,
+  bags: ["front", "side"] as const,
+  custom: ["view1", "view2"] as const,
+} as const;
+
 export const slipperDesignRequestSchema = z.object({
+  productType: z.enum(PRODUCT_TYPES),
+  customProductType: z.string().optional(),
   templateImage: z.string(),
   theme: z.string().min(1, "Theme is required"),
   style: z.string().min(1, "Style is required"),
   color: z.string().min(1, "Color is required"),
   material: z.string().min(1, "Material is required"),
-  angles: z.array(z.enum(["top", "45degree"])),
+  angles: z.array(z.string()),
   referenceImage: z.string().optional(),
   designDescription: z.string().optional(),
   brandLogo: z.string().optional(),
-});
+}).refine(
+  (data) => data.productType !== "custom" || data.customProductType,
+  {
+    message: "Custom product type name is required when product type is 'custom'",
+    path: ["customProductType"],
+  }
+);
 
 export const modelWearingRequestSchema = z.object({
-  slipperDesignImage: z.string(),
+  productDesignImage: z.string(),
+  productType: z.enum(PRODUCT_TYPES).optional(),
   nationality: z.string().min(1, "Nationality is required"),
   familyCombination: z.string().min(1, "Family combination is required"),
   scenario: z.string().min(1, "Scenario is required"),
@@ -27,12 +54,14 @@ export const modelWearingRequestSchema = z.object({
 
 export const generatedImageSchema = z.object({
   id: z.string(),
-  type: z.enum(["slipper_design", "model_wearing"]),
+  type: z.enum(["product_design", "model_wearing"]),
   imageUrl: z.string(),
-  angle: z.enum(["top", "45degree"]).optional(),
+  angle: z.string().optional(),
+  productType: z.enum(PRODUCT_TYPES).optional(),
   timestamp: z.number(),
   metadata: z.object({
-    // Slipper design metadata
+    // Product design metadata
+    productType: z.string().optional(),
     theme: z.string().optional(),
     style: z.string().optional(),
     color: z.string().optional(),
@@ -43,7 +72,7 @@ export const generatedImageSchema = z.object({
     scenario: z.string().optional(),
     location: z.string().optional(),
     presentationStyle: z.string().optional(),
-    slipperImageUrl: z.string().optional(),
+    productImageUrl: z.string().optional(),
   }).optional(),
 });
 
@@ -156,6 +185,8 @@ export const projects = pgTable("projects", {
 export const designs = pgTable("designs", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id),
+  productType: varchar("product_type", { length: 50 }).notNull().default('slippers'),
+  customProductType: varchar("custom_product_type", { length: 100 }),
   templateUrl: text("template_url"),
   theme: varchar("theme", { length: 100 }).notNull(),
   style: varchar("style", { length: 100 }).notNull(),
@@ -164,15 +195,16 @@ export const designs = pgTable("designs", {
   referenceImageUrl: text("reference_image_url"),
   designDescription: text("design_description"),
   brandLogoUrl: text("brand_logo_url"),
-  topViewUrl: text("top_view_url"),
-  view45Url: text("view_45_url"),
+  view1Url: text("view_1_url"),
+  view2Url: text("view_2_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const modelScenes = pgTable("model_scenes", {
   id: serial("id").primaryKey(),
   designId: integer("design_id").references(() => designs.id),
-  slipperImageUrl: text("slipper_image_url").notNull(),
+  productImageUrl: text("product_image_url").notNull(),
+  productType: varchar("product_type", { length: 50 }),
   nationality: varchar("nationality", { length: 100 }).notNull(),
   familyCombination: varchar("family_combination", { length: 100 }).notNull(),
   scenario: varchar("scenario", { length: 100 }).notNull(),
