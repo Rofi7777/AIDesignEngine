@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { generateSlipperDesign, generateModelWearingScene } from "./gemini";
+import { generateSlipperDesignEnhanced, generateModelWearingSceneEnhanced } from "./geminiEnhanced";
 import multer from "multer";
 import { readFileSync } from "fs";
 
@@ -51,8 +51,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const results: { topView?: string; view45?: string } = {};
 
       // STEP 1: Generate top view as canonical design (always generate this first)
-      console.log("Generating canonical design (top view)...");
-      results.topView = await generateSlipperDesign(
+      // Uses two-stage architecture: LLM generates optimized prompt → Gemini generates image
+      console.log("Generating canonical design (top view) with professional designer prompts...");
+      results.topView = await generateSlipperDesignEnhanced(
         templateFile.buffer,
         templateFile.mimetype,
         theme,
@@ -76,7 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const topViewBuffer = Buffer.from(topViewBase64, 'base64');
         const topViewMimeType = results.topView.match(/data:([^;]+);/)?.[1] || 'image/png';
         
-        results.view45 = await generateSlipperDesign(
+        results.view45 = await generateSlipperDesignEnhanced(
           templateFile.buffer,
           templateFile.mimetype,
           theme,
@@ -156,8 +157,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      console.log("Generating model wearing scene...");
-      const modelImage = await generateModelWearingScene(
+      console.log("Generating model wearing scene with professional designer prompts...");
+      const modelImage = await generateModelWearingSceneEnhanced(
         req.file.buffer,
         req.file.mimetype,
         nationality,
