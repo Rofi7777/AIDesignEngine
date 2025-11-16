@@ -21,6 +21,11 @@ The application features a single-page layout with a two-column structure (40% c
 - **Frontend:** React, TypeScript, shadcn UI, React Hook Form, TanStack Query, Tailwind CSS, Wouter for routing.
 - **Backend:** Node.js, Express, Multer (for file uploads).
 - **Database:** PostgreSQL with Drizzle ORM for data persistence.
+- **Professional Two-Stage AI Architecture (NEW):**
+  - **Stage 1 (Prompt Optimizer):** LLM acts as professional designer with 10+ years footwear design experience, transforms structured inputs into optimized prompts using gemini-2.0-flash text model
+  - **Stage 2 (Image Generation):** Uses expertly-crafted prompts with gemini-2.5-flash-image-preview for superior design quality
+  - Intelligent fallback system ensures stability if Stage 1 encounters issues
+  - Comprehensive debug logging for monitoring and troubleshooting
 - **AI Integration:** Google Gemini 2.5 Flash Image Preview via Replit AI Integrations.
 - **Validation:** Zod with drizzle-zod for robust form validation.
 - **Internationalization (i18n):** A React Context-based translation system with localStorage persistence supporting English, Traditional Chinese, and Vietnamese.

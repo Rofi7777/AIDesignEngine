@@ -161,12 +161,21 @@ Please provide your response as valid JSON with the following structure:
     });
 
     console.log("[Prompt Optimizer] LLM response received, extracting text...");
+    
+    // Check response structure first
+    if (!response.candidates || response.candidates.length === 0) {
+      throw new Error("No candidates in LLM response");
+    }
+    
     const textContent = response.text;
     console.log("[Prompt Optimizer] Text content length:", textContent?.length || 0);
     
-    if (!textContent) {
-      throw new Error("No text content in LLM response");
+    if (!textContent || textContent.trim().length === 0) {
+      console.error("[Prompt Optimizer] Empty response from LLM, candidates:", JSON.stringify(response.candidates, null, 2));
+      throw new Error("Empty text content in LLM response (possible safety filter)");
     }
+    
+    console.log("[Prompt Optimizer] Raw LLM response (first 500 chars):", textContent.substring(0, 500));
     
     // Extract JSON from the response (handle markdown code blocks if present)
     let jsonText = textContent;
@@ -177,7 +186,14 @@ Please provide your response as valid JSON with the following structure:
     }
 
     console.log("[Prompt Optimizer] Parsing JSON response...");
-    const optimizedPrompts: OptimizedPrompts = JSON.parse(jsonText.trim());
+    let optimizedPrompts: OptimizedPrompts;
+    try {
+      optimizedPrompts = JSON.parse(jsonText.trim());
+    } catch (parseError: any) {
+      console.error("[Prompt Optimizer] JSON parse error:", parseError.message);
+      console.error("[Prompt Optimizer] Attempted to parse:", jsonText.substring(0, 1000));
+      throw new Error(`Failed to parse LLM response as JSON: ${parseError.message}`);
+    }
     
     // Validate the response structure
     if (!optimizedPrompts.slipper_design_prompt || !optimizedPrompts.model_wearing_prompt) {
