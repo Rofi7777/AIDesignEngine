@@ -146,6 +146,7 @@ Please provide your response as valid JSON with the following structure:
 }`;
 
   try {
+    console.log("[Prompt Optimizer] Calling Gemini text model for prompt generation...");
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: [
@@ -159,7 +160,9 @@ Please provide your response as valid JSON with the following structure:
       ],
     });
 
+    console.log("[Prompt Optimizer] LLM response received, extracting text...");
     const textContent = response.text;
+    console.log("[Prompt Optimizer] Text content length:", textContent?.length || 0);
     
     if (!textContent) {
       throw new Error("No text content in LLM response");
@@ -169,9 +172,11 @@ Please provide your response as valid JSON with the following structure:
     let jsonText = textContent;
     const jsonMatch = textContent.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
     if (jsonMatch && jsonMatch[1]) {
+      console.log("[Prompt Optimizer] Found JSON in markdown code block");
       jsonText = jsonMatch[1];
     }
 
+    console.log("[Prompt Optimizer] Parsing JSON response...");
     const optimizedPrompts: OptimizedPrompts = JSON.parse(jsonText.trim());
     
     // Validate the response structure
@@ -179,10 +184,16 @@ Please provide your response as valid JSON with the following structure:
       throw new Error("LLM response missing required prompt fields");
     }
 
+    console.log("[Prompt Optimizer] ✓ Successfully generated optimized prompts");
+    console.log("[Prompt Optimizer] Slipper prompt length:", optimizedPrompts.slipper_design_prompt.length);
+    console.log("[Prompt Optimizer] Model wearing prompt length:", optimizedPrompts.model_wearing_prompt.length);
+    
     return optimizedPrompts;
   } catch (error: any) {
-    console.error("Error generating optimized prompts:", error);
+    console.error("[Prompt Optimizer] ✗ Error generating optimized prompts:", error.message);
+    console.error("[Prompt Optimizer] Error stack:", error.stack);
     // Fallback to basic prompts if LLM fails
+    console.log("[Prompt Optimizer] Using fallback prompts");
     return {
       slipper_design_prompt: generateFallbackSlipperPrompt(designInputs),
       model_wearing_prompt: generateFallbackModelPrompt(modelSceneInputs),
