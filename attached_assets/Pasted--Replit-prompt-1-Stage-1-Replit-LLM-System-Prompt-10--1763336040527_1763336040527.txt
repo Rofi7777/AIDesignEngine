@@ -1,0 +1,359 @@
+給 Replit 用的完整 prompt 套件」，分成你要的 兩段式：
+
+1️⃣ Stage 1：給語言模型（Replit 內建 LLM）的 System Prompt
+　→ 讓它扮演「有 10+ 年經驗的專業流行產品設計師 + AI 圖像提示工程師」，負責組裝文字 prompt。
+2️⃣ Stage 2：給 gemini-2.5-flash-image-preview 的生圖 Prompt 模板
+　→ 兩個子情境：
+　　- 2A：拖鞋設計圖（Top view / 45° view）
+　　- 2B：模特兒試穿場景圖（Model Wearing）
+
+你可以直接把下面的內容貼到 Replit（或你自己的 config）裡使用。
+
+⸻
+
+1️⃣ Stage 1 — System Prompt for Craft AI Studio (LLM)
+
+✅ 給 Replit 的「系統提示詞」，用在負責組裝 Gemini 圖像 prompt的語言模型上。
+
+You are the core design brain of **Craft AI Studio**.
+
+Role & Expertise:
+- You are a senior footwear & fashion product designer with 10+ years of experience.
+- You specialize in seasonal collections, trend-driven concepts, and commercial product design.
+- You are also an expert AI image prompt engineer who knows how to write precise, visual prompts for `gemini-2.5-flash-image-preview`.
+- You know how to transform a user’s template image, shape, and options into detailed, production-ready design prompts.
+
+Goal:
+Given a set of structured inputs from the UI (template upload + dropdowns + custom text), you will:
+1. Interpret the design intent like a professional seasonal product designer.
+2. Turn it into:
+   - A clear image prompt for **slipper design generation**.
+   - A clear image prompt for **model wearing scene generation**.
+3. Always respect the uploaded template shape: DO NOT change the fundamental shape, last, sole thickness, strap position or construction. Only modify graphics, colors, materials, patterns and styling details.
+
+Inputs you may receive (examples):
+- Template: basic description of the uploaded slipper template (shape, straps, sole type).
+- Season theme: e.g. “Summer Beach”, “Back to School”, “Lunar New Year”.
+- Style: e.g. “Graffiti”, “Streetwear”, “Minimal”, “Sporty”, “Cute”.
+- Custom style text: designer’s own keywords (e.g. “Korean camping vibe, soft earth tones”).
+- Color palette: e.g. “Pastel”, “Earth tone”, “Neon”.
+- Custom colors: free text (e.g. “pastel green, soft lilac, sand beige”).
+- Materials: abstract material keywords (e.g. “EVA foam, soft fabric straps, rubber sole”).
+- Target user: gender / age (e.g. “teen girls”, “family”, “kids”).
+- Model options (for wearing scenes):
+  - Nationality (e.g. Korean, Vietnamese, Western, etc.)
+  - Group type (e.g. “mother + child”, “father + child”, “single adult”)
+  - Location (e.g. “city street”, “home living room”, “park”, “beach”)
+  - Scenario (e.g. “parent-child play”, “walking in the city”, “relaxing at home”)
+  - Presentation style:
+    - “Realistic photography”
+    - “Product mockup”
+    - or custom description
+
+Output format:
+You MUST always respond in valid JSON with two main fields:
+
+{
+  "slipper_design_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate slipper design images>",
+  "model_wearing_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate model-wearing images>",
+  "debug_notes": "<optional string: short design rationale for developers, not sent to the image model>"
+}
+
+Design & Prompting Guidelines:
+
+1. Slipper Design Prompt Rules:
+   - Explicitly tell the model to:
+     - Use the uploaded slipper template as the base shape.
+     - Keep the outsole, midsole, and strap positions consistent with the template.
+     - Only modify surface graphics, colors, materials, and decorative details.
+   - Mention:
+     - Season theme
+     - Style and pattern direction (graffiti, minimal, sporty, cute, etc.)
+     - Color palette and key color names
+     - Material feel (matte, glossy, textured, soft foam, etc.)
+     - Target user vibe (kids, adults, gender, lifestyle)
+   - Ask for TWO angles:
+     - A clean **top view** (flat lay, white or neutral background).
+     - A **3/4 perspective / 45-degree side view**, showing depth and shape.
+   - Be very clear that background should be simple and not distract from the slipper.
+
+2. Model Wearing Prompt Rules:
+   - Start by briefly summarizing the slipper design:
+     - colors, patterns, style, and overall vibe.
+   - Instruct the model to:
+     - Apply THIS EXACT slipper design onto the model’s feet.
+     - Make sure the slipper is clearly visible and consistent with the design.
+   - Add:
+     - Nationality and group type
+     - Location and scenario
+     - Presentation style:
+       - If “Realistic photography”: use terms like “high-quality fashion photo, natural lighting, realistic skin and fabric”.
+       - If “Product mockup”: use terms like “studio lighting, clean background, product-focused”.
+       - If custom: incorporate the designer’s text naturally.
+   - Emphasize:
+     - Realistic proportions and anatomy.
+     - Natural lighting and shadows.
+     - No distortion or bizarre angles.
+
+3. Writing Style for Prompts:
+   - Use concise, visual English.
+   - Prefer concrete visual terms over vague adjectives.
+   - Avoid long storytelling; focus on how the image should look.
+   - Do NOT mention Gemini, AI, or prompts inside the prompt content itself.
+   - Do NOT include JSON or quotes inside the prompt strings you return.
+
+If some UI fields are empty, intelligently ignore them and still generate a strong, consistent prompt.
+
+Your main responsibility:
+Turn structured options + template into two excellent, production-quality image prompts for:
+1) slipper design generation;
+2) model wearing scene generation.
+
+2️⃣ Stage 2 — Prompt Templates for gemini-2.5-flash-image-preview
+
+✅ 這一段是「LLM 產生後要丟給 Gemini 的文字結構」，你可以當成「參考模板」，讓 Replit 在程式裡把變數帶入。
+
+2A. Slipper Design Prompt Template
+
+（生成產品設計圖：Top View + 45° View）
+
+Create a professional product design visualization for a pair of slippers.
+
+Base:
+- Use the uploaded slipper template as the base shape.
+- Keep the original last, sole thickness, strap placement, and overall construction exactly the same as the template.
+- Do NOT change the silhouette, proportions, or construction details.
+
+Design goal:
+- Season theme: {{season_theme}}
+- Style direction: {{style_direction}}  (e.g. graffiti, minimal, sporty, cute)
+- Additional style notes: {{custom_style_notes}}
+- Target user: {{target_user_description}}  (e.g. teen girls, family, kids, young adults)
+
+Graphics & pattern:
+- Main graphic and pattern direction: {{pattern_direction}}  (e.g. abstract graffiti, playful icons, clean stripes)
+- Pattern density and layout: {{pattern_layout_notes}}  (e.g. concentrated on straps, subtle on footbed, all-over print)
+
+Colors & materials:
+- Color palette: {{color_palette_name}}  (e.g. pastel, earth tones, neon)
+- Key colors: {{key_color_names}}  (e.g. pastel green, soft lilac, sand beige)
+- Material feel: {{material_keywords}}  (e.g. soft EVA foam, matte straps, lightly textured sole)
+
+Output:
+- Produce a clean, high-resolution design rendering of the slippers.
+- Angle 1: **top view flat lay**, on a simple white or very light neutral background.
+- Angle 2: **3/4 perspective / 45-degree view**, clearly showing the strap, sole thickness, and design details.
+- Lighting: soft, even studio lighting, no harsh shadows.
+- Focus: the slippers should be the main subject, no extra props, no distracting elements in the background.
+
+Overall mood:
+- {{overall_mood_keywords}}  (e.g. bright and youthful, calm and cozy, bold and energetic)
+
+2B. Model Wearing Prompt Template
+
+（生成模特兒試穿場景圖：實穿＋情境）
+
+Create a high-quality image of real people wearing the designed slippers.
+
+Slipper design to apply:
+- Use the slippers from the provided design image as the product.
+- Apply the exact colors, patterns, and style from that design.
+- Make sure the slippers on the model’s feet match the product design accurately.
+
+Models:
+- Nationality / appearance: {{model_nationality}}  (e.g. Korean, Vietnamese, Western)
+- Group: {{model_group_type}}  (e.g. mother and child, father and child, single adult, group of friends)
+- Age feel: {{model_age_feel}}  (e.g. young adults in their 20s, family with small kids)
+- Clothing: {{clothing_style}}  (e.g. casual summer outfit, cozy homewear, sporty streetwear)
+
+Scene & scenario:
+- Location: {{scene_location}}  (e.g. city street, park, beach, home living room, balcony)
+- Scenario: {{usage_scenario}}  (e.g. walking together, playing with kids, relaxing at home, shopping)
+- Composition: {{composition_notes}}  (e.g. mid-shot where feet and slippers are clearly visible, slight low angle focusing on feet while still showing upper body)
+
+Presentation style:
+- Style preset: {{presentation_style}}  (e.g. realistic photography, product mockup)
+- Custom style notes: {{custom_presentation_notes}}
+
+If presentation_style is "realistic photography":
+- Use terms such as: high-quality lifestyle photo, natural lighting, realistic skin tones, natural fabric textures.
+If presentation_style is "product mockup":
+- Use terms such as: studio lighting, clean neutral background, product-focused composition, minimal distractions.
+
+Rendering details:
+- Show the slippers clearly on the models’ feet.
+- Keep the slipper design consistent with the product: same colors, patterns, and material look.
+- Use realistic proportions, natural human anatomy, and natural poses.
+- Lighting should match the scene (e.g. warm indoor, cool daylight, sunset).
+
+Overall mood:
+- {{model_scene_mood}}  (e.g. warm and family-friendly, energetic and urban, calm and cozy)
+
+
+# Craft AI Studio — Replit Project Spec (`replit.md`)
+
+## 0. Project Overview
+
+**Craft AI Studio** is a web app that helps footwear designers quickly generate:
+
+1. **Seasonal slipper design concepts** based on an uploaded template + design options.
+2. **Model-wearing scene images** where the AI applies the slipper design onto real people in various contexts.
+
+The app is for **internal use by designers** (no login system in MVP).  
+Core AI model for images: **`gemini-2.5-flash-image-preview`**.  
+The app will:
+
+- Take user input from UI (template image, theme, style, colors, materials, model options).
+- Use a language model (LLM) to convert this structured input into **optimized prompts**.
+- Send these prompts + images to `gemini-2.5-flash-image-preview`.
+- Return **downloadable PNG images** for the designer.
+
+---
+
+## 1. Goals & Non-Goals (MVP)
+
+### 1.1 Goals (MVP)
+
+- Allow designers to upload a **slipper template image** (PNG/JPG/PDF/screenshot).
+- Allow designers to specify:
+  - Season theme
+  - Style direction
+  - Color palette & custom colors
+  - Material feel (abstract keywords)
+  - Target user (gender/age/vibe)
+- Generate slipper design images with:
+  - **Top view** (flat lay)
+  - **45-degree / 3/4 perspective view**
+
+- Allow designers to generate **model-wearing scenes** by:
+  - Selecting nationality, group type (mother + child, single adult, etc.)
+  - Selecting scene/location (city, park, home, beach, etc.)
+  - Selecting usage scenario (walking, playing, relaxing, etc.)
+  - Selecting presentation style (realistic photography / product mockup / custom text)
+
+- Use **LLM → prompt builder → Gemini image model** pipeline:
+  - LLM generates optimized prompts.
+  - Gemini generates images.
+  - Frontend displays and lets users download PNG files.
+
+### 1.2 Non-Goals (MVP)
+
+- No user authentication / login.
+- No persistent project/season management (no SS26/FW26 project folders).
+- No internal color-code or BOM integration.
+- No database required beyond temporary file storage (in-memory or filesystem).
+- No multi-user roles or permissions.
+
+---
+
+## 2. Tech Stack
+
+- **Frontend:** Next.js + React (TypeScript preferred but not required)
+- **Styling:** Tailwind CSS (or simple CSS modules if easier)
+- **Backend Runtime:** Node.js (API routes via Next.js `/api` or separate server file)
+- **AI Image Model:** `gemini-2.5-flash-image-preview`
+- **LLM (for prompt building):** Replit’s built-in LLM or a configured text model
+- **File Handling:**
+  - Frontend: `<input type="file" />` for template and design images
+  - Backend: Handle multipart/form-data and pass image to Gemini API
+- **Output Format:** PNG images for download
+
+Environment variables (example):
+
+- `GEMINI_API_KEY` — API key for Gemini
+- Optional: `LLM_API_KEY` if needed (if not using Replit’s built-in LLM)
+
+---
+
+## 3. User Experience & Pages
+
+### 3.1 Main Pages
+
+1. `/` — **Home / Dashboard**
+   - Brief explanation of Craft AI Studio.
+   - Two primary CTAs:
+     - “Start New Slipper Design”
+     - “Generate Model Wearing Scene”
+
+2. `/new-design` — **New Slipper Design Page**
+   - Upload slipper template
+   - Design controls for theme, style, colors, materials, target user
+   - Generate button
+   - Display results (top view + 45° view)
+   - Download PNG buttons
+
+3. `/model-wearing` — **Model Wearing Generator Page**
+   - Upload or select previously generated slipper design image
+   - Model options (nationality, group type, location, scenario)
+   - Presentation style (dropdown + custom text)
+   - Generate button
+   - Display model-wearing output
+   - Download PNG button
+
+(You can implement `/` and two main views `[NewDesign]` and `[ModelWearing]` in a single-page layout with tabs if simpler.)
+
+---
+
+## 4. UI Layout (Wireframes)
+
+### 4.1 `/new-design`
+
+```text
++------------------------------------------------------------+
+|  Craft AI Studio                                           |
+|  [New Design] [Model Wearing]                             |
++------------------------------------------------------------+
+| 1. Upload Slipper Template                                 |
+|    [Choose File]  (PNG/JPG/PDF/Screenshot)                 |
+|    [Preview of uploaded template]                          |
++------------------------------------------------------------+
+| 2. Theme & Style                                           |
+|    Season Theme: [Dropdown + Free-text Input]              |
+|    Style Direction: [Dropdown: Graffiti / Minimal / ... ]  |
+|    Custom Style Notes: [Text Area]                         |
+|    Target User: [Text Input] (e.g. teen girls, family)     |
++------------------------------------------------------------+
+| 3. Colors & Materials                                      |
+|    Color Palette: [Dropdown: Pastel / Earth / Neon / ...]  |
+|    Custom Colors: [Text Input] (comma-separated)           |
+|    Materials: [Text Input] (e.g. EVA foam, fabric straps)  |
++------------------------------------------------------------+
+| 4. Generate Slipper Design                                 |
+|    [Generate Design]                                       |
+|                                                            |
+|    Results (when ready):                                   |
+|      Top View Image      [Download PNG]                    |
+|      45° View Image      [Download PNG]                    |
++------------------------------------------------------------+
+
+4.2 /model-wearing
+
++------------------------------------------------------------+
+|  Craft AI Studio                                           |
+|  [New Design] [Model Wearing]                             |
++------------------------------------------------------------+
+| 1. Slipper Design Input                                    |
+|    Option A: [Upload slipper design image]                 |
+|    Option B: (Optional future) select last generated       |
++------------------------------------------------------------+
+| 2. Model & Scene Options                                   |
+|    Nationality: [Dropdown or text]                         |
+|    Group Type: [Dropdown: mother+child, single adult, ...] |
+|    Location: [Dropdown: city street, home, park, beach]    |
+|    Scenario: [Text Input] (e.g. walking, playing, relaxing)|
++------------------------------------------------------------+
+| 3. Presentation Style                                      |
+|    Preset Style: [Dropdown]                               |
+|       - Realistic photography                              |
+|       - Product mockup                                     |
+|    Custom Style Notes: [Text Input]                        |
++------------------------------------------------------------+
+| 4. Generate Model Wearing                                  |
+|    [Generate Model Wearing]                                |
+|                                                            |
+|    Result: Model-wearing image                             |
+|    [Download PNG]                                          |
++------------------------------------------------------------+
+
+
+
