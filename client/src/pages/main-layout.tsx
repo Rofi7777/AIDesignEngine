@@ -4,6 +4,7 @@ import Home from "./home";
 import ModelTryOn from "./model-tryon";
 import VirtualTryOn from "./virtual-tryon";
 import EcommerceScene from "./ecommerce-scene";
+import PosterDesign from "./poster-design";
 import { useTranslation } from "@/contexts/LanguageContext";
 
 export default function MainLayout() {
@@ -27,7 +28,7 @@ export default function MainLayout() {
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-8 py-8">
         <Tabs defaultValue="product-design" className="w-full">
-          <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-4 mb-8 h-auto" data-testid="tabs-main">
+          <TabsList className="grid w-full max-w-5xl mx-auto grid-cols-5 mb-8 h-auto" data-testid="tabs-main">
             <TabsTrigger value="product-design" data-testid="tab-product-design" className="whitespace-normal text-center px-2 py-3 min-h-[2.5rem]">
               {t('tabProductDesign')}
             </TabsTrigger>
@@ -39,6 +40,9 @@ export default function MainLayout() {
             </TabsTrigger>
             <TabsTrigger value="ecommerce-scene" data-testid="tab-ecommerce-scene" className="whitespace-normal text-center px-2 py-3 min-h-[2.5rem]">
               {t('tabEcommerceScene')}
+            </TabsTrigger>
+            <TabsTrigger value="poster-design" data-testid="tab-poster-design" className="whitespace-normal text-center px-2 py-3 min-h-[2.5rem]">
+              {t('tabPosterDesign')}
             </TabsTrigger>
           </TabsList>
 
@@ -56,6 +60,10 @@ export default function MainLayout() {
 
           <TabsContent value="ecommerce-scene">
             <EcommerceScene />
+          </TabsContent>
+
+          <TabsContent value="poster-design">
+            <PosterDesign />
           </TabsContent>
         </Tabs>
       </div>
