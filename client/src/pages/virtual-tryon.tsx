@@ -316,16 +316,16 @@ export default function VirtualTryOn() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="accessory">Accessory</SelectItem>
-                            <SelectItem value="top">Top</SelectItem>
-                            <SelectItem value="bottom">Bottom</SelectItem>
-                            <SelectItem value="dress">Dress</SelectItem>
-                            <SelectItem value="outerwear">Outerwear</SelectItem>
-                            <SelectItem value="shoes">Shoes</SelectItem>
+                            <SelectItem value="accessory">{t('virtualTryonProductTypeAccessory')}</SelectItem>
+                            <SelectItem value="top">{t('virtualTryonProductTypeTop')}</SelectItem>
+                            <SelectItem value="bottom">{t('virtualTryonProductTypeBottom')}</SelectItem>
+                            <SelectItem value="dress">{t('virtualTryonProductTypeDress')}</SelectItem>
+                            <SelectItem value="outerwear">{t('virtualTryonProductTypeOuterwear')}</SelectItem>
+                            <SelectItem value="shoes">{t('virtualTryonProductTypeShoes')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <Input
-                          placeholder="Product name (optional)"
+                          placeholder={t('virtualTryonProductNamePlaceholder')}
                           value={img.name || ''}
                           onChange={(e) => updateProductInfo(index, img.type, e.target.value)}
                           className="mt-2"
@@ -389,7 +389,7 @@ export default function VirtualTryOn() {
                           <Select onValueChange={field.onChange} value={field.value} data-testid="select-tryon-type">
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select type" />
+                                <SelectValue placeholder={t('virtualTryonSelectTypePlaceholder')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -457,7 +457,7 @@ export default function VirtualTryOn() {
                     name="aspectRatio"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Aspect Ratio</FormLabel>
+                        <FormLabel>{t('aspectRatioLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-aspect-ratio">
                           <FormControl>
                             <SelectTrigger>
@@ -465,11 +465,11 @@ export default function VirtualTryOn() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="1:1">1:1 (Square)</SelectItem>
-                            <SelectItem value="3:4">3:4 (Portrait)</SelectItem>
-                            <SelectItem value="4:3">4:3 (Landscape)</SelectItem>
-                            <SelectItem value="9:16">9:16 (Vertical)</SelectItem>
-                            <SelectItem value="16:9">16:9 (Horizontal)</SelectItem>
+                            <SelectItem value="1:1">{t('aspectRatio11')}</SelectItem>
+                            <SelectItem value="3:4">{t('aspectRatio34')}</SelectItem>
+                            <SelectItem value="4:3">{t('aspectRatio43')}</SelectItem>
+                            <SelectItem value="9:16">{t('aspectRatio916')}</SelectItem>
+                            <SelectItem value="16:9">{t('aspectRatio169')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

@@ -339,15 +339,15 @@ export default function EcommerceScene() {
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="product" id={`product-${index}`} />
-                            <Label htmlFor={`product-${index}`} className="text-xs">Product</Label>
+                            <Label htmlFor={`product-${index}`} className="text-xs">{t('ecommerceSceneAssetProduct')}</Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="prop" id={`prop-${index}`} />
-                            <Label htmlFor={`prop-${index}`} className="text-xs">Prop</Label>
+                            <Label htmlFor={`prop-${index}`} className="text-xs">{t('ecommerceSceneAssetProp')}</Label>
                           </div>
                         </RadioGroup>
                         <Input
-                          placeholder="Name (optional)"
+                          placeholder={t('ecommerceSceneAssetNamePlaceholder')}
                           value={img.name || ''}
                           onChange={(e) => updateAssetInfo(index, img.assetType, e.target.value)}
                           className="text-sm"
@@ -447,7 +447,7 @@ export default function EcommerceScene() {
                     name="aspectRatio"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Aspect Ratio</FormLabel>
+                        <FormLabel>{t('aspectRatioLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-aspect-ratio">
                           <FormControl>
                             <SelectTrigger>
@@ -455,11 +455,11 @@ export default function EcommerceScene() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="1:1">1:1 (Square)</SelectItem>
-                            <SelectItem value="3:4">3:4 (Portrait)</SelectItem>
-                            <SelectItem value="4:3">4:3 (Landscape)</SelectItem>
-                            <SelectItem value="9:16">9:16 (Vertical)</SelectItem>
-                            <SelectItem value="16:9">16:9 (Horizontal)</SelectItem>
+                            <SelectItem value="1:1">{t('aspectRatio11')}</SelectItem>
+                            <SelectItem value="3:4">{t('aspectRatio34')}</SelectItem>
+                            <SelectItem value="4:3">{t('aspectRatio43')}</SelectItem>
+                            <SelectItem value="9:16">{t('aspectRatio916')}</SelectItem>
+                            <SelectItem value="16:9">{t('aspectRatio169')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
