@@ -1,7 +1,7 @@
 # Craft AI Studio
 
 ## Overview
-**Craft AI Studio** is an AI-powered design application for generating seasonal fashion product concepts across multiple categories (shoes, slippers, clothes, bags, and custom products). Users can upload product templates, configure design parameters, and generate AI-created product designs with multiple viewing angles along with model-wearing scenes. All generated images support high-resolution PNG downloads. The project leverages Google Gemini 2.5 Flash Image Preview.
+**Craft AI Studio** is a comprehensive AI-powered design platform with **four main features**: (1) **Product Design Engine** supporting 4-angle generation for multiple fashion categories, (2) **Model Try-on System** generating realistic images of models wearing/using products, (3) **Virtual Try-on** for precise single or multi-product garment replacement on model images, and (4) **E-commerce Scene Composition** combining models, products, and props into complete marketing scenes. All features use Google Gemini 2.5 Flash with complete multi-language support (English, Traditional Chinese, Vietnamese).
 
 **Tagline:** "Craft Design Ideas with AI"
 
@@ -54,12 +54,33 @@ The application features a single-page layout with a two-column structure (40% c
 - **4-Angle Storage Design:** Each product design is stored with four view URLs (view1Url through view4Url) supporting the new 4-angle system across all product types. Database schema extended with view3Url and view4Url columns.
 
 ### Feature Specifications
+
+#### Feature 1: Product Design Engine
 - **4-Angle Template Upload:** Upload up to 4 optional product templates (PNG/JPG up to 10MB each) for 5 product categories: shoes, slippers, clothes, bags, custom. Each template corresponds to a specific viewing angle.
 - **AI-Generated 4-Angle Product Designs:** All products are generated with 4 viewing angles (top view, 45° view, side view, bottom view) with ULTRA-STRICT design consistency across all angles.
+
+#### Feature 2: Model Try-on System
 - **AI-Generated Model-Wearing Scenes:** Configurable elements (nationality, family, scenario, location, presentation) for realistic product visualization.
+- **Product-Model Integration:** Uses previously generated product designs as input for model scenes.
+
+#### Feature 3: Virtual Try-on (NEW)
+- **Dual Mode Operation:** 
+  - **Single-Product Mode:** Precise garment replacement maintaining exact fit and proportions
+  - **Multi-Product Mode:** Flexible outfit composition with multiple garments
+- **Smart Garment Integration:** AI intelligently replaces specific clothing items while preserving model pose, lighting, and background
+- **Supported Product Types:** Tops, bottoms, dresses, shoes, accessories, full outfits
+
+#### Feature 4: E-commerce Scene Composition (NEW)
+- **Multi-Asset Support:** Combine 1 model + 2-3 products + 1-2 props (max 6 total assets)
+- **Asset Type System:** Products (primary focus) and props (supporting elements like plants, furniture, decorative items)
+- **Scene Configuration:** Multiple scene types (studio, lifestyle, outdoor, minimalist), lighting options, composition styles, and aspect ratios
+- **Professional Marketing Scenes:** Generate complete e-commerce photography with proper product placement and styling
+
+#### Cross-Feature Capabilities
 - **High-Resolution PNG Download:** All generated images support full-resolution downloads.
-- **Multi-Language Interface:** Complete support for English, Traditional Chinese, and Vietnamese across all UI elements.
+- **Multi-Language Interface:** Complete support for English, Traditional Chinese, and Vietnamese across all major UI elements.
 - **Comprehensive Validation:** Form validation with user-friendly error messages and custom field clearing.
+- **Click-to-Enlarge:** All generated images include zoom functionality for detailed inspection.
 
 ## External Dependencies
 - **Google Gemini 2.5 Flash Image Preview:** For AI image generation.
