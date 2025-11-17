@@ -71,9 +71,10 @@ The application features a single-page layout with a two-column structure (40% c
 - **Supported Product Types:** Tops, bottoms, dresses, shoes, accessories, full outfits
 
 #### Feature 4: E-commerce Scene Composition (NEW)
-- **Multi-Asset Support:** Combine 1 model + 2-3 products + 1-2 props (max 6 total assets)
+- **Multi-Asset Support:** Combine products and props (max 6 assets), with optional model image for lifestyle scenes
+- **Flexible Scene Modes:** Product-only display scenes (no model) or lifestyle scenes (with model)
 - **Asset Type System:** Products (primary focus) and props (supporting elements like plants, furniture, decorative items)
-- **Scene Configuration:** Multiple scene types (studio, lifestyle, outdoor, minimalist), lighting options, composition styles, and aspect ratios
+- **Scene Configuration:** Multiple scene types (home, office, outdoor, cafe, studio, white background, custom), lighting options, composition styles, and aspect ratios
 - **Professional Marketing Scenes:** Generate complete e-commerce photography with proper product placement and styling
 
 #### Cross-Feature Capabilities
