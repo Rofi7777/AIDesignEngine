@@ -206,8 +206,50 @@ export default function Home() {
     queryKey: ["/api/generated-images"],
   });
 
+  // Validate image file size and dimensions
+  const validateImageFile = async (file: File): Promise<{ valid: boolean; error?: string }> => {
+    // Check file size (minimum 10KB)
+    if (file.size < 10 * 1024) {
+      return { 
+        valid: false, 
+        error: t('errorImageTooSmall') || 'Image file is too small. Please upload an image larger than 10KB.' 
+      };
+    }
+
+    // Check file size (maximum 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return { 
+        valid: false, 
+        error: t('errorImageTooLarge') || 'Image file is too large. Maximum size is 10MB.' 
+      };
+    }
+
+    // Check image dimensions
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        // Require minimum 100x100 dimensions
+        if (img.width < 100 || img.height < 100) {
+          resolve({ 
+            valid: false, 
+            error: t('errorImageDimensionsTooSmall') || 'Image dimensions are too small. Minimum size is 100x100 pixels.' 
+          });
+        } else {
+          resolve({ valid: true });
+        }
+      };
+      img.onerror = () => {
+        resolve({ 
+          valid: false, 
+          error: t('errorImageInvalid') || 'Invalid image file. Please upload a valid PNG or JPG image.' 
+        });
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   // Handle angle-specific template upload
-  const handleAngleFileUpload = (angle: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAngleFileUpload = (angle: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -215,6 +257,17 @@ export default function Home() {
       toast({
         title: t('errorInvalidFileType'),
         description: t('errorFileTypeMessage'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size and dimensions
+    const validation = await validateImageFile(file);
+    if (!validation.valid) {
+      toast({
+        title: t('errorInvalidImage') || 'Invalid Image',
+        description: validation.error,
         variant: "destructive",
       });
       return;
@@ -235,7 +288,7 @@ export default function Home() {
   };
 
   // Handle angle-specific drag & drop
-  const handleAngleDrop = (angle: string) => (e: React.DragEvent<HTMLDivElement>) => {
+  const handleAngleDrop = (angle: string) => async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
@@ -244,6 +297,17 @@ export default function Home() {
       toast({
         title: t('errorInvalidFileType'),
         description: t('errorFileTypeMessage'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size and dimensions
+    const validation = await validateImageFile(file);
+    if (!validation.valid) {
+      toast({
+        title: t('errorInvalidImage') || 'Invalid Image',
+        description: validation.error,
         variant: "destructive",
       });
       return;
@@ -277,13 +341,18 @@ export default function Home() {
 
   const generateDesignMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return await fetch("/api/generate-design", {
+      const res = await fetch("/api/generate-design", {
         method: "POST",
         body: formData,
-      }).then(res => {
-        if (!res.ok) throw new Error();
-        return res.json();
       });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || data.message || 'Failed to generate design');
+      }
+      
+      return data;
     },
     onSuccess: (data: any) => {
       // Convert response to dynamic angle mapping using modern keys
@@ -313,9 +382,10 @@ export default function Home() {
       });
     },
     onError: (error: any) => {
+      const errorMessage = error.message || t('toastError');
       toast({
         title: t('toastErrorTitle'),
-        description: t('toastError'),
+        description: errorMessage,
         variant: "destructive",
       });
     },
