@@ -581,7 +581,6 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <LanguageSelector />
-            <Badge variant="secondary" className="text-xs" data-testid="badge-version">{t('version')}</Badge>
           </div>
         </div>
       </header>

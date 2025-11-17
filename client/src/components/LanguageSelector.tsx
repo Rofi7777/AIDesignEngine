@@ -1,4 +1,4 @@
-import { Languages } from "lucide-react";
+import { Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,32 +9,33 @@ import {
 import { useTranslation } from "@/contexts/LanguageContext";
 import type { Language } from "@/lib/translations";
 
-const languageKeys: Record<Language, string> = {
-  'en': 'languageEnglish',
-  'zh-TW': 'languageTraditionalChinese',
-  'vi': 'languageVietnamese',
+const languageOptions: Record<Language, { label: string; flag: string }> = {
+  'en': { label: 'English', flag: '🇺🇸' },
+  'zh-TW': { label: '繁體中文', flag: '🇹🇼' },
+  'vi': { label: 'Tiếng Việt', flag: '🇻🇳' },
 };
 
 export function LanguageSelector() {
-  const { language, setLanguage, t } = useTranslation();
+  const { language, setLanguage } = useTranslation();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" data-testid="button-language-selector">
-          <Languages className="h-5 w-5" />
-          <span className="sr-only">{t('language')}</span>
+          <Globe className="h-5 w-5" />
+          <span className="sr-only">Select Language</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" data-testid="dropdown-language-menu">
-        {Object.entries(languageKeys).map(([lang, key]) => (
+        {Object.entries(languageOptions).map(([lang, { label, flag }]) => (
           <DropdownMenuItem
             key={lang}
             onClick={() => setLanguage(lang as Language)}
             data-testid={`dropdown-item-language-${lang}`}
             className={language === lang ? "bg-accent" : ""}
           >
-            {t(key as any)}
+            <span className="mr-2">{flag}</span>
+            {label}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
