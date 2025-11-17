@@ -420,6 +420,88 @@ export type InsertModelTryOnProduct = z.infer<typeof insertModelTryOnProductSche
 export type ModelTryOnResult = typeof modelTryOnResults.$inferSelect;
 export type InsertModelTryOnResult = z.infer<typeof insertModelTryOnResultSchema>;
 
+// Virtual Try-On Tables
+export const virtualTryOns = pgTable("virtual_try_ons", {
+  id: serial("id").primaryKey(),
+  modelImageUrl: text("model_image_url").notNull(),
+  tryonMode: varchar("tryon_mode", { length: 50 }).notNull(), // 'single' or 'multi'
+  tryonType: varchar("tryon_type", { length: 100 }), // for single mode: 'accessory', 'top', 'bottom', 'full'
+  preservePose: varchar("preserve_pose", { length: 10 }).default('yes'),
+  style: varchar("style", { length: 100 }).default('natural'), // 'natural' or 'fashion'
+  resultImageUrl: text("result_image_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const virtualTryOnProducts = pgTable("virtual_try_on_products", {
+  id: serial("id").primaryKey(),
+  tryOnId: integer("try_on_id").references(() => virtualTryOns.id).notNull(),
+  productImageUrl: text("product_image_url").notNull(),
+  productType: varchar("product_type", { length: 100 }).notNull(), // 'accessory', 'top', 'bottom', etc.
+  productName: varchar("product_name", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// E-commerce Scene Tables
+export const ecommerceScenes = pgTable("ecommerce_scenes", {
+  id: serial("id").primaryKey(),
+  modelImageUrl: text("model_image_url").notNull(),
+  sceneType: varchar("scene_type", { length: 100 }).notNull(), // 'home', 'office', 'outdoor', 'cafe', etc.
+  lighting: varchar("lighting", { length: 100 }).notNull(), // 'natural', 'warm', 'bright', 'soft'
+  composition: varchar("composition", { length: 100 }).notNull(), // 'center', 'rule-of-thirds', 'diagonal'
+  aspectRatio: varchar("aspect_ratio", { length: 10 }).notNull(),
+  resultImageUrl: text("result_image_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const ecommerceSceneAssets = pgTable("ecommerce_scene_assets", {
+  id: serial("id").primaryKey(),
+  sceneId: integer("scene_id").references(() => ecommerceScenes.id).notNull(),
+  assetType: varchar("asset_type", { length: 50 }).notNull(), // 'product' or 'prop'
+  assetImageUrl: text("asset_image_url").notNull(),
+  assetName: varchar("asset_name", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Relations for Virtual Try-On
+export const virtualTryOnsRelations = relations(virtualTryOns, ({ many }) => ({
+  products: many(virtualTryOnProducts),
+}));
+
+export const virtualTryOnProductsRelations = relations(virtualTryOnProducts, ({ one }) => ({
+  tryOn: one(virtualTryOns, {
+    fields: [virtualTryOnProducts.tryOnId],
+    references: [virtualTryOns.id],
+  }),
+}));
+
+// Relations for E-commerce Scene
+export const ecommerceScenesRelations = relations(ecommerceScenes, ({ many }) => ({
+  assets: many(ecommerceSceneAssets),
+}));
+
+export const ecommerceSceneAssetsRelations = relations(ecommerceSceneAssets, ({ one }) => ({
+  scene: one(ecommerceScenes, {
+    fields: [ecommerceSceneAssets.sceneId],
+    references: [ecommerceScenes.id],
+  }),
+}));
+
+// Insert and Select Schemas for new tables
+export const insertVirtualTryOnSchema = createInsertSchema(virtualTryOns).omit({ id: true, createdAt: true });
+export const insertVirtualTryOnProductSchema = createInsertSchema(virtualTryOnProducts).omit({ id: true, createdAt: true });
+export const insertEcommerceSceneSchema = createInsertSchema(ecommerceScenes).omit({ id: true, createdAt: true });
+export const insertEcommerceSceneAssetSchema = createInsertSchema(ecommerceSceneAssets).omit({ id: true, createdAt: true });
+
+// Types for new tables
+export type VirtualTryOn = typeof virtualTryOns.$inferSelect;
+export type InsertVirtualTryOn = z.infer<typeof insertVirtualTryOnSchema>;
+export type VirtualTryOnProduct = typeof virtualTryOnProducts.$inferSelect;
+export type InsertVirtualTryOnProduct = z.infer<typeof insertVirtualTryOnProductSchema>;
+export type EcommerceScene = typeof ecommerceScenes.$inferSelect;
+export type InsertEcommerceScene = z.infer<typeof insertEcommerceSceneSchema>;
+export type EcommerceSceneAsset = typeof ecommerceSceneAssets.$inferSelect;
+export type InsertEcommerceSceneAsset = z.infer<typeof insertEcommerceSceneAssetSchema>;
+
 // Model Try-On Request Schema (for API validation)
 export const modelTryOnRequestSchema = z.object({
   products: z.array(z.object({

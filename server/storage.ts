@@ -16,6 +16,14 @@ import {
   type InsertModelTryOnProduct,
   type ModelTryOnResult,
   type InsertModelTryOnResult,
+  type VirtualTryOn,
+  type InsertVirtualTryOn,
+  type VirtualTryOnProduct,
+  type InsertVirtualTryOnProduct,
+  type EcommerceScene,
+  type InsertEcommerceScene,
+  type EcommerceSceneAsset,
+  type InsertEcommerceSceneAsset,
   designs,
   modelScenes,
   projects,
@@ -24,6 +32,10 @@ import {
   modelTryOns,
   modelTryOnProducts,
   modelTryOnResults,
+  virtualTryOns,
+  virtualTryOnProducts,
+  ecommerceScenes,
+  ecommerceSceneAssets,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -80,6 +92,18 @@ export interface IStorage {
   createModelTryOnResult(result: InsertModelTryOnResult): Promise<ModelTryOnResult>;
   getModelTryOns(): Promise<ModelTryOn[]>;
   getModelTryOnResults(tryOnId: number): Promise<ModelTryOnResult[]>;
+  
+  // Virtual Try-On
+  createVirtualTryOn(tryOn: InsertVirtualTryOn): Promise<number>;
+  createVirtualTryOnProduct(product: InsertVirtualTryOnProduct): Promise<number>;
+  updateVirtualTryOnResult(id: number, resultImageUrl: string): Promise<VirtualTryOn>;
+  getVirtualTryOns(): Promise<VirtualTryOn[]>;
+  
+  // E-commerce Scene
+  createEcommerceScene(scene: InsertEcommerceScene): Promise<number>;
+  createEcommerceSceneAsset(asset: InsertEcommerceSceneAsset): Promise<number>;
+  updateEcommerceSceneResult(id: number, resultImageUrl: string): Promise<EcommerceScene>;
+  getEcommerceScenes(): Promise<EcommerceScene[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -375,6 +399,54 @@ export class DatabaseStorage implements IStorage {
 
   async getModelTryOnResults(tryOnId: number): Promise<ModelTryOnResult[]> {
     return await db.select().from(modelTryOnResults).where(eq(modelTryOnResults.tryOnId, tryOnId));
+  }
+
+  // Virtual Try-On methods
+  async createVirtualTryOn(tryOn: InsertVirtualTryOn): Promise<number> {
+    const [newTryOn] = await db.insert(virtualTryOns).values(tryOn).returning();
+    return newTryOn.id;
+  }
+
+  async createVirtualTryOnProduct(product: InsertVirtualTryOnProduct): Promise<number> {
+    const [newProduct] = await db.insert(virtualTryOnProducts).values(product).returning();
+    return newProduct.id;
+  }
+
+  async updateVirtualTryOnResult(id: number, resultImageUrl: string): Promise<VirtualTryOn> {
+    const [updated] = await db
+      .update(virtualTryOns)
+      .set({ resultImageUrl })
+      .where(eq(virtualTryOns.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getVirtualTryOns(): Promise<VirtualTryOn[]> {
+    return await db.select().from(virtualTryOns).orderBy(desc(virtualTryOns.createdAt));
+  }
+
+  // E-commerce Scene methods
+  async createEcommerceScene(scene: InsertEcommerceScene): Promise<number> {
+    const [newScene] = await db.insert(ecommerceScenes).values(scene).returning();
+    return newScene.id;
+  }
+
+  async createEcommerceSceneAsset(asset: InsertEcommerceSceneAsset): Promise<number> {
+    const [newAsset] = await db.insert(ecommerceSceneAssets).values(asset).returning();
+    return newAsset.id;
+  }
+
+  async updateEcommerceSceneResult(id: number, resultImageUrl: string): Promise<EcommerceScene> {
+    const [updated] = await db
+      .update(ecommerceScenes)
+      .set({ resultImageUrl })
+      .where(eq(ecommerceScenes.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getEcommerceScenes(): Promise<EcommerceScene[]> {
+    return await db.select().from(ecommerceScenes).orderBy(desc(ecommerceScenes.createdAt));
   }
 }
 
