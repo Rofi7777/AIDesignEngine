@@ -617,6 +617,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // E-commerce Poster Design API Route
+  app.post("/api/generate-poster", upload.fields([
+    { name: "productImages", maxCount: 6 },
+    { name: "referenceImage", maxCount: 1 },
+    { name: "logoImage", maxCount: 1 },
+  ]), async (req, res) => {
+    try {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const formData = req.body;
+
+      console.log('[Poster Design API] Request received');
+      console.log('[Poster Design API] Campaign Type:', formData.campaignType);
+      console.log('[Poster Design API] Visual Style:', formData.visualStyle);
+
+      const productImageFiles = files?.productImages || [];
+      const referenceImageFile = files?.referenceImage?.[0];
+      const logoImageFile = files?.logoImage?.[0];
+
+      if (productImageFiles.length === 0) {
+        return res.status(400).json({
+          error: "At least one product image is required",
+        });
+      }
+
+      if (productImageFiles.length > 6) {
+        return res.status(400).json({
+          error: "Maximum 6 product images allowed",
+        });
+      }
+
+      // Validate required fields
+      if (!formData.campaignType || !formData.visualStyle || !formData.backgroundScene || 
+          !formData.layout || !formData.aspectRatio || !formData.headlineStyle) {
+        return res.status(400).json({
+          error: "Missing required fields",
+        });
+      }
+
+      // Parse selling points if provided
+      let sellingPoints: string[] = [];
+      if (formData.sellingPoints) {
+        try {
+          sellingPoints = JSON.parse(formData.sellingPoints);
+        } catch (e) {
+          sellingPoints = [];
+        }
+      }
+
+      // Save to database
+      const posterId = await storage.createPosterRequest({
+        campaignType: formData.campaignType,
+        customCampaign: formData.customCampaign || null,
+        referenceImageUrl: referenceImageFile 
+          ? `data:${referenceImageFile.mimetype};base64,${referenceImageFile.buffer.toString('base64')}` 
+          : null,
+        referenceLevel: formData.referenceLevel || null,
+        customReferenceLevel: formData.customReferenceLevel || null,
+        visualStyle: formData.visualStyle,
+        customVisualStyle: formData.customVisualStyle || null,
+        backgroundScene: formData.backgroundScene,
+        customBackgroundScene: formData.customBackgroundScene || null,
+        layout: formData.layout,
+        customLayout: formData.customLayout || null,
+        aspectRatio: formData.aspectRatio,
+        headlineStyle: formData.headlineStyle,
+        customHeadline: formData.customHeadline || null,
+        autoGenerateHeadline: formData.autoGenerateHeadline || 'no',
+        sellingPoints,
+        autoGenerateSellingPoints: formData.autoGenerateSellingPoints || 'no',
+        priceStyle: formData.priceStyle || null,
+        originalPrice: formData.originalPrice || null,
+        currentPrice: formData.currentPrice || null,
+        discountText: formData.discountText || null,
+        customPriceStyle: formData.customPriceStyle || null,
+        logoImageUrl: logoImageFile 
+          ? `data:${logoImageFile.mimetype};base64,${logoImageFile.buffer.toString('base64')}` 
+          : null,
+        logoPosition: formData.logoPosition || null,
+        brandTagline: formData.brandTagline || null,
+      });
+
+      // Save product images
+      const parsedProductNames = formData.productNames ? JSON.parse(formData.productNames) : [];
+      for (let i = 0; i < productImageFiles.length; i++) {
+        const file = productImageFiles[i];
+        const base64Image = file.buffer.toString('base64');
+        const dataUrl = `data:${file.mimetype};base64,${base64Image}`;
+
+        await storage.createPosterProductImage({
+          posterId,
+          productImageUrl: dataUrl,
+          productName: parsedProductNames[i] || null,
+        });
+      }
+
+      // Generate poster design
+      console.log('[Poster Design API] Generating poster...');
+      
+      const { generatePosterDesign } = await import("./posterDesignGenerator");
+      
+      const imageUrl = await generatePosterDesign(
+        {
+          productImages: productImageFiles.map((file, i) => ({
+            buffer: file.buffer,
+            mimeType: file.mimetype,
+            name: parsedProductNames[i] || undefined,
+          })),
+          referenceImage: referenceImageFile ? {
+            buffer: referenceImageFile.buffer,
+            mimeType: referenceImageFile.mimetype,
+          } : undefined,
+          logoImage: logoImageFile ? {
+            buffer: logoImageFile.buffer,
+            mimeType: logoImageFile.mimetype,
+          } : undefined,
+        },
+        {
+          campaignType: formData.campaignType,
+          customCampaign: formData.customCampaign,
+          referenceLevel: formData.referenceLevel,
+          customReferenceLevel: formData.customReferenceLevel,
+          visualStyle: formData.visualStyle,
+          customVisualStyle: formData.customVisualStyle,
+          backgroundScene: formData.backgroundScene,
+          customBackgroundScene: formData.customBackgroundScene,
+          layout: formData.layout,
+          customLayout: formData.customLayout,
+          aspectRatio: formData.aspectRatio,
+          headlineStyle: formData.headlineStyle,
+          customHeadline: formData.customHeadline,
+          autoGenerateHeadline: formData.autoGenerateHeadline,
+          sellingPoints,
+          autoGenerateSellingPoints: formData.autoGenerateSellingPoints,
+          priceStyle: formData.priceStyle,
+          originalPrice: formData.originalPrice,
+          currentPrice: formData.currentPrice,
+          discountText: formData.discountText,
+          customPriceStyle: formData.customPriceStyle,
+          logoPosition: formData.logoPosition,
+          brandTagline: formData.brandTagline,
+        }
+      );
+
+      // Update result
+      await storage.updatePosterResult(posterId, imageUrl);
+
+      console.log('[Poster Design API] ✅ Generation successful');
+
+      res.json({
+        posterId,
+        imageUrl,
+        message: "Poster design generated successfully",
+      });
+
+    } catch (error: any) {
+      console.error("[Poster Design API] ❌ Error:", error);
+      
+      const isClientError = 
+        error.message?.includes("required") || 
+        error.message?.includes("invalid") ||
+        error.message?.includes("INVALID_ARGUMENT");
+      
+      res.status(isClientError ? 400 : 500).json({
+        error: isClientError ? error.message : "Failed to generate poster design",
+        message: error.message,
+      });
+    }
+  });
+
   // E-commerce Scene API Route
   app.post("/api/generate-ecommerce-scene", upload.fields([
     { name: "modelImage", maxCount: 1 },
