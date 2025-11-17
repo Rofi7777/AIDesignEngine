@@ -6,6 +6,7 @@ import { extractDesignSpecification, type DesignSpecification } from "./designSp
 import { generateModelTryOn } from "./modelTryOnGenerator";
 import { generateVirtualTryOn } from "./virtualTryOnGenerator";
 import { generateEcommerceScene } from "./ecommerceSceneGenerator";
+import { generatePosterDesign } from "./posterDesignGenerator";
 import multer from "multer";
 import { readFileSync } from "fs";
 
@@ -893,6 +894,184 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(isClientError ? 400 : 500).json({
         error: isClientError ? error.message : "Failed to generate e-commerce scene",
+        message: error.message,
+      });
+    }
+  });
+
+  // Generate Poster Design
+  app.post("/api/generate-poster", upload.fields([
+    { name: "productImages", maxCount: 6 },
+    { name: "referenceImage", maxCount: 1 },
+    { name: "logoImage", maxCount: 1 },
+  ]), async (req, res) => {
+    try {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const {
+        campaignType,
+        customCampaign,
+        referenceLevel,
+        customReferenceLevel,
+        visualStyle,
+        customVisualStyle,
+        backgroundScene,
+        customBackgroundScene,
+        layout,
+        customLayout,
+        aspectRatio,
+        headlineStyle,
+        customHeadline,
+        autoGenerateHeadline,
+        sellingPoints,
+        autoGenerateSellingPoints,
+        priceStyle,
+        originalPrice,
+        currentPrice,
+        discountText,
+        customPriceStyle,
+        logoPosition,
+        brandTagline,
+      } = req.body;
+
+      console.log('[Poster Design API] Request received');
+      console.log('[Poster Design API] Campaign Type:', campaignType);
+      console.log('[Poster Design API] Visual Style:', visualStyle);
+
+      const productImageFiles = files?.productImages || [];
+      const referenceImageFile = files?.referenceImage?.[0];
+      const logoImageFile = files?.logoImage?.[0];
+
+      // Validate required fields
+      if (productImageFiles.length === 0) {
+        return res.status(400).json({
+          error: "At least one product image is required",
+        });
+      }
+
+      if (productImageFiles.length > 6) {
+        return res.status(400).json({
+          error: "Maximum 6 product images allowed",
+        });
+      }
+
+      if (!campaignType || !visualStyle || !backgroundScene || !layout || !aspectRatio || !headlineStyle) {
+        return res.status(400).json({
+          error: "Missing required fields: campaignType, visualStyle, backgroundScene, layout, aspectRatio, headlineStyle",
+        });
+      }
+
+      // Parse selling points if provided as JSON string
+      let parsedSellingPoints: string[] = [];
+      if (sellingPoints) {
+        try {
+          parsedSellingPoints = JSON.parse(sellingPoints);
+        } catch (error) {
+          return res.status(400).json({
+            error: "Invalid selling points format",
+          });
+        }
+      }
+
+      // Validate price fields if price display is enabled
+      if (priceStyle && priceStyle !== 'no-price') {
+        if (priceStyle === 'original-plus-sale' && (!originalPrice || !currentPrice)) {
+          return res.status(400).json({
+            error: "Both original price and current price are required for 'original + sale' display",
+          });
+        }
+        if (priceStyle === 'percentage-off' && (!originalPrice || !currentPrice)) {
+          return res.status(400).json({
+            error: "Both original price and current price are required for percentage off calculation",
+          });
+        }
+        if (priceStyle === 'final-price-only' && !currentPrice) {
+          return res.status(400).json({
+            error: "Current price is required for 'final price only' display",
+          });
+        }
+      }
+
+      // Prepare assets for generator
+      const assets = {
+        productImages: productImageFiles.map(file => ({
+          buffer: file.buffer,
+          mimeType: file.mimetype,
+          name: file.originalname,
+        })),
+        referenceImage: referenceImageFile ? {
+          buffer: referenceImageFile.buffer,
+          mimeType: referenceImageFile.mimetype,
+        } : undefined,
+        logoImage: logoImageFile ? {
+          buffer: logoImageFile.buffer,
+          mimeType: logoImageFile.mimetype,
+        } : undefined,
+      };
+
+      // Prepare options for generator
+      const options = {
+        campaignType,
+        customCampaign,
+        referenceLevel,
+        customReferenceLevel,
+        visualStyle,
+        customVisualStyle,
+        backgroundScene,
+        customBackgroundScene,
+        layout,
+        customLayout,
+        aspectRatio,
+        headlineStyle,
+        customHeadline,
+        autoGenerateHeadline,
+        sellingPoints: parsedSellingPoints,
+        autoGenerateSellingPoints,
+        priceStyle,
+        originalPrice,
+        currentPrice,
+        discountText,
+        customPriceStyle,
+        logoPosition,
+        brandTagline,
+      };
+
+      // Generate poster first (don't save to DB until generation succeeds)
+      console.log('[Poster Design API] Generating poster...');
+      const posterUrl = await generatePosterDesign(assets, options);
+
+      // Only save to database after successful generation
+      const posterId = await storage.createPosterRequest({
+        campaignType,
+        visualStyle,
+        layout,
+        aspectRatio,
+        headlineStyle,
+        priceStyle: priceStyle || null,
+        logoPosition: logoPosition || null,
+        brandTagline: brandTagline || null,
+      });
+
+      // Update with generated result
+      await storage.updatePosterResult(posterId, posterUrl);
+
+      console.log('[Poster Design API] ✅ Generation successful');
+
+      res.json({
+        posterId,
+        imageUrl: posterUrl,  // Frontend expects 'imageUrl'
+        message: "Poster generated successfully",
+      });
+
+    } catch (error: any) {
+      console.error("[Poster Design API] ❌ Error:", error);
+      
+      const isClientError = 
+        error.message?.includes("required") || 
+        error.message?.includes("invalid") ||
+        error.message?.includes("INVALID_ARGUMENT");
+      
+      res.status(isClientError ? 400 : 500).json({
+        error: isClientError ? error.message : "Failed to generate poster",
         message: error.message,
       });
     }

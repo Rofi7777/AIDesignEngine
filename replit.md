@@ -1,7 +1,7 @@
 # Craft AI Studio
 
 ## Overview
-**Craft AI Studio** is a comprehensive AI-powered design platform with **four main features**: (1) **Product Design Engine** supporting 4-angle generation for multiple fashion categories, (2) **Model Try-on System** generating realistic images of models wearing/using products, (3) **Virtual Try-on** for precise single or multi-product garment replacement on model images, and (4) **E-commerce Scene Composition** combining models, products, and props into complete marketing scenes. All features use Google Gemini 2.5 Flash with complete multi-language support (English, Traditional Chinese, Vietnamese).
+**Craft AI Studio** is a comprehensive AI-powered design platform with **five main features**: (1) **Product Design Engine** supporting 4-angle generation for multiple fashion categories, (2) **Model Try-on System** generating realistic images of models wearing/using products, (3) **Virtual Try-on** for precise single or multi-product garment replacement on model images, (4) **E-commerce Scene Composition** combining models, products, and props into complete marketing scenes, and (5) **E-commerce Poster Design** with three-module configuration for creating complete marketing posters with products, copy, branding, and pricing. All features use Google Gemini 2.5 Flash with complete multi-language support (English, Traditional Chinese, Vietnamese).
 
 **Tagline:** "Craft Design Ideas with AI"
 
@@ -50,7 +50,7 @@ The application features a single-page layout with a two-column structure (40% c
 - **Multi-Image Gemini API Integration:** The Gemini API calls accept multiple images (template + canonical design + reference + logo) in a single request for perfect consistency.
 - **Click-to-Enlarge Image Zoom:** All generated images include a click-to-zoom feature, displaying images in a dialog modal for detailed inspection.
 - **Custom Options:** Users can specify custom colors, materials, presentation styles, and custom product types with associated validation.
-- **Database Schema:** `SlipperDesign` (product_type, custom_product_type, template, theme, style, color, material, **view1Url, view2Url, view3Url, view4Url**, custom options) and `ModelScene` (product image reference, product_type, nationality, family, scenario, location, presentation style, generated scene image). Schemas are defined in `shared/schema.ts`.
+- **Database Schema:** `SlipperDesign` (product_type, custom_product_type, template, theme, style, color, material, **view1Url, view2Url, view3Url, view4Url**, custom options), `ModelScene` (product image reference, product_type, nationality, family, scenario, location, presentation style, generated scene image), and `PosterRequest` (campaign type, visual style, layout, aspect ratio, headline style, price display, logo position, tagline, generated poster image). Schemas are defined in `shared/schema.ts`.
 - **4-Angle Storage Design:** Each product design is stored with four view URLs (view1Url through view4Url) supporting the new 4-angle system across all product types. Database schema extended with view3Url and view4Url columns.
 
 ### Feature Specifications
@@ -76,6 +76,15 @@ The application features a single-page layout with a two-column structure (40% c
 - **Asset Type System:** Products (primary focus) and props (supporting elements like plants, furniture, decorative items)
 - **Scene Configuration:** Multiple scene types (home, office, outdoor, cafe, studio, white background, custom), lighting options, composition styles, and aspect ratios
 - **Professional Marketing Scenes:** Generate complete e-commerce photography with proper product placement and styling
+
+#### Feature 5: E-commerce Poster Design (NEW)
+- **Three-Module Configuration System:**
+  - **Module A (Campaign & Scene):** Campaign type selection (new arrival, seasonal sale, clearance, flash sale, holiday promo, brand launch, bundle deal, membership, limited edition, custom), optional reference image with usage level control (inspiration, strict adherence, visual tone only)
+  - **Module B (Visual Style & Layout):** Visual style (modern minimalist, bold vibrant, elegant luxurious, playful fun, natural organic, tech futuristic, vintage retro, editorial clean), background scene, layout (centered, split, grid, collage, asymmetric, full bleed, L-shape, diagonal, custom), aspect ratio (1:1, 3:4, 4:3, 9:16, 16:9)
+  - **Module C (Copy & Elements):** Headline style (bold statement, question, benefit-focused, urgency-driven, emotional appeal, minimal/clean, playful, premium/elegant), custom headline, selling points (up to 3), price display style (original + sale, percentage off, final price only, none, tiered pricing, bundle pricing), original/current prices, discount text, optional brand logo with position control (top-left, top-right, bottom-left, bottom-right, center-top, center-bottom), brand tagline
+- **Product Image Management:** Upload 1-6 product images (PNG/JPG, max 10MB each) as main poster elements
+- **AI-Powered Poster Generation:** Three-stage architecture (prompt optimizer → image generation → spec extraction) creates professional marketing posters with integrated products, copy, pricing, and branding
+- **Flexible Asset Integration:** Supports reference images for style guidance and brand logos for identity consistency
 
 #### Cross-Feature Capabilities
 - **High-Resolution PNG Download:** All generated images support full-resolution downloads.
