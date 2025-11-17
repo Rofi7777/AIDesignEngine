@@ -218,6 +218,7 @@ export const translations = {
     toastMissingDesign: 'Please generate a slipper design first',
     toastDesignSuccess: 'Slipper design generated successfully!',
     toastModelSuccess: 'Model wearing scene generated successfully!',
+    toastSuccessTitle: 'Success',
     toastErrorTitle: 'Error',
     toastError: 'An error occurred. Please try again.',
     
@@ -500,6 +501,7 @@ export const translations = {
     toastMissingDesign: '請先生成拖鞋設計',
     toastDesignSuccess: '拖鞋設計生成成功！',
     toastModelSuccess: '模特兒穿著場景生成成功！',
+    toastSuccessTitle: '成功',
     toastErrorTitle: '錯誤',
     toastError: '發生錯誤。請再試一次。',
     
@@ -782,6 +784,7 @@ export const translations = {
     toastMissingDesign: 'Vui lòng tạo thiết kế dép trước',
     toastDesignSuccess: 'Thiết kế dép đã được tạo thành công!',
     toastModelSuccess: 'Cảnh người mẫu đeo đã được tạo thành công!',
+    toastSuccessTitle: 'Thành Công',
     toastErrorTitle: 'Lỗi',
     toastError: 'Đã xảy ra lỗi. Vui lòng thử lại.',
     

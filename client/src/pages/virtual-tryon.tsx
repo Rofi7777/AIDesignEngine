@@ -100,14 +100,14 @@ export default function VirtualTryOn() {
     onSuccess: (data) => {
       setGeneratedImage(data.imageUrl);
       toast({
-        title: "Success!",
-        description: "Virtual try-on generated successfully",
+        title: t('toastSuccessTitle'),
+        description: t('toastModelSuccess'),
       });
     },
     onError: (error: Error) => {
       toast({
         variant: "destructive",
-        title: "Generation failed",
+        title: t('toastErrorTitle'),
         description: error.message,
       });
     },
@@ -134,8 +134,8 @@ export default function VirtualTryOn() {
     if (availableSlots <= 0) {
       toast({
         variant: "destructive",
-        title: "Maximum limit reached",
-        description: `Maximum ${maxProducts} product(s) allowed in ${tryonMode} mode`,
+        title: t('toastErrorTitle'),
+        description: t('toastError'),
       });
       return;
     }
@@ -167,8 +167,8 @@ export default function VirtualTryOn() {
     if (!modelImage) {
       toast({
         variant: "destructive",
-        title: "No model image",
-        description: "Please upload a model image",
+        title: t('toastErrorTitle'),
+        description: t('toastError'),
       });
       return;
     }
@@ -176,8 +176,8 @@ export default function VirtualTryOn() {
     if (productImages.length === 0) {
       toast({
         variant: "destructive",
-        title: "No products",
-        description: "Please upload at least one product image",
+        title: t('toastErrorTitle'),
+        description: t('toastError'),
       });
       return;
     }
@@ -185,8 +185,8 @@ export default function VirtualTryOn() {
     if (data.tryonMode === 'single' && !data.tryonType) {
       toast({
         variant: "destructive",
-        title: "Missing try-on type",
-        description: "Please select a try-on type for single mode",
+        title: t('toastErrorTitle'),
+        description: t('toastError'),
       });
       return;
     }
@@ -210,12 +210,12 @@ export default function VirtualTryOn() {
           {/* Configuration Panel */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Virtual Try-On Setup</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('virtualTryonTitle')}</h2>
               
               {/* Model Image Upload */}
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Model Image</label>
+                  <label className="block text-sm font-medium mb-2">{t('virtualTryonModelImage')}</label>
                   <div 
                     className="border-2 border-dashed rounded-xl p-6 text-center hover-elevate active-elevate-2 cursor-pointer"
                     onClick={() => document.getElementById('model-upload')?.click()}
@@ -244,7 +244,7 @@ export default function VirtualTryOn() {
                     ) : (
                       <>
                         <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">Upload model image</p>
+                        <p className="text-sm text-muted-foreground">{t('uploadAreaTitle')}</p>
                       </>
                     )}
                   </div>
@@ -263,7 +263,7 @@ export default function VirtualTryOn() {
               <div className="space-y-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Product Images (Max: {tryonMode === 'single' ? '1' : '5'})
+                    {t('virtualTryonProducts')} ({t('virtualTryonMaxProducts')}: {tryonMode === 'single' ? '1' : '5'})
                   </label>
                   <div 
                     className="border-2 border-dashed rounded-xl p-6 text-center hover-elevate active-elevate-2 cursor-pointer"
@@ -272,7 +272,7 @@ export default function VirtualTryOn() {
                   >
                     <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">
-                      Upload product images ({productImages.length}/{tryonMode === 'single' ? '1' : '5'})
+                      {t('uploadAreaTitle')} ({productImages.length}/{tryonMode === 'single' ? '1' : '5'})
                     </p>
                   </div>
                   <input
@@ -340,7 +340,7 @@ export default function VirtualTryOn() {
 
             {/* Configuration Form */}
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Try-On Configuration</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('virtualTryonConfiguration')}</h2>
               
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -350,7 +350,7 @@ export default function VirtualTryOn() {
                     name="tryonMode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Try-On Mode</FormLabel>
+                        <FormLabel>{t('virtualTryonMode')}</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={(value) => {
@@ -365,11 +365,11 @@ export default function VirtualTryOn() {
                           >
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="single" id="single" data-testid="radio-mode-single" />
-                              <Label htmlFor="single">Single Product (Precise)</Label>
+                              <Label htmlFor="single">{t('virtualTryonModeSingle')}</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="multi" id="multi" data-testid="radio-mode-multi" />
-                              <Label htmlFor="multi">Multi-Product (Flexible)</Label>
+                              <Label htmlFor="multi">{t('virtualTryonModeMulti')}</Label>
                             </div>
                           </RadioGroup>
                         </FormControl>
@@ -385,7 +385,7 @@ export default function VirtualTryOn() {
                       name="tryonType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Try-On Type</FormLabel>
+                          <FormLabel>{t('virtualTryonType')}</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value} data-testid="select-tryon-type">
                             <FormControl>
                               <SelectTrigger>
@@ -393,10 +393,10 @@ export default function VirtualTryOn() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="accessory">Accessory Only</SelectItem>
-                              <SelectItem value="top">Top Only</SelectItem>
-                              <SelectItem value="bottom">Bottom Only</SelectItem>
-                              <SelectItem value="full">Full Outfit</SelectItem>
+                              <SelectItem value="accessory">{t('virtualTryonTypeAccessory')}</SelectItem>
+                              <SelectItem value="top">{t('virtualTryonTypeTop')}</SelectItem>
+                              <SelectItem value="bottom">{t('virtualTryonTypeBottom')}</SelectItem>
+                              <SelectItem value="full">{t('virtualTryonTypeFull')}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -411,7 +411,7 @@ export default function VirtualTryOn() {
                     name="preservePose"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Preserve Pose</FormLabel>
+                        <FormLabel>{t('virtualTryonPreservePose')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-preserve-pose">
                           <FormControl>
                             <SelectTrigger>
@@ -419,8 +419,8 @@ export default function VirtualTryOn() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="yes">Yes - Keep exact pose</SelectItem>
-                            <SelectItem value="no">No - Allow adjustment</SelectItem>
+                            <SelectItem value="yes">{t('virtualTryonPreservePoseYes')}</SelectItem>
+                            <SelectItem value="no">{t('virtualTryonPreservePoseNo')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -434,7 +434,7 @@ export default function VirtualTryOn() {
                     name="style"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Photography Style</FormLabel>
+                        <FormLabel>{t('virtualTryonStyleLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-style">
                           <FormControl>
                             <SelectTrigger>
@@ -442,8 +442,8 @@ export default function VirtualTryOn() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="natural">Natural & Realistic</SelectItem>
-                            <SelectItem value="fashion">Fashion Editorial</SelectItem>
+                            <SelectItem value="natural">{t('virtualTryonStyleNatural')}</SelectItem>
+                            <SelectItem value="fashion">{t('virtualTryonStyleFashion')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -486,10 +486,10 @@ export default function VirtualTryOn() {
                     {mutation.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Generating...
+                        {t('virtualTryonGenerating')}
                       </>
                     ) : (
-                      'Generate Virtual Try-On'
+                      t('virtualTryonGenerate')
                     )}
                   </Button>
                 </form>
@@ -500,7 +500,7 @@ export default function VirtualTryOn() {
           {/* Results Panel */}
           <div className="lg:col-span-3">
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Generated Result</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('virtualTryonResult')}</h2>
               
               {generatedImage ? (
                 <div className="space-y-4">
@@ -525,13 +525,13 @@ export default function VirtualTryOn() {
                     data-testid="button-download"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Download Image
+                    {t('downloadPNG')}
                   </Button>
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground py-20">
                   <ImageIcon className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                  <p>Upload images and configure settings to generate your virtual try-on</p>
+                  <p>{t('virtualTryonEmptyState')}</p>
                 </div>
               )}
             </Card>

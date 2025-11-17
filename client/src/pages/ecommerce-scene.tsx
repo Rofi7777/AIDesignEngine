@@ -98,14 +98,14 @@ export default function EcommerceScene() {
     onSuccess: (data) => {
       setGeneratedImage(data.imageUrl);
       toast({
-        title: "Success!",
-        description: "E-commerce scene generated successfully",
+        title: t('toastSuccessTitle'),
+        description: t('toastModelSuccess'),
       });
     },
     onError: (error: Error) => {
       toast({
         variant: "destructive",
-        title: "Generation failed",
+        title: t('toastErrorTitle'),
         description: error.message,
       });
     },
@@ -132,8 +132,8 @@ export default function EcommerceScene() {
     if (availableSlots <= 0) {
       toast({
         variant: "destructive",
-        title: "Maximum limit reached",
-        description: `Maximum ${maxAssets} assets allowed (2-3 products + 1-2 props)`,
+        title: t('toastErrorTitle'),
+        description: t('toastError'),
       });
       return;
     }
@@ -165,8 +165,8 @@ export default function EcommerceScene() {
     if (!modelImage) {
       toast({
         variant: "destructive",
-        title: "No model image",
-        description: "Please upload a model image",
+        title: t('toastErrorTitle'),
+        description: t('toastError'),
       });
       return;
     }
@@ -174,8 +174,8 @@ export default function EcommerceScene() {
     if (assetImages.length === 0) {
       toast({
         variant: "destructive",
-        title: "No assets",
-        description: "Please upload at least one asset (product or prop)",
+        title: t('toastErrorTitle'),
+        description: t('toastError'),
       });
       return;
     }
@@ -184,8 +184,8 @@ export default function EcommerceScene() {
     if (productCount === 0) {
       toast({
         variant: "destructive",
-        title: "No products",
-        description: "At least one product is required",
+        title: t('toastErrorTitle'),
+        description: t('toastError'),
       });
       return;
     }
@@ -212,12 +212,12 @@ export default function EcommerceScene() {
           {/* Configuration Panel */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Scene Setup</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('ecommerceSceneTitle')}</h2>
               
               {/* Model Image Upload */}
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Model Image</label>
+                  <label className="block text-sm font-medium mb-2">{t('ecommerceSceneModelImage')}</label>
                   <div 
                     className="border-2 border-dashed rounded-xl p-6 text-center hover-elevate active-elevate-2 cursor-pointer"
                     onClick={() => document.getElementById('model-upload')?.click()}
@@ -246,7 +246,7 @@ export default function EcommerceScene() {
                     ) : (
                       <>
                         <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">Upload model image</p>
+                        <p className="text-sm text-muted-foreground">{t('uploadAreaTitle')}</p>
                       </>
                     )}
                   </div>
@@ -266,16 +266,16 @@ export default function EcommerceScene() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-sm font-medium">
-                      Assets (Max: 6)
+                      {t('ecommerceSceneAssets')} ({t('ecommerceSceneMaxAssets')})
                     </label>
                     <div className="flex gap-2">
                       <Badge variant="secondary" className="text-xs">
                         <Package className="w-3 h-3 mr-1" />
-                        {productCount} Products
+                        {productCount} {t('ecommerceSceneProducts')}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
                         <Boxes className="w-3 h-3 mr-1" />
-                        {propCount} Props
+                        {propCount} {t('ecommerceSceneProps')}
                       </Badge>
                     </div>
                   </div>
@@ -286,10 +286,10 @@ export default function EcommerceScene() {
                   >
                     <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground">
-                      Upload products & props ({assetImages.length}/6)
+                      {t('uploadAreaTitle')} ({assetImages.length}/6)
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      2-3 products + 1-2 props recommended
+                      {t('ecommerceSceneRecommendation')}
                     </p>
                   </div>
                   <input
@@ -362,7 +362,7 @@ export default function EcommerceScene() {
 
             {/* Configuration Form */}
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Scene Configuration</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('ecommerceSceneConfiguration')}</h2>
               
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -372,19 +372,19 @@ export default function EcommerceScene() {
                     name="sceneType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Scene Type</FormLabel>
+                        <FormLabel>{t('ecommerceSceneType')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-scene-type">
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select scene type" />
+                              <SelectValue placeholder={t('ecommerceSceneType')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="home">Home Interior</SelectItem>
-                            <SelectItem value="office">Office/Workspace</SelectItem>
-                            <SelectItem value="outdoor">Outdoor/Natural</SelectItem>
-                            <SelectItem value="cafe">Cafe/Restaurant</SelectItem>
-                            <SelectItem value="studio">Studio/Minimal</SelectItem>
+                            <SelectItem value="home">{t('ecommerceSceneTypeHome')}</SelectItem>
+                            <SelectItem value="office">{t('ecommerceSceneTypeOffice')}</SelectItem>
+                            <SelectItem value="outdoor">{t('ecommerceSceneTypeOutdoor')}</SelectItem>
+                            <SelectItem value="cafe">{t('ecommerceSceneTypeCafe')}</SelectItem>
+                            <SelectItem value="studio">{t('ecommerceSceneTypeStudio')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -398,7 +398,7 @@ export default function EcommerceScene() {
                     name="lighting"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Lighting Style</FormLabel>
+                        <FormLabel>{t('ecommerceSceneLighting')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-lighting">
                           <FormControl>
                             <SelectTrigger>
@@ -406,10 +406,10 @@ export default function EcommerceScene() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="natural">Natural Daylight</SelectItem>
-                            <SelectItem value="warm">Warm & Cozy</SelectItem>
-                            <SelectItem value="bright">Bright & Even</SelectItem>
-                            <SelectItem value="soft">Soft & Diffused</SelectItem>
+                            <SelectItem value="natural">{t('ecommerceSceneLightingNatural')}</SelectItem>
+                            <SelectItem value="warm">{t('ecommerceSceneLightingWarm')}</SelectItem>
+                            <SelectItem value="bright">{t('ecommerceSceneLightingBright')}</SelectItem>
+                            <SelectItem value="soft">{t('ecommerceSceneLightingSoft')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -423,7 +423,7 @@ export default function EcommerceScene() {
                     name="composition"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Composition Style</FormLabel>
+                        <FormLabel>{t('ecommerceSceneComposition')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-composition">
                           <FormControl>
                             <SelectTrigger>
@@ -431,9 +431,9 @@ export default function EcommerceScene() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="center">Center Focused</SelectItem>
-                            <SelectItem value="rule-of-thirds">Rule of Thirds</SelectItem>
-                            <SelectItem value="diagonal">Diagonal Dynamic</SelectItem>
+                            <SelectItem value="center">{t('ecommerceSceneCompositionCenter')}</SelectItem>
+                            <SelectItem value="rule-of-thirds">{t('ecommerceSceneCompositionThirds')}</SelectItem>
+                            <SelectItem value="diagonal">{t('ecommerceSceneCompositionDiagonal')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -476,10 +476,10 @@ export default function EcommerceScene() {
                     {mutation.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Generating Scene...
+                        {t('ecommerceSceneGenerating')}
                       </>
                     ) : (
-                      'Generate E-commerce Scene'
+                      t('ecommerceSceneGenerate')
                     )}
                   </Button>
                 </form>
@@ -490,7 +490,7 @@ export default function EcommerceScene() {
           {/* Results Panel */}
           <div className="lg:col-span-3">
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Generated Scene</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('ecommerceSceneResult')}</h2>
               
               {generatedImage ? (
                 <div className="space-y-4">
@@ -515,14 +515,13 @@ export default function EcommerceScene() {
                     data-testid="button-download"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Download Image
+                    {t('downloadPNG')}
                   </Button>
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground py-20">
                   <ImageIcon className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                  <p>Upload model, products & props, then configure the scene to generate</p>
-                  <p className="text-sm mt-2">Recommended: 1 model + 2-3 products + 1-2 props</p>
+                  <p>{t('ecommerceSceneEmptyState')}</p>
                 </div>
               )}
             </Card>

@@ -29,16 +29,16 @@ export default function MainLayout() {
         <Tabs defaultValue="product-design" className="w-full">
           <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-4 mb-8" data-testid="tabs-main">
             <TabsTrigger value="product-design" data-testid="tab-product-design">
-              Product Design
+              {t('tabProductDesign')}
             </TabsTrigger>
             <TabsTrigger value="model-tryon" data-testid="tab-model-tryon">
-              Model Try-on
+              {t('tabModelTryon')}
             </TabsTrigger>
             <TabsTrigger value="virtual-tryon" data-testid="tab-virtual-tryon">
-              Virtual Try-on
+              {t('tabVirtualTryon')}
             </TabsTrigger>
             <TabsTrigger value="ecommerce-scene" data-testid="tab-ecommerce-scene">
-              E-commerce Scene
+              {t('tabEcommerceScene')}
             </TabsTrigger>
           </TabsList>
 
