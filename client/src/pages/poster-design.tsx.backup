@@ -150,13 +150,13 @@ export default function PosterDesign() {
     onSuccess: (data) => {
       setGeneratedPoster(data.imageUrl);
       toast({
-        title: t("posterDesignSuccessTitle"),
-        description: t("posterDesignSuccessMessage"),
+        title: t("posterDesign.successTitle"),
+        description: t("posterDesign.successMessage"),
       });
     },
     onError: (error: Error) => {
       toast({
-        title: t("posterDesignErrorTitle"),
+        title: t("posterDesign.errorTitle"),
         description: error.message,
         variant: "destructive",
       });
@@ -166,7 +166,7 @@ export default function PosterDesign() {
   const onSubmit = (data: FormData) => {
     if (productImages.length === 0) {
       toast({
-        title: t("posterDesignErrorTitle"),
+        title: t("posterDesign.errorTitle"),
         description: "Please upload at least one product image",
         variant: "destructive",
       });
@@ -179,7 +179,7 @@ export default function PosterDesign() {
     const files = Array.from(e.target.files || []);
     if (productImages.length + files.length > 6) {
       toast({
-        title: t("posterDesignErrorTitle"),
+        title: t("posterDesign.errorTitle"),
         description: "Maximum 6 product images allowed",
         variant: "destructive",
       });
@@ -210,7 +210,7 @@ export default function PosterDesign() {
         <div className="space-y-4">
           <div className="mb-6">
             <h1 className="text-3xl font-bold mb-2">{t("tabs.posterDesign")}</h1>
-            <p className="text-muted-foreground">{t("posterDesignSubtitle")}</p>
+            <p className="text-muted-foreground">{t("posterDesign.subtitle")}</p>
           </div>
 
           <Form {...form}>
@@ -218,7 +218,7 @@ export default function PosterDesign() {
               {/* Product Images Upload */}
               <Card>
                 <CardContent className="pt-6">
-                  <Label>{t("posterDesignProductImages")} *</Label>
+                  <Label>{t("posterDesign.productImages")} *</Label>
                   <div className="mt-2 space-y-2">
                     <Input
                       ref={productInputRef}
@@ -230,7 +230,7 @@ export default function PosterDesign() {
                       className="cursor-pointer"
                     />
                     <p className="text-xs text-muted-foreground">
-                      {t("posterDesignProductImagesHint")}
+                      {t("posterDesign.productImagesHint")}
                     </p>
                     {productImages.length > 0 && (
                       <div className="grid grid-cols-3 gap-2 mt-2">
@@ -270,7 +270,7 @@ export default function PosterDesign() {
                 {/* Module A: Campaign & Scene */}
                 <AccordionItem value="module-a">
                   <AccordionTrigger className="text-lg font-semibold">
-                    {t("posterDesignModuleA")}
+                    {t("posterDesign.moduleA")}
                   </AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-4">
                     <FormField
@@ -278,7 +278,7 @@ export default function PosterDesign() {
                       name="campaignType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("posterDesignCampaignType")} *</FormLabel>
+                          <FormLabel>{t("posterDesign.campaignType")} *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger data-testid="select-campaign-type">
@@ -306,7 +306,7 @@ export default function PosterDesign() {
                         name="customCampaign"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("posterDesignCustomCampaign")}</FormLabel>
+                            <FormLabel>{t("posterDesign.customCampaign")}</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-custom-campaign" />
                             </FormControl>
@@ -317,7 +317,7 @@ export default function PosterDesign() {
                     )}
 
                     <div>
-                      <Label>{t("posterDesignReferenceImage")}</Label>
+                      <Label>{t("posterDesign.referenceImage")}</Label>
                       <Input
                         ref={referenceInputRef}
                         type="file"
@@ -360,7 +360,7 @@ export default function PosterDesign() {
                         name="referenceLevel"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("posterDesignReferenceLevel")}</FormLabel>
+                            <FormLabel>{t("posterDesign.referenceLevel")}</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -385,7 +385,7 @@ export default function PosterDesign() {
                 {/* Module B: Visual Style & Layout */}
                 <AccordionItem value="module-b">
                   <AccordionTrigger className="text-lg font-semibold">
-                    {t("posterDesignModuleB")}
+                    {t("posterDesign.moduleB")}
                   </AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-4">
                     <FormField
@@ -393,7 +393,7 @@ export default function PosterDesign() {
                       name="visualStyle"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("posterDesignVisualStyle")} *</FormLabel>
+                          <FormLabel>{t("posterDesign.visualStyle")} *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger data-testid="select-visual-style">
@@ -419,7 +419,7 @@ export default function PosterDesign() {
                       name="backgroundScene"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("posterDesignBackgroundScene")} *</FormLabel>
+                          <FormLabel>{t("posterDesign.backgroundScene")} *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -445,7 +445,7 @@ export default function PosterDesign() {
                       name="layout"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("posterDesignLayout")} *</FormLabel>
+                          <FormLabel>{t("posterDesign.layout")} *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -471,7 +471,7 @@ export default function PosterDesign() {
                       name="aspectRatio"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("posterDesignAspectRatio")} *</FormLabel>
+                          <FormLabel>{t("posterDesign.aspectRatio")} *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -496,7 +496,7 @@ export default function PosterDesign() {
                 {/* Module C: Copy & Elements */}
                 <AccordionItem value="module-c">
                   <AccordionTrigger className="text-lg font-semibold">
-                    {t("posterDesignModuleC")}
+                    {t("posterDesign.moduleC")}
                   </AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-4">
                     <FormField
@@ -504,7 +504,7 @@ export default function PosterDesign() {
                       name="headlineStyle"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("posterDesignHeadlineStyle")} *</FormLabel>
+                          <FormLabel>{t("posterDesign.headlineStyle")} *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -548,7 +548,7 @@ export default function PosterDesign() {
                         name="customHeadline"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("posterDesignCustomHeadline")}</FormLabel>
+                            <FormLabel>{t("posterDesign.customHeadline")}</FormLabel>
                             <FormControl>
                               <Input {...field} placeholder="Enter your headline" />
                             </FormControl>
@@ -559,7 +559,7 @@ export default function PosterDesign() {
                     )}
 
                     <div className="space-y-2">
-                      <Label>{t("posterDesignSellingPoints")}</Label>
+                      <Label>{t("posterDesign.sellingPoints")}</Label>
                       <FormField
                         control={form.control}
                         name="autoGenerateSellingPoints"
@@ -622,7 +622,7 @@ export default function PosterDesign() {
                       name="priceStyle"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("posterDesignPriceStyle")}</FormLabel>
+                          <FormLabel>{t("posterDesign.priceStyle")}</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -649,7 +649,7 @@ export default function PosterDesign() {
                           name="originalPrice"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t("posterDesignOriginalPrice")}</FormLabel>
+                              <FormLabel>{t("posterDesign.originalPrice")}</FormLabel>
                               <FormControl>
                                 <Input {...field} placeholder="$99.99" />
                               </FormControl>
@@ -662,7 +662,7 @@ export default function PosterDesign() {
                           name="currentPrice"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t("posterDesignCurrentPrice")}</FormLabel>
+                              <FormLabel>{t("posterDesign.currentPrice")}</FormLabel>
                               <FormControl>
                                 <Input {...field} placeholder="$49.99" />
                               </FormControl>
@@ -675,7 +675,7 @@ export default function PosterDesign() {
                           name="discountText"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t("posterDesignDiscountText")}</FormLabel>
+                              <FormLabel>{t("posterDesign.discountText")}</FormLabel>
                               <FormControl>
                                 <Input {...field} placeholder="50% OFF" />
                               </FormControl>
@@ -687,7 +687,7 @@ export default function PosterDesign() {
                     )}
 
                     <div>
-                      <Label>{t("posterDesignLogoImage")}</Label>
+                      <Label>{t("posterDesign.logoImage")}</Label>
                       <Input
                         ref={logoInputRef}
                         type="file"
@@ -729,7 +729,7 @@ export default function PosterDesign() {
                         name="logoPosition"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{t("posterDesignLogoPosition")}</FormLabel>
+                            <FormLabel>{t("posterDesign.logoPosition")}</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -755,7 +755,7 @@ export default function PosterDesign() {
                       name="brandTagline"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t("posterDesignBrandTagline")}</FormLabel>
+                          <FormLabel>{t("posterDesign.brandTagline")}</FormLabel>
                           <FormControl>
                             <Input {...field} placeholder="Your Brand Tagline" />
                           </FormControl>
@@ -776,10 +776,10 @@ export default function PosterDesign() {
                 {generateMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t("posterDesignGenerating")}
+                    {t("posterDesign.generating")}
                   </>
                 ) : (
-                  t("posterDesignGenerate")
+                  t("posterDesign.generate")
                 )}
               </Button>
             </form>
@@ -804,13 +804,13 @@ export default function PosterDesign() {
                     data-testid="button-download-poster"
                   >
                     <Download className="mr-2 h-4 w-4" />
-                    {t("posterDesignDownload")}
+                    {t("posterDesign.download")}
                   </Button>
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground p-8">
                   <Upload className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                  <p>{t("posterDesignNoPreview")}</p>
+                  <p>{t("posterDesign.noPreview")}</p>
                 </div>
               )}
             </CardContent>

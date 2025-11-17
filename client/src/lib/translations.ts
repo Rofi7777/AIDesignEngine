@@ -228,6 +228,7 @@ export const translations = {
     tabVirtualTryon: 'Virtual Try-on',
     tabEcommerceScene: 'E-commerce Scene',
     tabPosterDesign: 'Poster Design',
+    'tabs.posterDesign': 'E-commerce Poster Design',
     
     // Model Try-on Page
     modelTryonProductUpload: 'Product Upload',
@@ -647,6 +648,7 @@ export const translations = {
     tabVirtualTryon: '虛擬換裝',
     tabEcommerceScene: '電商場景',
     tabPosterDesign: '海報設計',
+    'tabs.posterDesign': '電商廣告海報',
     
     // Model Try-on Page
     modelTryonProductUpload: '產品上傳',
@@ -1066,6 +1068,7 @@ export const translations = {
     tabVirtualTryon: 'Thử Đồ Ảo',
     tabEcommerceScene: 'Cảnh E-commerce',
     tabPosterDesign: 'Thiết kế Poster',
+    'tabs.posterDesign': 'Thiết Kế Poster Quảng Cáo',
     
     // Model Try-on Page
     modelTryonProductUpload: 'Tải Lên Sản Phẩm',
