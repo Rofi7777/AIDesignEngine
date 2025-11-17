@@ -624,10 +624,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   ]), async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const { sceneType, lighting, composition, aspectRatio, assetTypes, assetNames } = req.body;
+      const { sceneType, customSceneType, lighting, composition, aspectRatio, assetTypes, assetNames } = req.body;
 
       console.log('[E-commerce Scene API] Request received');
       console.log('[E-commerce Scene API] Scene Type:', sceneType);
+      if (customSceneType) {
+        console.log('[E-commerce Scene API] Custom Scene Type:', customSceneType);
+      }
 
       const modelImageFile = files?.modelImage?.[0];
       const assetImageFiles = files?.assetImages || [];
@@ -696,6 +699,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })),
         {
           sceneType,
+          customSceneType,
           lighting,
           composition,
           aspectRatio,

@@ -43,16 +43,26 @@ export default function EcommerceScene() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const formSchema = z.object({
-    sceneType: z.string().min(1, "Scene type is required"),
+    sceneType: z.string().min(1, t('ecommerceSceneValidationCustomRequired')),
+    customSceneType: z.string().optional(),
     lighting: z.string().min(1, "Lighting is required"),
     composition: z.string().min(1, "Composition is required"),
     aspectRatio: z.string().min(1, "Aspect ratio is required"),
+  }).refine((data) => {
+    if (data.sceneType === 'custom' && !data.customSceneType) {
+      return false;
+    }
+    return true;
+  }, {
+    message: t('ecommerceSceneValidationCustomRequired'),
+    path: ['customSceneType'],
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       sceneType: '',
+      customSceneType: '',
       lighting: 'natural',
       composition: 'rule-of-thirds',
       aspectRatio: '16:9',
@@ -77,6 +87,9 @@ export default function EcommerceScene() {
       });
       
       formData.append('sceneType', data.sceneType);
+      if (data.customSceneType) {
+        formData.append('customSceneType', data.customSceneType);
+      }
       formData.append('lighting', data.lighting);
       formData.append('composition', data.composition);
       formData.append('aspectRatio', data.aspectRatio);
@@ -373,7 +386,16 @@ export default function EcommerceScene() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('ecommerceSceneType')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} data-testid="select-scene-type">
+                        <Select 
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            if (value !== 'custom') {
+                              form.setValue('customSceneType', '');
+                            }
+                          }} 
+                          value={field.value} 
+                          data-testid="select-scene-type"
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder={t('ecommerceSceneType')} />
@@ -385,12 +407,35 @@ export default function EcommerceScene() {
                             <SelectItem value="outdoor">{t('ecommerceSceneTypeOutdoor')}</SelectItem>
                             <SelectItem value="cafe">{t('ecommerceSceneTypeCafe')}</SelectItem>
                             <SelectItem value="studio">{t('ecommerceSceneTypeStudio')}</SelectItem>
+                            <SelectItem value="white-bg">{t('ecommerceSceneTypeWhiteBg')}</SelectItem>
+                            <SelectItem value="custom">{t('ecommerceSceneTypeCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* Custom Scene Type */}
+                  {form.watch('sceneType') === 'custom' && (
+                    <FormField
+                      control={form.control}
+                      name="customSceneType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('ecommerceSceneCustomLabel')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('ecommerceSceneCustomPlaceholder')}
+                              {...field}
+                              data-testid="input-custom-scene"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   {/* Lighting */}
                   <FormField

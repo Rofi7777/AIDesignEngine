@@ -10,6 +10,7 @@ const ai = new GoogleGenAI({
 
 interface EcommerceSceneOptions {
   sceneType: string;
+  customSceneType?: string;
   lighting: string;
   composition: string;
   aspectRatio: string;
@@ -137,6 +138,23 @@ SCENE SPECIFICATION:
 - Clean, minimalist background
 - Professional lighting setup
 - Focus entirely on the model and products
+`;
+  } else if (options.sceneType === 'white-bg') {
+    prompt += `WHITE BACKGROUND SCENE:
+- Create a pure white background (RGB: 255, 255, 255)
+- Clean, professional product photography style
+- No environmental elements or props in background
+- Soft, even lighting to eliminate shadows
+- Focus entirely on the model and products
+- Seamless white backdrop
+`;
+  } else if (options.sceneType === 'custom') {
+    const customScene = options.customSceneType || 'professional setting';
+    prompt += `CUSTOM SCENE:
+- Create a ${customScene} setting
+- Ensure the environment feels authentic and professional
+- Incorporate appropriate environmental elements
+- Match the mood and style to the described scene
 `;
   } else {
     prompt += `CUSTOM SCENE:
