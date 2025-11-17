@@ -134,13 +134,21 @@ export default function EcommerceScene() {
 
   const handleAssetImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    console.log('[Asset Upload] Files selected:', files?.length || 0);
+    
+    if (!files || files.length === 0) {
+      console.log('[Asset Upload] No files selected');
+      return;
+    }
 
     const maxAssets = 6;
     const currentCount = assetImages.length;
     const availableSlots = maxAssets - currentCount;
 
+    console.log('[Asset Upload] Current count:', currentCount, 'Available slots:', availableSlots);
+
     if (availableSlots <= 0) {
+      console.log('[Asset Upload] No available slots');
       toast({
         variant: "destructive",
         title: t('toastErrorTitle'),
@@ -150,6 +158,8 @@ export default function EcommerceScene() {
     }
 
     const filesToAdd = Array.from(files).slice(0, availableSlots);
+    console.log('[Asset Upload] Files to add:', filesToAdd.length);
+    
     const newImages = filesToAdd.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
@@ -157,7 +167,10 @@ export default function EcommerceScene() {
       name: undefined,
     }));
 
+    console.log('[Asset Upload] Setting asset images, new count will be:', currentCount + newImages.length);
     setAssetImages((prev) => [...prev, ...newImages]);
+    
+    e.target.value = '';
   };
 
   const removeAssetImage = (index: number) => {
