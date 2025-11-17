@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
@@ -132,10 +132,10 @@ export default function Home() {
   const [brandLogoFile, setBrandLogoFile] = useState<File | null>(null);
   const [brandLogoPreview, setBrandLogoPreview] = useState<string | null>(null);
 
-  const [generatedSlipperTop, setGeneratedSlipperTop] = useState<string | null>(null);
-  const [generatedSlipper45, setGeneratedSlipper45] = useState<string | null>(null);
+  // Dynamic product images storage - keyed by angle name
+  const [generatedImages, setGeneratedImages] = useState<Record<string, string>>({});
   const [generatedModelImage, setGeneratedModelImage] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<"top" | "45degree">("top");
+  const [activeView, setActiveView] = useState<string>("");
   
   // Image zoom modal state
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
@@ -143,6 +143,12 @@ export default function Home() {
 
   const designFormSchema = useMemo(() => createDesignFormSchema(t), [t]);
   const modelFormSchema = useMemo(() => createModelFormSchema(t), [t]);
+
+  // Clear generated images when product type changes
+  useEffect(() => {
+    setGeneratedImages({});
+    setActiveView("");
+  }, [selectedProductType]);
 
   const designForm = useForm<DesignFormValues>({
     resolver: zodResolver(designFormSchema),
@@ -171,7 +177,7 @@ export default function Home() {
     },
   });
 
-  const { data: generatedImages } = useQuery<GeneratedImage[]>({
+  const { data: savedImages } = useQuery<GeneratedImage[]>({
     queryKey: ["/api/generated-images"],
   });
 
@@ -233,8 +239,27 @@ export default function Home() {
       });
     },
     onSuccess: (data: any) => {
-      setGeneratedSlipperTop(data.topView || null);
-      setGeneratedSlipper45(data.view45 || null);
+      // Convert response to dynamic angle mapping using modern keys
+      const newImages: Record<string, string> = {};
+      const productConfig = getProductConfig(selectedProductType);
+      const angles = Array.from(productConfig.angles);
+      
+      // Map backend response using actual angle keys
+      angles.forEach(angle => {
+        if (data[angle]) {
+          newImages[angle] = data[angle];
+        }
+      });
+      
+      // Set active view to first angle that has an image
+      // Prioritize angles that actually have images, then fall back to any available image
+      const firstAvailableAngle = 
+        angles.find(angle => newImages[angle]) || 
+        Object.keys(newImages)[0] || 
+        angles[0] || 
+        "";
+      setGeneratedImages(newImages);
+      setActiveView(firstAvailableAngle);
       queryClient.invalidateQueries({ queryKey: ["/api/generated-images"] });
       toast({
         description: t('toastDesignSuccess'),
@@ -322,7 +347,8 @@ export default function Home() {
   };
 
   const onModelSubmit = async (data: ModelFormValues) => {
-    const productImage = generatedSlipperTop || generatedSlipper45;
+    // Get first available generated image
+    const productImage = Object.values(generatedImages)[0];
     if (!productImage) {
       toast({
         description: t('errorMissingDesign'),
@@ -463,6 +489,7 @@ export default function Home() {
                       placeholder={t('customProductTypePlaceholder')}
                       value={customProductType}
                       onChange={(e) => setCustomProductType(e.target.value)}
+                      disabled={selectedProductType !== "custom"}
                       className="mt-2"
                       data-testid="input-custom-product-type"
                     />
@@ -1025,17 +1052,38 @@ export default function Home() {
             <Card className="p-8 rounded-2xl shadow-sm border-border/50">
               <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-xl font-semibold" data-testid="text-section-results">{t('sectionGallery')}</h3>
-                {(generatedSlipperTop || generatedSlipper45) && (
-                  <Tabs value={activeView} onValueChange={(v) => setActiveView(v as any)}>
+                {Object.keys(generatedImages).length > 0 && (
+                  <Tabs value={activeView} onValueChange={(v) => setActiveView(v)}>
                     <TabsList>
-                      <TabsTrigger value="top" data-testid="tab-top-view">{t('topView')}</TabsTrigger>
-                      <TabsTrigger value="45degree" data-testid="tab-45-view">{t('view45')}</TabsTrigger>
+                      {(() => {
+                        const productConfig = getProductConfig(selectedProductType);
+                        const angles = Array.from(productConfig.angles);
+                        const labelMap: Record<string, string> = {
+                          'top': t('topView'),
+                          '45degree': t('view45'),
+                          'front': t('frontView'),
+                          'back': t('backView'),
+                          'side': t('sideView'),
+                          'view1': t('view1'),
+                          'view2': t('view2'),
+                        };
+                        
+                        return angles.map((angle, idx) => (
+                          <TabsTrigger 
+                            key={angle} 
+                            value={angle}
+                            data-testid={`tab-${angle}-view`}
+                          >
+                            {labelMap[angle] || angle}
+                          </TabsTrigger>
+                        ));
+                      })()}
                     </TabsList>
                   </Tabs>
                 )}
               </div>
 
-              {!generatedSlipperTop && !generatedSlipper45 && !generatedModelImage ? (
+              {Object.keys(generatedImages).length === 0 && !generatedModelImage ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/50 py-32" data-testid="empty-state">
                   <ImageIcon className="mb-4 h-20 w-20 text-primary/20" data-testid="icon-empty-state" />
                   <p className="text-xl font-light text-muted-foreground" data-testid="text-empty-title">
@@ -1047,55 +1095,50 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="space-y-8">
-                  {activeView === "top" && generatedSlipperTop && (
-                    <div className="group relative overflow-hidden rounded-2xl" data-testid="card-design-top">
-                      <img
-                        src={generatedSlipperTop}
-                        alt={t('altTopViewDesign')}
-                        className="w-full rounded-2xl shadow-sm cursor-pointer hover-elevate transition-all"
-                        onClick={() => {
-                          setZoomedImage(generatedSlipperTop);
-                          setZoomedImageAlt(t('altTopViewDesign'));
-                        }}
-                        data-testid="img-design-top"
-                      />
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="absolute bottom-4 right-4 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
-                        onClick={() => downloadImage(generatedSlipperTop, "slipper-design-top-view.png")}
-                        data-testid="button-download-top"
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        {t('downloadPNG')}
-                      </Button>
-                    </div>
-                  )}
-
-                  {activeView === "45degree" && generatedSlipper45 && (
-                    <div className="group relative overflow-hidden rounded-2xl" data-testid="card-design-45">
-                      <img
-                        src={generatedSlipper45}
-                        alt={t('alt45ViewDesign')}
-                        className="w-full rounded-2xl shadow-sm cursor-pointer hover-elevate transition-all"
-                        onClick={() => {
-                          setZoomedImage(generatedSlipper45);
-                          setZoomedImageAlt(t('alt45ViewDesign'));
-                        }}
-                        data-testid="img-design-45"
-                      />
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="absolute bottom-4 right-4 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
-                        onClick={() => downloadImage(generatedSlipper45, "slipper-design-45-view.png")}
-                        data-testid="button-download-45"
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        {t('downloadPNG')}
-                      </Button>
-                    </div>
-                  )}
+                  {(() => {
+                    const currentImage = generatedImages[activeView];
+                    if (!currentImage) return null;
+                    
+                    const productTypeName = selectedProductType === "custom" && customProductType 
+                      ? customProductType 
+                      : selectedProductType;
+                    
+                    const labelMap: Record<string, string> = {
+                      'top': t('altTopViewDesign'),
+                      '45degree': t('alt45ViewDesign'),
+                      'front': 'Front View Design',
+                      'back': 'Back View Design',
+                      'side': 'Side View Design',
+                      'view1': 'View 1 Design',
+                      'view2': 'View 2 Design',
+                    };
+                    const altText = labelMap[activeView] || `${activeView} Design`;
+                    
+                    return (
+                      <div className="group relative overflow-hidden rounded-2xl" data-testid={`card-design-${activeView}`}>
+                        <img
+                          src={currentImage}
+                          alt={altText}
+                          className="w-full rounded-2xl shadow-sm cursor-pointer hover-elevate transition-all"
+                          onClick={() => {
+                            setZoomedImage(currentImage);
+                            setZoomedImageAlt(altText);
+                          }}
+                          data-testid={`img-design-${activeView}`}
+                        />
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="absolute bottom-4 right-4 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
+                          onClick={() => downloadImage(currentImage, `${productTypeName}-design-${activeView}.png`)}
+                          data-testid={`button-download-${activeView}`}
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          {t('downloadPNG')}
+                        </Button>
+                      </div>
+                    );
+                  })()}
 
                   {generatedModelImage && (
                     <div className="pt-6 border-t border-border/50">

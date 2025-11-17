@@ -47,22 +47,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const anglesArray = JSON.parse(angles || '["top", "45degree"]');
+      const productType = req.body.productType || 'slippers';
+      const customProductType = req.body.customProductType;
 
-      const results: { topView?: string; view45?: string } = {};
+      const results: Record<string, string> = {};
+      let canonicalImageBuffer: Buffer | undefined;
+      let canonicalImageMimeType: string | undefined;
 
-      // STEP 1: Generate top view as canonical design (always generate this first)
+      // STEP 1: Generate first angle as canonical design (always generate this first)
       // Uses two-stage architecture: LLM generates optimized prompt → Gemini generates image
-      console.log("Generating canonical design (top view) with professional designer prompts...");
-      results.topView = await generateProductDesignEnhanced(
-        req.body.productType || 'slippers',
-        req.body.customProductType,
+      const firstAngle = anglesArray[0];
+      console.log(`Generating canonical design (${firstAngle} view) with professional designer prompts...`);
+      results[firstAngle] = await generateProductDesignEnhanced(
+        productType,
+        customProductType,
         templateFile.buffer,
         templateFile.mimetype,
         theme,
         style,
         color,
         material,
-        "top",
+        firstAngle,
         referenceImageFile?.buffer,
         referenceImageFile?.mimetype,
         brandLogoFile?.buffer,
@@ -70,34 +75,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         designDescription
       );
 
-      // STEP 2: If 45° view is needed, use top view as reference for consistency
-      if (anglesArray.includes("45degree")) {
-        console.log("Generating 45° view with design consistency enforcement...");
+      // Extract canonical image for subsequent angles
+      const canonicalBase64 = results[firstAngle].split(',')[1];
+      canonicalImageBuffer = Buffer.from(canonicalBase64, 'base64');
+      canonicalImageMimeType = results[firstAngle].match(/data:([^;]+);/)?.[1] || 'image/png';
+
+      // STEP 2: Generate remaining angles using canonical as reference for consistency
+      for (let i = 1; i < anglesArray.length; i++) {
+        const angle = anglesArray[i];
+        console.log(`Generating ${angle} view with design consistency enforcement...`);
         
-        // Extract buffer from top view data URL
-        const topViewBase64 = results.topView.split(',')[1];
-        const topViewBuffer = Buffer.from(topViewBase64, 'base64');
-        const topViewMimeType = results.topView.match(/data:([^;]+);/)?.[1] || 'image/png';
-        
-        results.view45 = await generateProductDesignEnhanced(
-          req.body.productType || 'slippers',
-          req.body.customProductType,
+        results[angle] = await generateProductDesignEnhanced(
+          productType,
+          customProductType,
           templateFile.buffer,
           templateFile.mimetype,
           theme,
           style,
           color,
           material,
-          "45degree",
+          angle,
           referenceImageFile?.buffer,
           referenceImageFile?.mimetype,
           brandLogoFile?.buffer,
           brandLogoFile?.mimetype,
           designDescription,
-          topViewBuffer,
-          topViewMimeType
+          canonicalImageBuffer,
+          canonicalImageMimeType
         );
       }
+      
+      // Map to legacy field names for backward compatibility
+      const legacyResults: any = { ...results };
+      if (results['top']) legacyResults.topView = results['top'];
+      if (results['45degree']) legacyResults.view45 = results['45degree'];
+      if (results['front']) legacyResults.frontView = results['front'];
+      if (results['back']) legacyResults.backView = results['back'];
+      if (results['side']) legacyResults.sideView = results['side'];
+      if (results['view1']) legacyResults.view1 = results['view1'];
+      if (results['view2']) legacyResults.view2 = results['view2'];
 
       // Convert optional images to data URLs for storage
       let referenceImageUrl: string | null = null;
@@ -112,8 +128,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Save both angles as a single design record
       await storage.saveCompleteDesign({
-        topViewUrl: results.topView || null,
-        view45Url: results.view45 || null,
+        view1Url: results[anglesArray[0]] || null,
+        view2Url: results[anglesArray[1]] || null,
+        productType,
+        customProductType,
         theme,
         style,
         color,
@@ -123,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         brandLogoUrl,
       });
 
-      res.json(results);
+      res.json(legacyResults);
     } catch (error: any) {
       console.error("Error generating design:", error);
       

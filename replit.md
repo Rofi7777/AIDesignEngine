@@ -1,7 +1,7 @@
 # Craft AI Studio
 
 ## Overview
-**Craft AI Studio** is an AI-powered design application for generating seasonal slipper concepts. It allows users to upload slipper templates, configure design parameters, and generate AI-created slipper designs (top and 45° views) along with model-wearing scenes. All generated images support high-resolution PNG downloads. The project leverages Google Gemini 2.5 Flash Image Preview.
+**Craft AI Studio** is an AI-powered design application for generating seasonal fashion product concepts across multiple categories (shoes, slippers, clothes, bags, and custom products). Users can upload product templates, configure design parameters, and generate AI-created product designs with multiple viewing angles along with model-wearing scenes. All generated images support high-resolution PNG downloads. The project leverages Google Gemini 2.5 Flash Image Preview.
 
 **Tagline:** "Craft Design Ideas with AI"
 
@@ -29,17 +29,23 @@ The application features a single-page layout with a two-column structure (40% c
 - **AI Integration:** Google Gemini 2.5 Flash Image Preview via Replit AI Integrations.
 - **Validation:** Zod with drizzle-zod for robust form validation.
 - **Internationalization (i18n):** A React Context-based translation system with localStorage persistence supporting English, Traditional Chinese, and Vietnamese.
-- **Two-Step Design Generation:** Ensures consistency between top and 45° views. The top view is generated first as a canonical reference, and the 45° view uses this reference to maintain identical patterns, colors, and backgrounds, only changing the camera angle.
-- **Shape Preservation System:** AI prompts strictly enforce preservation of the exact shoe/product silhouette, dimensions, proportions, and 3D structure from the template. Only surface design elements (colors, patterns, materials, textures, logos) are modified, treating generation as a "skin wrap."
+- **Multi-Product Type System:** Supports 5 product categories with dynamic viewing angle configuration:
+  - **Shoes/Slippers:** top view + 45° view
+  - **Clothes:** front view + back view
+  - **Bags:** front view + side view
+  - **Custom:** user-defined view1 + view2
+- **Two-Step Design Generation:** Ensures consistency between viewing angles. The first angle is generated as a canonical reference, and the second angle uses this reference to maintain identical patterns, colors, and backgrounds, only changing the camera angle.
+- **Shape Preservation System:** AI prompts strictly enforce preservation of the exact product silhouette, dimensions, proportions, and 3D structure from the template. Only surface design elements (colors, patterns, materials, textures, logos) are modified, treating generation as a "skin wrap."
 - **Enhanced Design Input:** Supports optional reference image uploads, detailed design descriptions (text input), and brand logo uploads to guide AI generation.
 - **Multi-Image Gemini API Integration:** The Gemini API calls accept multiple images (template + reference + logo) in a single request.
 - **Click-to-Enlarge Image Zoom:** All generated images include a click-to-zoom feature, displaying images in a dialog modal for detailed inspection.
-- **Custom Options:** Users can specify custom colors, materials, and presentation styles with associated validation.
-- **Database Schema:** `SlipperDesign` (template, theme, style, color, material, custom options, generated images) and `ModelScene` (slipper image reference, nationality, family, scenario, location, presentation style, generated scene image). Schemas are defined in `shared/schema.ts`.
+- **Custom Options:** Users can specify custom colors, materials, presentation styles, and custom product types with associated validation.
+- **Database Schema:** `SlipperDesign` (product_type, custom_product_type, template, theme, style, color, material, view1Url, view2Url, custom options) and `ModelScene` (product image reference, product_type, nationality, family, scenario, location, presentation style, generated scene image). Schemas are defined in `shared/schema.ts`.
+- **Two-Angle Storage Design:** Each product design is stored with two view URLs (view1Url, view2Url) which align perfectly with all current product configurations (shoes/slippers: top+45°, clothes: front+back, bags: front+side, custom: view1+view2). Future expansion to >2 angles would require schema migration with JSON column or separate angle table.
 
 ### Feature Specifications
-- Slipper Template Upload (PNG/JPG up to 10MB).
-- AI-generated top and 45° views of slipper designs.
+- Product Template Upload (PNG/JPG up to 10MB) for 5 product categories: shoes, slippers, clothes, bags, custom.
+- AI-generated product designs with category-specific viewing angles (shoes/slippers: top+45°, clothes: front+back, bags: front+side, custom: view1+view2).
 - AI-generated model-wearing scenes with configurable elements (nationality, family, scenario, location, presentation).
 - High-resolution PNG download for all generated images.
 - Multi-language interface with English, Traditional Chinese, and Vietnamese.

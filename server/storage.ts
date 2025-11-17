@@ -26,8 +26,10 @@ export interface IStorage {
   
   // Save both angles as a single design record
   saveCompleteDesign(params: {
-    topViewUrl: string | null;
-    view45Url: string | null;
+    view1Url: string | null;
+    view2Url: string | null;
+    productType?: string;
+    customProductType?: string;
     theme: string;
     style: string;
     color: string;
@@ -67,16 +69,18 @@ export class DatabaseStorage implements IStorage {
   async saveGeneratedImage(imageData: Omit<GeneratedImage, 'id' | 'timestamp'>): Promise<GeneratedImage> {
     const metadata = imageData.metadata || {};
     
-    if (imageData.type === 'slipper_design') {
+    if (imageData.type === 'product_design') {
       const design = await this.createDesign({
         projectId: null,
+        productType: metadata.productType || 'slippers',
+        customProductType: null,
         templateUrl: null,
         theme: metadata.theme || 'Unknown',
         style: metadata.style || 'Unknown',
         color: metadata.color || 'Unknown',
         material: metadata.material || 'Unknown',
-        topViewUrl: imageData.angle === 'top' ? imageData.imageUrl : null,
-        view45Url: imageData.angle === '45degree' ? imageData.imageUrl : null,
+        view1Url: imageData.angle === 'top' || imageData.angle === 'front' || imageData.angle === 'view1' ? imageData.imageUrl : null,
+        view2Url: imageData.angle === '45degree' || imageData.angle === 'back' || imageData.angle === 'side' || imageData.angle === 'view2' ? imageData.imageUrl : null,
       });
       
       return {
@@ -93,7 +97,8 @@ export class DatabaseStorage implements IStorage {
       // For model_wearing, we need to save to modelScenes table
       const scene = await this.createModelScene({
         designId: null,
-        slipperImageUrl: metadata.slipperImageUrl || '',
+        productImageUrl: metadata.productImageUrl || '',
+        productType: metadata.productType || null,
         nationality: metadata.nationality || 'Unknown',
         familyCombination: metadata.familyCombination || 'Single Adult',
         scenario: metadata.scenario || 'Unknown',
@@ -127,16 +132,18 @@ export class DatabaseStorage implements IStorage {
     
     const images: GeneratedImage[] = [];
     
-    // Add slipper designs
+    // Add product designs
     for (const design of allDesigns) {
-      if (design.topViewUrl) {
+      if (design.view1Url) {
         images.push({
-          id: `${design.id}-top`,
-          type: 'slipper_design',
-          imageUrl: design.topViewUrl,
-          angle: 'top',
+          id: `${design.id}-view1`,
+          type: 'product_design',
+          imageUrl: design.view1Url,
+          angle: 'view1',
+          productType: design.productType as any,
           timestamp: design.createdAt.getTime(),
           metadata: {
+            productType: design.productType,
             theme: design.theme,
             style: design.style,
             color: design.color,
@@ -144,14 +151,16 @@ export class DatabaseStorage implements IStorage {
           },
         });
       }
-      if (design.view45Url) {
+      if (design.view2Url) {
         images.push({
-          id: `${design.id}-45`,
-          type: 'slipper_design',
-          imageUrl: design.view45Url,
-          angle: '45degree',
+          id: `${design.id}-view2`,
+          type: 'product_design',
+          imageUrl: design.view2Url,
+          angle: 'view2',
+          productType: design.productType as any,
           timestamp: design.createdAt.getTime(),
           metadata: {
+            productType: design.productType,
             theme: design.theme,
             style: design.style,
             color: design.color,
@@ -184,8 +193,10 @@ export class DatabaseStorage implements IStorage {
 
   // Save both angles as a single design record
   async saveCompleteDesign(params: {
-    topViewUrl: string | null;
-    view45Url: string | null;
+    view1Url: string | null;
+    view2Url: string | null;
+    productType?: string;
+    customProductType?: string;
     theme: string;
     style: string;
     color: string;
@@ -197,12 +208,14 @@ export class DatabaseStorage implements IStorage {
     templateUrl?: string | null;
   }): Promise<Design> {
     // Validate that at least one URL is present
-    if (!params.topViewUrl && !params.view45Url) {
-      throw new Error('At least one view (top or 45°) must be generated');
+    if (!params.view1Url && !params.view2Url) {
+      throw new Error('At least one view must be generated');
     }
     
     const design = await this.createDesign({
       projectId: params.projectId || null,
+      productType: params.productType || 'slippers',
+      customProductType: params.customProductType || null,
       templateUrl: params.templateUrl || null,
       theme: params.theme,
       style: params.style,
@@ -211,8 +224,8 @@ export class DatabaseStorage implements IStorage {
       designDescription: params.designDescription || null,
       referenceImageUrl: params.referenceImageUrl || null,
       brandLogoUrl: params.brandLogoUrl || null,
-      topViewUrl: params.topViewUrl,
-      view45Url: params.view45Url,
+      view1Url: params.view1Url,
+      view2Url: params.view2Url,
     });
     
     return design;
