@@ -421,6 +421,16 @@ export const translations = {
     posterDesignSuccessMessage: 'Poster generated successfully',
     posterDesignErrorTitle: 'Error',
     
+    // Poster Design - UI Elements
+    autoGenerateHeadline: 'Auto-generate headline',
+    autoGenerateSellingPoints: 'Auto-generate selling points',
+    placeholderEnterHeadline: 'Enter your headline',
+    placeholderSellingPoint1: 'Selling point 1',
+    placeholderSellingPoint2: 'Selling point 2',
+    placeholderSellingPoint3: 'Selling point 3',
+    placeholderBrandTagline: 'Your Brand Tagline',
+    buttonRemove: 'Remove',
+    
     // Poster Design - Campaign Type Options
     campaignDiscount: 'Discount / Sale',
     campaignNewProduct: 'New Product Launch',
@@ -908,6 +918,16 @@ export const translations = {
     posterDesignSuccessMessage: '海報生成成功',
     posterDesignErrorTitle: '錯誤',
     
+    // Poster Design - UI Elements
+    autoGenerateHeadline: '自動生成標題',
+    autoGenerateSellingPoints: '自動生成賣點',
+    placeholderEnterHeadline: '輸入您的標題',
+    placeholderSellingPoint1: '賣點 1',
+    placeholderSellingPoint2: '賣點 2',
+    placeholderSellingPoint3: '賣點 3',
+    placeholderBrandTagline: '您的品牌口號',
+    buttonRemove: '移除',
+    
     // Poster Design - Campaign Type Options
     campaignDiscount: '折扣促銷',
     campaignNewProduct: '新品上市',
@@ -1394,6 +1414,16 @@ export const translations = {
     posterDesignSuccessTitle: 'Thành công!',
     posterDesignSuccessMessage: 'Tạo poster thành công',
     posterDesignErrorTitle: 'Lỗi',
+    
+    // Poster Design - UI Elements
+    autoGenerateHeadline: 'Tự động tạo tiêu đề',
+    autoGenerateSellingPoints: 'Tự động tạo điểm bán hàng',
+    placeholderEnterHeadline: 'Nhập tiêu đề của bạn',
+    placeholderSellingPoint1: 'Điểm bán hàng 1',
+    placeholderSellingPoint2: 'Điểm bán hàng 2',
+    placeholderSellingPoint3: 'Điểm bán hàng 3',
+    placeholderBrandTagline: 'Khẩu hiệu thương hiệu của bạn',
+    buttonRemove: 'Xóa',
     
     // Poster Design - Campaign Type Options
     campaignDiscount: 'Giảm Giá / Khuyến Mãi',

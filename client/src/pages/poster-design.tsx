@@ -536,7 +536,7 @@ export default function PosterDesign() {
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel>Auto-generate headline</FormLabel>
+                            <FormLabel>{t("autoGenerateHeadline")}</FormLabel>
                           </div>
                         </FormItem>
                       )}
@@ -550,7 +550,7 @@ export default function PosterDesign() {
                           <FormItem>
                             <FormLabel>{t("posterDesignCustomHeadline")}</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder="Enter your headline" />
+                              <Input {...field} placeholder={t("placeholderEnterHeadline")} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -572,7 +572,7 @@ export default function PosterDesign() {
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
-                              <FormLabel>Auto-generate selling points</FormLabel>
+                              <FormLabel>{t("autoGenerateSellingPoints")}</FormLabel>
                             </div>
                           </FormItem>
                         )}
@@ -586,7 +586,7 @@ export default function PosterDesign() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <Input {...field} placeholder="Selling point 1" />
+                                  <Input {...field} placeholder={t("placeholderSellingPoint1")} />
                                 </FormControl>
                               </FormItem>
                             )}
@@ -597,7 +597,7 @@ export default function PosterDesign() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <Input {...field} placeholder="Selling point 2" />
+                                  <Input {...field} placeholder={t("placeholderSellingPoint2")} />
                                 </FormControl>
                               </FormItem>
                             )}
@@ -608,7 +608,7 @@ export default function PosterDesign() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <Input {...field} placeholder="Selling point 3" />
+                                  <Input {...field} placeholder={t("placeholderSellingPoint3")} />
                                 </FormControl>
                               </FormItem>
                             )}
@@ -717,7 +717,7 @@ export default function PosterDesign() {
                               }
                             }}
                           >
-                            Remove
+                            {t("buttonRemove")}
                           </Button>
                         </div>
                       )}
@@ -757,7 +757,7 @@ export default function PosterDesign() {
                         <FormItem>
                           <FormLabel>{t("posterDesignBrandTagline")}</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="Your Brand Tagline" />
+                            <Input {...field} placeholder={t("placeholderBrandTagline")} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
