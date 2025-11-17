@@ -12,13 +12,13 @@ export const PRODUCT_TYPES = [
   "custom",
 ] as const;
 
-// Angle types for different products
+// Angle types for different products - supporting 4 angles per product
 export const PRODUCT_ANGLES = {
-  shoes: ["top", "45degree"] as const,
-  slippers: ["top", "45degree"] as const,
-  clothes: ["front", "back"] as const,
-  bags: ["front", "side"] as const,
-  custom: ["view1", "view2"] as const,
+  shoes: ["top", "45degree", "side", "bottom"] as const,
+  slippers: ["top", "45degree", "side", "bottom"] as const,
+  clothes: ["front", "back", "side", "detail"] as const,
+  bags: ["front", "side", "top", "detail"] as const,
+  custom: ["view1", "view2", "view3", "view4"] as const,
 } as const;
 
 // Base schema without validation - can be used with .omit() and .extend()
@@ -201,6 +201,8 @@ export const designs = pgTable("designs", {
   brandLogoUrl: text("brand_logo_url"),
   view1Url: text("view_1_url"),
   view2Url: text("view_2_url"),
+  view3Url: text("view_3_url"),
+  view4Url: text("view_4_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

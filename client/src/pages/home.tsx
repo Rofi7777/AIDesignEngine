@@ -114,17 +114,41 @@ const createModelFormSchema = (t: (key: any) => string) =>
 type DesignFormValues = z.infer<ReturnType<typeof createDesignFormSchema>>;
 type ModelFormValues = z.infer<ReturnType<typeof createModelFormSchema>>;
 
+// Type for per-angle template uploads
+type AngleUpload = {
+  file: File | null;
+  previewUrl: string | null;
+  fileName: string | null;
+};
+
+type AngleUploads = Record<string, AngleUpload>;
+
+// Helper to initialize angle uploads based on product config
+const initializeAngleUploads = (productType: ProductType): AngleUploads => {
+  const config = getProductConfig(productType);
+  const uploads: AngleUploads = {};
+  config.angles.forEach((angle) => {
+    uploads[angle] = {
+      file: null,
+      previewUrl: null,
+      fileName: null,
+    };
+  });
+  return uploads;
+};
+
 export default function Home() {
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   
   // Product Type Selection
   const [selectedProductType, setSelectedProductType] = useState<ProductType>("slippers");
   const [customProductType, setCustomProductType] = useState<string>("");
   
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [uploadedFileName, setUploadedFileName] = useState<string>("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Multi-angle template uploads (one per angle, all optional)
+  const [angleUploads, setAngleUploads] = useState<AngleUploads>(() => 
+    initializeAngleUploads("slippers")
+  );
   
   // New design enhancement files
   const [referenceImageFile, setReferenceImageFile] = useState<File | null>(null);
@@ -144,10 +168,11 @@ export default function Home() {
   const designFormSchema = useMemo(() => createDesignFormSchema(t), [t]);
   const modelFormSchema = useMemo(() => createModelFormSchema(t), [t]);
 
-  // Clear generated images when product type changes
+  // Clear generated images and reset angle uploads when product type changes
   useEffect(() => {
     setGeneratedImages({});
     setActiveView("");
+    setAngleUploads(initializeAngleUploads(selectedProductType));
   }, [selectedProductType]);
 
   const designForm = useForm<DesignFormValues>({
@@ -181,7 +206,8 @@ export default function Home() {
     queryKey: ["/api/generated-images"],
   });
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle angle-specific template upload
+  const handleAngleFileUpload = (angle: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -194,17 +220,22 @@ export default function Home() {
       return;
     }
 
-    setUploadedFile(file);
-    setUploadedFileName(file.name);
-    
     const reader = new FileReader();
     reader.onload = (event) => {
-      setPreviewUrl(event.target?.result as string);
+      setAngleUploads(prev => ({
+        ...prev,
+        [angle]: {
+          file,
+          fileName: file.name,
+          previewUrl: event.target?.result as string,
+        },
+      }));
     };
     reader.readAsDataURL(file);
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  // Handle angle-specific drag & drop
+  const handleAngleDrop = (angle: string) => (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
@@ -218,14 +249,30 @@ export default function Home() {
       return;
     }
 
-    setUploadedFile(file);
-    setUploadedFileName(file.name);
-    
     const reader = new FileReader();
     reader.onload = (event) => {
-      setPreviewUrl(event.target?.result as string);
+      setAngleUploads(prev => ({
+        ...prev,
+        [angle]: {
+          file,
+          fileName: file.name,
+          previewUrl: event.target?.result as string,
+        },
+      }));
     };
     reader.readAsDataURL(file);
+  };
+
+  // Remove angle-specific template
+  const handleRemoveAngleUpload = (angle: string) => () => {
+    setAngleUploads(prev => ({
+      ...prev,
+      [angle]: {
+        file: null,
+        fileName: null,
+        previewUrl: null,
+      },
+    }));
   };
 
   const generateDesignMutation = useMutation({
@@ -301,7 +348,9 @@ export default function Home() {
   });
 
   const onDesignSubmit = (data: DesignFormValues) => {
-    if (!uploadedFile) {
+    // Check if at least one template is uploaded
+    const hasAnyTemplate = Object.values(angleUploads).some(upload => upload.file !== null);
+    if (!hasAnyTemplate) {
       toast({
         description: t('errorMissingTemplate'),
         variant: "destructive",
@@ -318,7 +367,19 @@ export default function Home() {
     }
 
     const formData = new FormData();
-    formData.append("template", uploadedFile);
+    
+    // Add all angle-specific templates with angle-specific keys
+    const productConfig = getProductConfig(selectedProductType);
+    const angles = Array.from(productConfig.angles);
+    
+    angles.forEach(angle => {
+      const upload = angleUploads[angle];
+      if (upload && upload.file) {
+        // Use angle-specific key like "template_top", "template_45degree", etc.
+        formData.append(`template_${angle}`, upload.file);
+      }
+    });
+    
     formData.append("productType", selectedProductType);
     if (selectedProductType === "custom" && customProductType.trim()) {
       formData.append("customProductType", customProductType);
@@ -328,9 +389,8 @@ export default function Home() {
     formData.append("color", data.color === "Custom" ? data.customColor! : data.color);
     formData.append("material", data.material === "Custom" ? data.customMaterial! : data.material);
     
-    // Get angles for the selected product type
-    const productConfig = getProductConfig(selectedProductType);
-    formData.append("angles", JSON.stringify(Array.from(productConfig.angles)));
+    // Send angles array
+    formData.append("angles", JSON.stringify(angles));
     
     // Add new optional fields
     if (referenceImageFile) {
@@ -500,59 +560,70 @@ export default function Home() {
 
             <Card className="p-8 rounded-2xl shadow-sm border-border/50">
               <h3 className="mb-6 text-xl font-light tracking-wide" data-testid="text-section-upload">{t('sectionUpload')}</h3>
-              <div
-                className="group relative cursor-pointer overflow-hidden rounded-2xl border border-dashed border-border/60 bg-muted/20 transition-colors hover-elevate"
-                onDrop={handleDrop}
-                onDragOver={(e) => e.preventDefault()}
-                onClick={() => document.getElementById("file-upload")?.click()}
-                data-testid="dropzone-upload"
-              >
-                <input
-                  id="file-upload"
-                  type="file"
-                  className="hidden"
-                  accept="image/png,image/jpeg,image/jpg"
-                  onChange={handleFileUpload}
-                  data-testid="input-file"
-                />
-                {previewUrl ? (
-                  <div className="relative aspect-video">
-                    <img
-                      src={previewUrl}
-                      alt={t('altUploadedTemplate')}
-                      className="h-full w-full object-contain"
-                      data-testid="img-template-preview"
-                    />
-                    <Button
-                      size="icon"
-                      variant="destructive"
-                      className="absolute right-2 top-2"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setUploadedFile(null);
-                        setUploadedFileName("");
-                        setPreviewUrl(null);
-                      }}
-                      data-testid="button-remove-template"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12">
-                    <Upload className="mb-3 h-12 w-12 text-muted-foreground" data-testid="icon-upload" />
-                    <p className="mb-1 font-medium" data-testid="text-upload-title">{t('uploadAreaTitle')}</p>
-                    <p className="text-sm text-muted-foreground" data-testid="text-upload-hint">
-                      {t('uploadAreaSubtitle')}
-                    </p>
-                  </div>
-                )}
+              <p className="mb-6 text-sm text-muted-foreground">{t('uploadHintMultiAngle')}</p>
+              
+              {/* 2x2 Grid of angle-specific upload cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {getProductConfig(selectedProductType).angles.map((angle) => {
+                  const upload = angleUploads[angle];
+                  const localeKey = language === 'zh-TW' ? 'zhTW' : language === 'vi' ? 'vi' : 'en';
+                  const angleLabel = getProductConfig(selectedProductType).angleLabels[angle]?.[localeKey] || angle;
+                  
+                  return (
+                    <div key={angle} className="space-y-2">
+                      <Label className="text-sm font-normal">{angleLabel}</Label>
+                      <div
+                        className="group relative cursor-pointer overflow-hidden rounded-2xl border border-dashed border-border/60 bg-muted/20 transition-colors hover-elevate"
+                        onDrop={handleAngleDrop(angle)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onClick={() => document.getElementById(`file-upload-${angle}`)?.click()}
+                        data-testid={`dropzone-${angle}`}
+                      >
+                        <input
+                          id={`file-upload-${angle}`}
+                          type="file"
+                          className="hidden"
+                          accept="image/png,image/jpeg,image/jpg"
+                          onChange={handleAngleFileUpload(angle)}
+                          data-testid={`input-file-${angle}`}
+                        />
+                        {upload?.previewUrl ? (
+                          <div className="relative aspect-video">
+                            <img
+                              src={upload.previewUrl}
+                              alt={angleLabel}
+                              className="h-full w-full object-contain"
+                              data-testid={`img-preview-${angle}`}
+                            />
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              className="absolute right-2 top-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemoveAngleUpload(angle)();
+                              }}
+                              data-testid={`button-remove-${angle}`}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center py-8">
+                            <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
+                            <p className="text-xs text-muted-foreground">{t('uploadOptional')}</p>
+                          </div>
+                        )}
+                      </div>
+                      {upload?.fileName && (
+                        <p className="text-xs text-muted-foreground truncate" data-testid={`text-filename-${angle}`}>
+                          {upload.fileName}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              {uploadedFileName && (
-                <p className="mt-2 text-sm text-muted-foreground" data-testid="text-filename">
-                  {uploadedFileName}
-                </p>
-              )}
             </Card>
 
             <Card className="p-8 rounded-2xl shadow-sm border-border/50">
@@ -1058,23 +1129,15 @@ export default function Home() {
                       {(() => {
                         const productConfig = getProductConfig(selectedProductType);
                         const angles = Array.from(productConfig.angles);
-                        const labelMap: Record<string, string> = {
-                          'top': t('topView'),
-                          '45degree': t('view45'),
-                          'front': t('frontView'),
-                          'back': t('backView'),
-                          'side': t('sideView'),
-                          'view1': t('view1'),
-                          'view2': t('view2'),
-                        };
+                        const localeKey = language === 'zh-TW' ? 'zhTW' : language === 'vi' ? 'vi' : 'en';
                         
-                        return angles.map((angle, idx) => (
+                        return angles.map((angle) => (
                           <TabsTrigger 
                             key={angle} 
                             value={angle}
                             data-testid={`tab-${angle}-view`}
                           >
-                            {labelMap[angle] || angle}
+                            {productConfig.angleLabels[angle]?.[localeKey] || angle}
                           </TabsTrigger>
                         ));
                       })()}

@@ -22,7 +22,9 @@ export const translations = {
     customProductTypeLabel: 'Custom Product Type',
     
     // Upload Section
-    sectionUpload: '2. Upload Template',
+    sectionUpload: '2. Upload Templates',
+    uploadHintMultiAngle: 'Upload templates for each angle (all optional). At least one template required.',
+    uploadOptional: 'Optional',
     uploadAreaTitle: 'Drop template or click to upload',
     uploadAreaSubtitle: 'PNG or JPG up to 10MB',
     uploading: 'Uploading...',
@@ -236,6 +238,8 @@ export const translations = {
     
     // Upload Section
     sectionUpload: '2. 上傳模板',
+    uploadHintMultiAngle: '為每個角度上傳模板（全部選填）。至少需要一個模板。',
+    uploadOptional: '選填',
     uploadAreaTitle: '拖放模板或點擊上傳',
     uploadAreaSubtitle: 'PNG 或 JPG，最大 10MB',
     uploading: '上傳中...',
@@ -449,6 +453,8 @@ export const translations = {
     
     // Upload Section
     sectionUpload: '2. Tải Lên Mẫu',
+    uploadHintMultiAngle: 'Tải lên mẫu cho từng góc (tất cả đều tùy chọn). Cần ít nhất một mẫu.',
+    uploadOptional: 'Tùy chọn',
     uploadAreaTitle: 'Kéo thả mẫu hoặc nhấp để tải lên',
     uploadAreaSubtitle: 'PNG hoặc JPG tối đa 10MB',
     uploading: 'Đang tải lên...',
