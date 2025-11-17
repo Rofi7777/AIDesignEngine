@@ -352,7 +352,7 @@ export const translations = {
     // E-commerce Scene
     ecommerceSceneTitle: 'Scene Setup',
     ecommerceSceneConfiguration: 'Scene Configuration',
-    ecommerceSceneModelImage: 'Model Image',
+    ecommerceSceneModelImage: 'Model Image (Optional)',
     ecommerceSceneAssets: 'Assets',
     ecommerceSceneMaxAssets: 'Max: 6',
     ecommerceSceneProducts: 'Products',
@@ -383,8 +383,8 @@ export const translations = {
     ecommerceSceneGenerate: 'Generate E-commerce Scene',
     ecommerceSceneGenerating: 'Generating Scene...',
     ecommerceSceneResult: 'Generated Scene',
-    ecommerceSceneEmptyState: 'Upload model, products & props, then configure the scene to generate',
-    ecommerceSceneRecommendation: 'Recommended: 1 model + 2-3 products + 1-2 props',
+    ecommerceSceneEmptyState: 'Upload products & props (model optional), then configure the scene to generate',
+    ecommerceSceneRecommendation: 'Recommended: 2-3 products + 1-2 props (model optional)',
   },
   'zh-TW': {
     // Header
@@ -737,7 +737,7 @@ export const translations = {
     // E-commerce Scene
     ecommerceSceneTitle: '場景設置',
     ecommerceSceneConfiguration: '場景配置',
-    ecommerceSceneModelImage: '模特兒圖片',
+    ecommerceSceneModelImage: '模特兒圖片（選填）',
     ecommerceSceneAssets: '素材',
     ecommerceSceneMaxAssets: '最多：6',
     ecommerceSceneProducts: '產品',
@@ -768,8 +768,8 @@ export const translations = {
     ecommerceSceneGenerate: '生成電商場景',
     ecommerceSceneGenerating: '生成場景中...',
     ecommerceSceneResult: '生成場景',
-    ecommerceSceneEmptyState: '上傳模特兒、產品和道具，然後配置場景以生成',
-    ecommerceSceneRecommendation: '推薦：1位模特兒 + 2-3件產品 + 1-2個道具',
+    ecommerceSceneEmptyState: '上傳產品和道具（模特兒可選），然後配置場景以生成',
+    ecommerceSceneRecommendation: '推薦：2-3件產品 + 1-2個道具（模特兒可選）',
   },
   vi: {
     // Header
@@ -1122,7 +1122,7 @@ export const translations = {
     // E-commerce Scene
     ecommerceSceneTitle: 'Thiết Lập Cảnh',
     ecommerceSceneConfiguration: 'Cấu Hình Cảnh',
-    ecommerceSceneModelImage: 'Hình Người Mẫu',
+    ecommerceSceneModelImage: 'Hình Người Mẫu (Tùy Chọn)',
     ecommerceSceneAssets: 'Tài Sản',
     ecommerceSceneMaxAssets: 'Tối đa: 6',
     ecommerceSceneProducts: 'Sản Phẩm',
@@ -1153,8 +1153,8 @@ export const translations = {
     ecommerceSceneGenerate: 'Tạo Cảnh E-commerce',
     ecommerceSceneGenerating: 'Đang tạo cảnh...',
     ecommerceSceneResult: 'Cảnh Đã Tạo',
-    ecommerceSceneEmptyState: 'Tải lên người mẫu, sản phẩm & đạo cụ, sau đó cấu hình cảnh để tạo',
-    ecommerceSceneRecommendation: 'Khuyến nghị: 1 người mẫu + 2-3 sản phẩm + 1-2 đạo cụ',
+    ecommerceSceneEmptyState: 'Tải lên sản phẩm & đạo cụ (người mẫu tùy chọn), sau đó cấu hình cảnh để tạo',
+    ecommerceSceneRecommendation: 'Khuyến nghị: 2-3 sản phẩm + 1-2 đạo cụ (người mẫu tùy chọn)',
   },
 } as const;
 

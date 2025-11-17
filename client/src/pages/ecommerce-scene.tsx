@@ -71,16 +71,14 @@ export default function EcommerceScene() {
 
   const mutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      if (!modelImage) {
-        throw new Error("Model image is required");
-      }
-
       if (assetImages.length === 0) {
         throw new Error("At least one asset (product or prop) is required");
       }
 
       const formData = new FormData();
-      formData.append('modelImage', modelImage.file);
+      if (modelImage) {
+        formData.append('modelImage', modelImage.file);
+      }
       
       assetImages.forEach((img) => {
         formData.append('assetImages', img.file);
@@ -175,15 +173,6 @@ export default function EcommerceScene() {
   };
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    if (!modelImage) {
-      toast({
-        variant: "destructive",
-        title: t('toastErrorTitle'),
-        description: t('toastError'),
-      });
-      return;
-    }
-
     if (assetImages.length === 0) {
       toast({
         variant: "destructive",

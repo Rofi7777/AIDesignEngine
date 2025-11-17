@@ -24,30 +24,37 @@ interface SceneAsset {
 }
 
 export async function generateEcommerceScene(
-  modelImageBuffer: Buffer,
-  modelImageMimeType: string,
+  modelImageBuffer: Buffer | null,
+  modelImageMimeType: string | null,
   assets: SceneAsset[],
   options: EcommerceSceneOptions
 ): Promise<string> {
+  const hasModel = !!modelImageBuffer && !!modelImageMimeType;
+  
   console.log('[E-commerce Scene] Starting generation...');
+  console.log('[E-commerce Scene] Has Model:', hasModel);
   console.log('[E-commerce Scene] Scene Type:', options.sceneType);
   console.log('[E-commerce Scene] Assets:', assets.length);
   console.log('[E-commerce Scene] Composition:', options.composition);
 
-  const prompt = buildEcommerceScenePrompt(assets, options);
+  const prompt = buildEcommerceScenePrompt(assets, options, hasModel);
   
   console.log('[E-commerce Scene] Prompt:', prompt.substring(0, 200) + '...');
 
   try {
     const parts: any[] = [
       { text: prompt },
-      {
+    ];
+
+    // Add model image only if provided
+    if (hasModel && modelImageBuffer && modelImageMimeType) {
+      parts.push({
         inlineData: {
           mimeType: modelImageMimeType,
           data: modelImageBuffer.toString('base64'),
         },
-      },
-    ];
+      });
+    }
 
     for (const asset of assets) {
       parts.push({
@@ -89,12 +96,23 @@ export async function generateEcommerceScene(
 
 function buildEcommerceScenePrompt(
   assets: SceneAsset[],
-  options: EcommerceSceneOptions
+  options: EcommerceSceneOptions,
+  hasModel: boolean
 ): string {
   const products = assets.filter(a => a.assetType === 'product');
   const props = assets.filter(a => a.assetType === 'prop');
 
-  let prompt = `You are an expert e-commerce photographer and scene compositor. Create a professional marketing photograph that combines the provided model with products and props into a cohesive, compelling scene.
+  let prompt = hasModel 
+    ? `You are an expert e-commerce photographer and scene compositor. Create a professional marketing photograph that combines the provided model with products and props into a cohesive, compelling scene.
+
+SCENE SPECIFICATION:
+- Scene Type: ${options.sceneType}
+- Lighting Style: ${options.lighting}
+- Composition: ${options.composition}
+- Aspect Ratio: ${options.aspectRatio}
+
+`
+    : `You are an expert e-commerce product photographer. Create a professional marketing photograph that showcases the provided products and props in an appealing, commercial-ready display scene.
 
 SCENE SPECIFICATION:
 - Scene Type: ${options.sceneType}
@@ -137,7 +155,7 @@ SCENE SPECIFICATION:
 - Create a professional photography studio setting
 - Clean, minimalist background
 - Professional lighting setup
-- Focus entirely on the model and products
+- Focus entirely on ${hasModel ? 'the model and products' : 'the products'}
 `;
   } else if (options.sceneType === 'white-bg') {
     prompt += `WHITE BACKGROUND SCENE:
@@ -145,7 +163,7 @@ SCENE SPECIFICATION:
 - Clean, professional product photography style
 - No environmental elements or props in background
 - Soft, even lighting to eliminate shadows
-- Focus entirely on the model and products
+- Focus entirely on ${hasModel ? 'the model and products' : 'the products'}
 - Seamless white backdrop
 `;
   } else if (options.sceneType === 'custom') {
@@ -198,12 +216,12 @@ COMPOSITION STYLE: ${options.composition}
 `;
 
   if (options.composition === 'center') {
-    prompt += `- Place the model and key products in the center of the frame
+    prompt += `- Place ${hasModel ? 'the model and key products' : 'the key products'} in the center of the frame
 - Symmetrical, balanced composition
 - Direct focus on the main subject
 `;
   } else if (options.composition === 'rule-of-thirds') {
-    prompt += `- Position the model and products along the rule of thirds grid
+    prompt += `- Position ${hasModel ? 'the model and products' : 'the products'} along the rule of thirds grid
 - Create visual interest through asymmetry
 - Professional photography composition
 `;
@@ -218,9 +236,12 @@ COMPOSITION STYLE: ${options.composition}
 ELEMENTS TO COMPOSITE:
 `;
 
-  prompt += `1. Model (provided image) - Main subject of the scene\n`;
-
-  let assetIndex = 2;
+  let assetIndex = 1;
+  
+  if (hasModel) {
+    prompt += `1. Model (provided image) - Main subject of the scene\n`;
+    assetIndex = 2;
+  }
   if (products.length > 0) {
     prompt += `\nPRODUCTS (${products.length}):\n`;
     products.forEach((product, idx) => {
@@ -250,11 +271,11 @@ CRITICAL REQUIREMENTS:
 ✓ Realistic shadows and reflections for all objects
 ✓ Appropriate scale and perspective for all elements
 ✓ Products should be the visual focus, props are supporting elements
-✓ Model should interact naturally with the scene (holding product, sitting near it, etc.)
+${hasModel ? '✓ Model should interact naturally with the scene (holding product, sitting near it, etc.)' : ''}
 ✓ Clean, professional result suitable for e-commerce marketing
 
 COMPOSITION GUIDELINES:
-- Maximum ${assets.length + 1} total elements in scene (model + ${assets.length} assets)
+- Maximum ${hasModel ? assets.length + 1 : assets.length} total elements in scene${hasModel ? ` (model + ${assets.length} assets)` : ` (${assets.length} assets)`}
 - Keep the composition simple and uncluttered
 - Ensure products are clearly visible and well-presented
 - Create depth and dimension through placement and lighting

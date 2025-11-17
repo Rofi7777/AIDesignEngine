@@ -635,12 +635,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const modelImageFile = files?.modelImage?.[0];
       const assetImageFiles = files?.assetImages || [];
 
-      if (!modelImageFile) {
-        return res.status(400).json({
-          error: "Model image is required",
-        });
-      }
-
       if (assetImageFiles.length === 0) {
         return res.status(400).json({
           error: "At least one asset (product or prop) is required",
@@ -664,7 +658,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Save to database
       const sceneId = await storage.createEcommerceScene({
-        modelImageUrl: `data:${modelImageFile.mimetype};base64,${modelImageFile.buffer.toString('base64')}`,
+        modelImageUrl: modelImageFile 
+          ? `data:${modelImageFile.mimetype};base64,${modelImageFile.buffer.toString('base64')}` 
+          : null,
         sceneType,
         lighting,
         composition,
@@ -687,10 +683,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate e-commerce scene
       console.log('[E-commerce Scene API] Generating e-commerce scene...');
+      console.log('[E-commerce Scene API] Has model image:', !!modelImageFile);
       
       const imageUrl = await generateEcommerceScene(
-        modelImageFile.buffer,
-        modelImageFile.mimetype,
+        modelImageFile ? modelImageFile.buffer : null,
+        modelImageFile ? modelImageFile.mimetype : null,
         assetImageFiles.map((file, i) => ({
           assetType: parsedAssetTypes[i] || 'product',
           imageBuffer: file.buffer,

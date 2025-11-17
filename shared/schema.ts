@@ -444,7 +444,7 @@ export const virtualTryOnProducts = pgTable("virtual_try_on_products", {
 // E-commerce Scene Tables
 export const ecommerceScenes = pgTable("ecommerce_scenes", {
   id: serial("id").primaryKey(),
-  modelImageUrl: text("model_image_url").notNull(),
+  modelImageUrl: text("model_image_url"), // Optional - for product-only display scenes without model
   sceneType: varchar("scene_type", { length: 100 }).notNull(), // 'home', 'office', 'outdoor', 'cafe', etc.
   lighting: varchar("lighting", { length: 100 }).notNull(), // 'natural', 'warm', 'bright', 'soft'
   composition: varchar("composition", { length: 100 }).notNull(), // 'center', 'rule-of-thirds', 'diagonal'
