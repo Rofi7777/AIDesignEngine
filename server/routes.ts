@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { generateProductDesignEnhanced, generateModelSceneEnhanced } from "./geminiEnhanced";
 import { extractDesignSpecification, type DesignSpecification } from "./designSpecExtractor";
 import { generateModelTryOn } from "./modelTryOnGenerator";
+import { generateVirtualTryOn } from "./virtualTryOnGenerator";
+import { generateEcommerceScene } from "./ecommerceSceneGenerator";
 import multer from "multer";
 import { readFileSync } from "fs";
 
@@ -498,6 +500,229 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(isClientError ? 400 : 500).json({
         error: isClientError ? error.message : "Failed to generate model try-on images",
+        message: error.message,
+      });
+    }
+  });
+
+  // Virtual Try-On API Route
+  app.post("/api/generate-virtual-tryon", upload.fields([
+    { name: "modelImage", maxCount: 1 },
+    { name: "productImages", maxCount: 5 },
+  ]), async (req, res) => {
+    try {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const { tryonMode, tryonType, preservePose, style, aspectRatio, productTypes, productNames } = req.body;
+
+      console.log('[Virtual Try-On API] Request received');
+      console.log('[Virtual Try-On API] Mode:', tryonMode);
+
+      const modelImageFile = files?.modelImage?.[0];
+      const productImageFiles = files?.productImages || [];
+
+      if (!modelImageFile) {
+        return res.status(400).json({
+          error: "Model image is required",
+        });
+      }
+
+      if (productImageFiles.length === 0) {
+        return res.status(400).json({
+          error: "At least one product image is required",
+        });
+      }
+
+      if (!tryonMode || !aspectRatio) {
+        return res.status(400).json({
+          error: "Missing required fields: tryonMode, aspectRatio",
+        });
+      }
+
+      if (tryonMode === 'single' && !tryonType) {
+        return res.status(400).json({
+          error: "tryonType is required for single product mode",
+        });
+      }
+
+      const parsedProductTypes = JSON.parse(productTypes || '[]');
+      const parsedProductNames = JSON.parse(productNames || '[]');
+
+      // Save to database
+      const tryOnId = await storage.createVirtualTryOn({
+        modelImageUrl: `data:${modelImageFile.mimetype};base64,${modelImageFile.buffer.toString('base64')}`,
+        tryonMode,
+        tryonType: tryonMode === 'single' ? tryonType : null,
+        preservePose: preservePose || 'yes',
+        style: style || 'natural',
+      });
+
+      // Save product images
+      for (let i = 0; i < productImageFiles.length; i++) {
+        const file = productImageFiles[i];
+        const base64Image = file.buffer.toString('base64');
+        const dataUrl = `data:${file.mimetype};base64,${base64Image}`;
+
+        await storage.createVirtualTryOnProduct({
+          tryOnId,
+          productImageUrl: dataUrl,
+          productType: parsedProductTypes[i] || 'clothing',
+          productName: parsedProductNames[i] || null,
+        });
+      }
+
+      // Generate virtual try-on image
+      console.log('[Virtual Try-On API] Generating virtual try-on image...');
+      
+      const imageUrl = await generateVirtualTryOn(
+        modelImageFile.buffer,
+        modelImageFile.mimetype,
+        productImageFiles.map((file, i) => ({
+          imageBuffer: file.buffer,
+          imageMimeType: file.mimetype,
+          productType: parsedProductTypes[i] || 'clothing',
+          productName: parsedProductNames[i] || undefined,
+        })),
+        {
+          tryonMode,
+          tryonType: tryonMode === 'single' ? tryonType : undefined,
+          preservePose: preservePose || 'yes',
+          style: style || 'natural',
+          aspectRatio,
+        }
+      );
+
+      // Update result
+      await storage.updateVirtualTryOnResult(tryOnId, imageUrl);
+
+      console.log('[Virtual Try-On API] ✅ Generation successful');
+
+      res.json({
+        tryOnId,
+        imageUrl,
+        message: "Virtual try-on generated successfully",
+      });
+
+    } catch (error: any) {
+      console.error("[Virtual Try-On API] ❌ Error:", error);
+      
+      const isClientError = 
+        error.message?.includes("required") || 
+        error.message?.includes("invalid") ||
+        error.message?.includes("INVALID_ARGUMENT");
+      
+      res.status(isClientError ? 400 : 500).json({
+        error: isClientError ? error.message : "Failed to generate virtual try-on",
+        message: error.message,
+      });
+    }
+  });
+
+  // E-commerce Scene API Route
+  app.post("/api/generate-ecommerce-scene", upload.fields([
+    { name: "modelImage", maxCount: 1 },
+    { name: "assetImages", maxCount: 6 },
+  ]), async (req, res) => {
+    try {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const { sceneType, lighting, composition, aspectRatio, assetTypes, assetNames } = req.body;
+
+      console.log('[E-commerce Scene API] Request received');
+      console.log('[E-commerce Scene API] Scene Type:', sceneType);
+
+      const modelImageFile = files?.modelImage?.[0];
+      const assetImageFiles = files?.assetImages || [];
+
+      if (!modelImageFile) {
+        return res.status(400).json({
+          error: "Model image is required",
+        });
+      }
+
+      if (assetImageFiles.length === 0) {
+        return res.status(400).json({
+          error: "At least one asset (product or prop) is required",
+        });
+      }
+
+      if (assetImageFiles.length > 6) {
+        return res.status(400).json({
+          error: "Maximum 6 assets allowed (model + 2-3 products + 1-2 props)",
+        });
+      }
+
+      if (!sceneType || !lighting || !composition || !aspectRatio) {
+        return res.status(400).json({
+          error: "Missing required fields: sceneType, lighting, composition, aspectRatio",
+        });
+      }
+
+      const parsedAssetTypes = JSON.parse(assetTypes || '[]');
+      const parsedAssetNames = JSON.parse(assetNames || '[]');
+
+      // Save to database
+      const sceneId = await storage.createEcommerceScene({
+        modelImageUrl: `data:${modelImageFile.mimetype};base64,${modelImageFile.buffer.toString('base64')}`,
+        sceneType,
+        lighting,
+        composition,
+        aspectRatio,
+      });
+
+      // Save asset images
+      for (let i = 0; i < assetImageFiles.length; i++) {
+        const file = assetImageFiles[i];
+        const base64Image = file.buffer.toString('base64');
+        const dataUrl = `data:${file.mimetype};base64,${base64Image}`;
+
+        await storage.createEcommerceSceneAsset({
+          sceneId,
+          assetType: parsedAssetTypes[i] || 'product',
+          assetImageUrl: dataUrl,
+          assetName: parsedAssetNames[i] || null,
+        });
+      }
+
+      // Generate e-commerce scene
+      console.log('[E-commerce Scene API] Generating e-commerce scene...');
+      
+      const imageUrl = await generateEcommerceScene(
+        modelImageFile.buffer,
+        modelImageFile.mimetype,
+        assetImageFiles.map((file, i) => ({
+          assetType: parsedAssetTypes[i] || 'product',
+          imageBuffer: file.buffer,
+          imageMimeType: file.mimetype,
+          assetName: parsedAssetNames[i] || undefined,
+        })),
+        {
+          sceneType,
+          lighting,
+          composition,
+          aspectRatio,
+        }
+      );
+
+      // Update result
+      await storage.updateEcommerceSceneResult(sceneId, imageUrl);
+
+      console.log('[E-commerce Scene API] ✅ Generation successful');
+
+      res.json({
+        sceneId,
+        imageUrl,
+        message: "E-commerce scene generated successfully",
+      });
+
+    } catch (error: any) {
+      console.error("[E-commerce Scene API] ❌ Error:", error);
+      
+      const isClientError = 
+        error.message?.includes("required") || 
+        error.message?.includes("invalid") ||
+        error.message?.includes("INVALID_ARGUMENT");
+      
+      res.status(isClientError ? 400 : 500).json({
+        error: isClientError ? error.message : "Failed to generate e-commerce scene",
         message: error.message,
       });
     }
