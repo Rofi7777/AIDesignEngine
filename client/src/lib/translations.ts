@@ -420,6 +420,73 @@ export const translations = {
     posterDesignSuccessTitle: 'Success!',
     posterDesignSuccessMessage: 'Poster generated successfully',
     posterDesignErrorTitle: 'Error',
+    
+    // Poster Design - Campaign Type Options
+    campaignDiscount: 'Discount / Sale',
+    campaignNewProduct: 'New Product Launch',
+    campaignBestseller: 'Bestseller',
+    campaignFestival: 'Festival / Holiday',
+    campaignBrandStory: 'Brand Story',
+    campaignBundle: 'Bundle Deal',
+    campaignCustom: 'Custom',
+    
+    // Poster Design - Reference Level Options
+    refLevelLayoutOnly: 'Layout Only',
+    refLevelLayoutColor: 'Layout + Color',
+    refLevelLooseInspiration: 'Loose Inspiration',
+    refLevelCustom: 'Custom',
+    
+    // Poster Design - Visual Style Options
+    styleFreshDrink: 'Fresh Drink Style',
+    styleCute3d: 'Cute 3D Style',
+    stylePremiumMinimal: 'Premium Minimal',
+    styleTaobaoPromo: 'Taobao Promo Style',
+    styleNaturalLifestyle: 'Natural Lifestyle',
+    styleCustom: 'Custom',
+    
+    // Poster Design - Background Scene Options
+    bgGradient: 'Gradient',
+    bgStudioTabletop: 'Studio Tabletop',
+    bgOutdoorNature: 'Outdoor Nature',
+    bgUrban: 'Urban Setting',
+    bgIndoorLifestyle: 'Indoor Lifestyle',
+    bgCustom: 'Custom',
+    
+    // Poster Design - Layout Options
+    layoutSingleCentered: 'Single Product Centered',
+    layoutProductNumber: 'Product with Number Badge',
+    layoutLeftRightSplit: 'Left-Right Split',
+    layoutTopBottomSplit: 'Top-Bottom Split',
+    layoutGridCollage: 'Grid Collage',
+    layoutCustom: 'Custom',
+    
+    // Poster Design - Aspect Ratio Options
+    aspectRatioSquare: '1:1 (Square)',
+    aspectRatioPortrait: '9:16 (Portrait)',
+    aspectRatioLandscape: '16:9 (Landscape)',
+    aspectRatio43: '4:3',
+    aspectRatio34: '3:4',
+    
+    // Poster Design - Headline Style Options
+    headlineEmotional: 'Emotional',
+    headlineBenefitFocused: 'Benefit-Focused',
+    headlinePriceFocused: 'Price-Focused',
+    headlineBrandStory: 'Brand Story',
+    headlineCustom: 'Custom',
+    
+    // Poster Design - Price Style Options
+    priceBigPrice: 'Big Price Display',
+    priceOriginalDiscounted: 'Original + Discounted',
+    priceCoupon: 'Coupon Style',
+    priceNoPrice: 'No Price',
+    priceCustom: 'Custom',
+    
+    // Poster Design - Logo Position Options
+    logoTopLeft: 'Top Left',
+    logoTopRight: 'Top Right',
+    logoBottomLeft: 'Bottom Left',
+    logoBottomRight: 'Bottom Right',
+    logoCenter: 'Center',
   },
   'zh-TW': {
     // Header
@@ -840,6 +907,73 @@ export const translations = {
     posterDesignSuccessTitle: '成功！',
     posterDesignSuccessMessage: '海報生成成功',
     posterDesignErrorTitle: '錯誤',
+    
+    // Poster Design - Campaign Type Options
+    campaignDiscount: '折扣促銷',
+    campaignNewProduct: '新品上市',
+    campaignBestseller: '熱銷商品',
+    campaignFestival: '節慶活動',
+    campaignBrandStory: '品牌故事',
+    campaignBundle: '組合優惠',
+    campaignCustom: '自訂',
+    
+    // Poster Design - Reference Level Options
+    refLevelLayoutOnly: '僅版面',
+    refLevelLayoutColor: '版面+配色',
+    refLevelLooseInspiration: '靈感參考',
+    refLevelCustom: '自訂',
+    
+    // Poster Design - Visual Style Options
+    styleFreshDrink: '清新飲品風',
+    styleCute3d: '可愛3D風',
+    stylePremiumMinimal: '極簡高級',
+    styleTaobaoPromo: '淘寶促銷風',
+    styleNaturalLifestyle: '自然生活風',
+    styleCustom: '自訂',
+    
+    // Poster Design - Background Scene Options
+    bgGradient: '漸層背景',
+    bgStudioTabletop: '工作室桌面',
+    bgOutdoorNature: '戶外自然',
+    bgUrban: '都市場景',
+    bgIndoorLifestyle: '室內生活',
+    bgCustom: '自訂',
+    
+    // Poster Design - Layout Options
+    layoutSingleCentered: '單品置中',
+    layoutProductNumber: '商品數字徽章',
+    layoutLeftRightSplit: '左右分割',
+    layoutTopBottomSplit: '上下分割',
+    layoutGridCollage: '網格拼貼',
+    layoutCustom: '自訂',
+    
+    // Poster Design - Aspect Ratio Options
+    aspectRatioSquare: '1:1 (正方形)',
+    aspectRatioPortrait: '9:16 (直式)',
+    aspectRatioLandscape: '16:9 (橫式)',
+    aspectRatio43: '4:3',
+    aspectRatio34: '3:4',
+    
+    // Poster Design - Headline Style Options
+    headlineEmotional: '情感訴求',
+    headlineBenefitFocused: '利益導向',
+    headlinePriceFocused: '價格主打',
+    headlineBrandStory: '品牌故事',
+    headlineCustom: '自訂',
+    
+    // Poster Design - Price Style Options
+    priceBigPrice: '大字價格',
+    priceOriginalDiscounted: '原價+折扣',
+    priceCoupon: '優惠券風格',
+    priceNoPrice: '不顯示價格',
+    priceCustom: '自訂',
+    
+    // Poster Design - Logo Position Options
+    logoTopLeft: '左上',
+    logoTopRight: '右上',
+    logoBottomLeft: '左下',
+    logoBottomRight: '右下',
+    logoCenter: '正中',
   },
   vi: {
     // Header
@@ -1260,6 +1394,73 @@ export const translations = {
     posterDesignSuccessTitle: 'Thành công!',
     posterDesignSuccessMessage: 'Tạo poster thành công',
     posterDesignErrorTitle: 'Lỗi',
+    
+    // Poster Design - Campaign Type Options
+    campaignDiscount: 'Giảm Giá / Khuyến Mãi',
+    campaignNewProduct: 'Ra Mắt Sản Phẩm Mới',
+    campaignBestseller: 'Sản Phẩm Bán Chạy',
+    campaignFestival: 'Lễ Hội / Ngày Lễ',
+    campaignBrandStory: 'Câu Chuyện Thương Hiệu',
+    campaignBundle: 'Combo Ưu Đãi',
+    campaignCustom: 'Tùy Chỉnh',
+    
+    // Poster Design - Reference Level Options
+    refLevelLayoutOnly: 'Chỉ Bố Cục',
+    refLevelLayoutColor: 'Bố Cục + Màu Sắc',
+    refLevelLooseInspiration: 'Cảm Hứng',
+    refLevelCustom: 'Tùy Chỉnh',
+    
+    // Poster Design - Visual Style Options
+    styleFreshDrink: 'Phong Cách Đồ Uống Tươi Mát',
+    styleCute3d: 'Phong Cách 3D Dễ Thương',
+    stylePremiumMinimal: 'Tối Giản Cao Cấp',
+    styleTaobaoPromo: 'Phong Cách Khuyến Mãi',
+    styleNaturalLifestyle: 'Phong Cách Tự Nhiên',
+    styleCustom: 'Tùy Chỉnh',
+    
+    // Poster Design - Background Scene Options
+    bgGradient: 'Nền Gradient',
+    bgStudioTabletop: 'Bàn Studio',
+    bgOutdoorNature: 'Thiên Nhiên Ngoài Trời',
+    bgUrban: 'Bối Cảnh Đô Thị',
+    bgIndoorLifestyle: 'Phong Cách Trong Nhà',
+    bgCustom: 'Tùy Chỉnh',
+    
+    // Poster Design - Layout Options
+    layoutSingleCentered: 'Sản Phẩm Đơn Giữa',
+    layoutProductNumber: 'Sản Phẩm Với Số',
+    layoutLeftRightSplit: 'Chia Trái Phải',
+    layoutTopBottomSplit: 'Chia Trên Dưới',
+    layoutGridCollage: 'Lưới Collage',
+    layoutCustom: 'Tùy Chỉnh',
+    
+    // Poster Design - Aspect Ratio Options
+    aspectRatioSquare: '1:1 (Vuông)',
+    aspectRatioPortrait: '9:16 (Dọc)',
+    aspectRatioLandscape: '16:9 (Ngang)',
+    aspectRatio43: '4:3',
+    aspectRatio34: '3:4',
+    
+    // Poster Design - Headline Style Options
+    headlineEmotional: 'Cảm Xúc',
+    headlineBenefitFocused: 'Lợi Ích',
+    headlinePriceFocused: 'Giá Cả',
+    headlineBrandStory: 'Câu Chuyện',
+    headlineCustom: 'Tùy Chỉnh',
+    
+    // Poster Design - Price Style Options
+    priceBigPrice: 'Giá Lớn',
+    priceOriginalDiscounted: 'Giá Gốc + Giảm',
+    priceCoupon: 'Phiếu Giảm Giá',
+    priceNoPrice: 'Không Hiện Giá',
+    priceCustom: 'Tùy Chỉnh',
+    
+    // Poster Design - Logo Position Options
+    logoTopLeft: 'Trên Trái',
+    logoTopRight: 'Trên Phải',
+    logoBottomLeft: 'Dưới Trái',
+    logoBottomRight: 'Dưới Phải',
+    logoCenter: 'Giữa',
   },
 } as const;
 
