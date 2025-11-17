@@ -286,13 +286,13 @@ export default function PosterDesign() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="discount">Discount / Sale</SelectItem>
-                              <SelectItem value="new-product">New Product Launch</SelectItem>
-                              <SelectItem value="bestseller">Bestseller</SelectItem>
-                              <SelectItem value="festival">Festival / Holiday</SelectItem>
-                              <SelectItem value="brand-story">Brand Story</SelectItem>
-                              <SelectItem value="bundle">Bundle Deal</SelectItem>
-                              <SelectItem value="custom">Custom</SelectItem>
+                              <SelectItem value="discount">{t("campaignDiscount")}</SelectItem>
+                              <SelectItem value="new-product">{t("campaignNewProduct")}</SelectItem>
+                              <SelectItem value="bestseller">{t("campaignBestseller")}</SelectItem>
+                              <SelectItem value="festival">{t("campaignFestival")}</SelectItem>
+                              <SelectItem value="brand-story">{t("campaignBrandStory")}</SelectItem>
+                              <SelectItem value="bundle">{t("campaignBundle")}</SelectItem>
+                              <SelectItem value="custom">{t("campaignCustom")}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -368,10 +368,10 @@ export default function PosterDesign() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="layout-only">Layout Only</SelectItem>
-                                <SelectItem value="layout-color">Layout + Color</SelectItem>
-                                <SelectItem value="loose-inspiration">Loose Inspiration</SelectItem>
-                                <SelectItem value="custom">Custom</SelectItem>
+                                <SelectItem value="layout-only">{t("refLevelLayoutOnly")}</SelectItem>
+                                <SelectItem value="layout-color">{t("refLevelLayoutColor")}</SelectItem>
+                                <SelectItem value="loose-inspiration">{t("refLevelLooseInspiration")}</SelectItem>
+                                <SelectItem value="custom">{t("campaignCustom")}</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -401,12 +401,12 @@ export default function PosterDesign() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="fresh-drink">Fresh Drink Style</SelectItem>
-                              <SelectItem value="cute-3d">Cute 3D Style</SelectItem>
-                              <SelectItem value="premium-minimal">Premium Minimal</SelectItem>
-                              <SelectItem value="taobao-promo">Taobao Promo Style</SelectItem>
-                              <SelectItem value="natural-lifestyle">Natural Lifestyle</SelectItem>
-                              <SelectItem value="custom">Custom</SelectItem>
+                              <SelectItem value="fresh-drink">{t("styleFreshDrink")}</SelectItem>
+                              <SelectItem value="cute-3d">{t("styleCute3d")}</SelectItem>
+                              <SelectItem value="premium-minimal">{t("stylePremiumMinimal")}</SelectItem>
+                              <SelectItem value="taobao-promo">{t("styleTaobaoPromo")}</SelectItem>
+                              <SelectItem value="natural-lifestyle">{t("styleNaturalLifestyle")}</SelectItem>
+                              <SelectItem value="custom">{t("campaignCustom")}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -427,12 +427,12 @@ export default function PosterDesign() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="gradient">Gradient</SelectItem>
-                              <SelectItem value="studio-tabletop">Studio Tabletop</SelectItem>
-                              <SelectItem value="outdoor-nature">Outdoor Nature</SelectItem>
-                              <SelectItem value="urban">Urban Setting</SelectItem>
-                              <SelectItem value="indoor-lifestyle">Indoor Lifestyle</SelectItem>
-                              <SelectItem value="custom">Custom</SelectItem>
+                              <SelectItem value="gradient">{t("bgGradient")}</SelectItem>
+                              <SelectItem value="studio-tabletop">{t("bgStudioTabletop")}</SelectItem>
+                              <SelectItem value="outdoor-nature">{t("bgOutdoorNature")}</SelectItem>
+                              <SelectItem value="urban">{t("bgUrban")}</SelectItem>
+                              <SelectItem value="indoor-lifestyle">{t("bgIndoorLifestyle")}</SelectItem>
+                              <SelectItem value="custom">{t("campaignCustom")}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -453,12 +453,12 @@ export default function PosterDesign() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="single-centered">Single Product Centered</SelectItem>
-                              <SelectItem value="product-number">Product with Number Badge</SelectItem>
-                              <SelectItem value="left-right-split">Left-Right Split</SelectItem>
-                              <SelectItem value="top-bottom-split">Top-Bottom Split</SelectItem>
-                              <SelectItem value="grid-collage">Grid Collage</SelectItem>
-                              <SelectItem value="custom">Custom</SelectItem>
+                              <SelectItem value="single-centered">{t("layoutSingleCentered")}</SelectItem>
+                              <SelectItem value="product-number">{t("layoutProductNumber")}</SelectItem>
+                              <SelectItem value="left-right-split">{t("layoutLeftRightSplit")}</SelectItem>
+                              <SelectItem value="top-bottom-split">{t("layoutTopBottomSplit")}</SelectItem>
+                              <SelectItem value="grid-collage">{t("layoutGridCollage")}</SelectItem>
+                              <SelectItem value="custom">{t("campaignCustom")}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -479,11 +479,11 @@ export default function PosterDesign() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="1:1">1:1 (Square)</SelectItem>
-                              <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
-                              <SelectItem value="16:9">16:9 (Landscape)</SelectItem>
-                              <SelectItem value="4:3">4:3</SelectItem>
-                              <SelectItem value="3:4">3:4</SelectItem>
+                              <SelectItem value="1:1">{t("posterAspectRatioSquare")}</SelectItem>
+                              <SelectItem value="9:16">{t("posterAspectRatioPortrait")}</SelectItem>
+                              <SelectItem value="16:9">{t("posterAspectRatioLandscape")}</SelectItem>
+                              <SelectItem value="4:3">{t("posterAspectRatio43")}</SelectItem>
+                              <SelectItem value="3:4">{t("posterAspectRatio34")}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -512,11 +512,11 @@ export default function PosterDesign() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="emotional">Emotional</SelectItem>
-                              <SelectItem value="benefit-focused">Benefit-Focused</SelectItem>
-                              <SelectItem value="price-focused">Price-Focused</SelectItem>
-                              <SelectItem value="brand-story">Brand Story</SelectItem>
-                              <SelectItem value="custom">Custom</SelectItem>
+                              <SelectItem value="emotional">{t("headlineEmotional")}</SelectItem>
+                              <SelectItem value="benefit-focused">{t("headlineBenefitFocused")}</SelectItem>
+                              <SelectItem value="price-focused">{t("headlinePriceFocused")}</SelectItem>
+                              <SelectItem value="brand-story">{t("campaignBrandStory")}</SelectItem>
+                              <SelectItem value="custom">{t("campaignCustom")}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -630,11 +630,11 @@ export default function PosterDesign() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="big-price">Big Price Display</SelectItem>
-                              <SelectItem value="original-discounted">Original + Discounted</SelectItem>
-                              <SelectItem value="coupon">Coupon Style</SelectItem>
-                              <SelectItem value="no-price">No Price</SelectItem>
-                              <SelectItem value="custom">Custom</SelectItem>
+                              <SelectItem value="big-price">{t("priceBigPrice")}</SelectItem>
+                              <SelectItem value="original-discounted">{t("priceOriginalDiscounted")}</SelectItem>
+                              <SelectItem value="coupon">{t("priceCoupon")}</SelectItem>
+                              <SelectItem value="no-price">{t("priceNoPrice")}</SelectItem>
+                              <SelectItem value="custom">{t("campaignCustom")}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -737,11 +737,11 @@ export default function PosterDesign() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="top-left">Top Left</SelectItem>
-                                <SelectItem value="top-right">Top Right</SelectItem>
-                                <SelectItem value="bottom-left">Bottom Left</SelectItem>
-                                <SelectItem value="bottom-right">Bottom Right</SelectItem>
-                                <SelectItem value="center">Center</SelectItem>
+                                <SelectItem value="top-left">{t("logoTopLeft")}</SelectItem>
+                                <SelectItem value="top-right">{t("logoTopRight")}</SelectItem>
+                                <SelectItem value="bottom-left">{t("logoBottomLeft")}</SelectItem>
+                                <SelectItem value="bottom-right">{t("logoBottomRight")}</SelectItem>
+                                <SelectItem value="center">{t("logoCenter")}</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />

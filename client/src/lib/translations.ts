@@ -461,11 +461,11 @@ export const translations = {
     layoutCustom: 'Custom',
     
     // Poster Design - Aspect Ratio Options
-    aspectRatioSquare: '1:1 (Square)',
-    aspectRatioPortrait: '9:16 (Portrait)',
-    aspectRatioLandscape: '16:9 (Landscape)',
-    aspectRatio43: '4:3',
-    aspectRatio34: '3:4',
+    posterAspectRatioSquare: '1:1 (Square)',
+    posterAspectRatioPortrait: '9:16 (Portrait)',
+    posterAspectRatioLandscape: '16:9 (Landscape)',
+    posterAspectRatio43: '4:3',
+    posterAspectRatio34: '3:4',
     
     // Poster Design - Headline Style Options
     headlineEmotional: 'Emotional',
@@ -948,11 +948,11 @@ export const translations = {
     layoutCustom: '自訂',
     
     // Poster Design - Aspect Ratio Options
-    aspectRatioSquare: '1:1 (正方形)',
-    aspectRatioPortrait: '9:16 (直式)',
-    aspectRatioLandscape: '16:9 (橫式)',
-    aspectRatio43: '4:3',
-    aspectRatio34: '3:4',
+    posterAspectRatioSquare: '1:1 (正方形)',
+    posterAspectRatioPortrait: '9:16 (直式)',
+    posterAspectRatioLandscape: '16:9 (橫式)',
+    posterAspectRatio43: '4:3',
+    posterAspectRatio34: '3:4',
     
     // Poster Design - Headline Style Options
     headlineEmotional: '情感訴求',
@@ -1435,11 +1435,11 @@ export const translations = {
     layoutCustom: 'Tùy Chỉnh',
     
     // Poster Design - Aspect Ratio Options
-    aspectRatioSquare: '1:1 (Vuông)',
-    aspectRatioPortrait: '9:16 (Dọc)',
-    aspectRatioLandscape: '16:9 (Ngang)',
-    aspectRatio43: '4:3',
-    aspectRatio34: '3:4',
+    posterAspectRatioSquare: '1:1 (Vuông)',
+    posterAspectRatioPortrait: '9:16 (Dọc)',
+    posterAspectRatioLandscape: '16:9 (Ngang)',
+    posterAspectRatio43: '4:3',
+    posterAspectRatio34: '3:4',
     
     // Poster Design - Headline Style Options
     headlineEmotional: 'Cảm Xúc',
