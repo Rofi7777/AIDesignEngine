@@ -27,17 +27,17 @@ export default function MainLayout() {
       {/* Main Content with Tabs */}
       <div className="max-w-7xl mx-auto px-8 py-8">
         <Tabs defaultValue="product-design" className="w-full">
-          <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-4 mb-8" data-testid="tabs-main">
-            <TabsTrigger value="product-design" data-testid="tab-product-design">
+          <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-4 mb-8 h-auto" data-testid="tabs-main">
+            <TabsTrigger value="product-design" data-testid="tab-product-design" className="whitespace-normal text-center px-2 py-3 min-h-[2.5rem]">
               {t('tabProductDesign')}
             </TabsTrigger>
-            <TabsTrigger value="model-tryon" data-testid="tab-model-tryon">
+            <TabsTrigger value="model-tryon" data-testid="tab-model-tryon" className="whitespace-normal text-center px-2 py-3 min-h-[2.5rem]">
               {t('tabModelTryon')}
             </TabsTrigger>
-            <TabsTrigger value="virtual-tryon" data-testid="tab-virtual-tryon">
+            <TabsTrigger value="virtual-tryon" data-testid="tab-virtual-tryon" className="whitespace-normal text-center px-2 py-3 min-h-[2.5rem]">
               {t('tabVirtualTryon')}
             </TabsTrigger>
-            <TabsTrigger value="ecommerce-scene" data-testid="tab-ecommerce-scene">
+            <TabsTrigger value="ecommerce-scene" data-testid="tab-ecommerce-scene" className="whitespace-normal text-center px-2 py-3 min-h-[2.5rem]">
               {t('tabEcommerceScene')}
             </TabsTrigger>
           </TabsList>

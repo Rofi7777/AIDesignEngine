@@ -163,16 +163,16 @@ export default function ModelTryOn() {
           {/* Configuration Panel */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Product Upload</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('modelTryonProductUpload')}</h2>
               
               {/* Product Images Upload */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Product Images</label>
+                  <label className="block text-sm font-medium mb-2">{t('modelTryonProductImages')}</label>
                   <div className="border-2 border-dashed rounded-xl p-6 text-center hover-elevate active-elevate-2 cursor-pointer"
                     onClick={() => document.getElementById('product-upload')?.click()}>
                     <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Click to upload product images</p>
+                    <p className="text-sm text-muted-foreground">{t('modelTryonClickToUpload')}</p>
                     <input
                       id="product-upload"
                       type="file"
@@ -202,20 +202,20 @@ export default function ModelTryOn() {
                               onValueChange={(value) => updateProductType(index, value)}
                             >
                               <SelectTrigger data-testid={`select-product-type-${index}`}>
-                                <SelectValue placeholder="Select product type" />
+                                <SelectValue placeholder={t('modelTryonSelectProductType')} />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="Hat">Hat</SelectItem>
-                                <SelectItem value="Top / Shirt / Jacket">Top / Shirt / Jacket</SelectItem>
-                                <SelectItem value="Bottom / Pants / Skirt">Bottom / Pants / Skirt</SelectItem>
-                                <SelectItem value="Shoes / Slippers">Shoes / Slippers</SelectItem>
-                                <SelectItem value="Accessories">Accessories</SelectItem>
-                                <SelectItem value="Custom">Custom</SelectItem>
+                                <SelectItem value="Hat">{t('modelTryonProductTypeHat')}</SelectItem>
+                                <SelectItem value="Top / Shirt / Jacket">{t('modelTryonProductTypeTop')}</SelectItem>
+                                <SelectItem value="Bottom / Pants / Skirt">{t('modelTryonProductTypeBottom')}</SelectItem>
+                                <SelectItem value="Shoes / Slippers">{t('modelTryonProductTypeShoes')}</SelectItem>
+                                <SelectItem value="Accessories">{t('modelTryonProductTypeAccessories')}</SelectItem>
+                                <SelectItem value="Custom">{t('modelTryonProductTypeCustom')}</SelectItem>
                               </SelectContent>
                             </Select>
                             {img.type === "Custom" && (
                               <Input
-                                placeholder="Enter custom product type"
+                                placeholder={t('modelTryonEnterCustomType')}
                                 value={img.typeCustom || ""}
                                 onChange={(e) => updateProductType(index, "Custom", e.target.value)}
                                 data-testid={`input-custom-type-${index}`}
@@ -239,7 +239,7 @@ export default function ModelTryOn() {
             </Card>
 
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Model & Scene Options</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('modelTryonModelSceneOptions')}</h2>
               
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -249,19 +249,19 @@ export default function ModelTryOn() {
                     name="nationality"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Model Nationality</FormLabel>
+                        <FormLabel>{t('modelTryonNationality')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-nationality">
-                              <SelectValue placeholder="Select nationality" />
+                              <SelectValue placeholder={t('modelTryonSelectNationality')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="East Asian">East Asian</SelectItem>
-                            <SelectItem value="Southeast Asian">Southeast Asian</SelectItem>
-                            <SelectItem value="Western / European">Western / European</SelectItem>
-                            <SelectItem value="Middle Eastern / Latin">Middle Eastern / Latin</SelectItem>
-                            <SelectItem value="Custom">Custom</SelectItem>
+                            <SelectItem value="East Asian">{t('modelTryonNationalityEastAsian')}</SelectItem>
+                            <SelectItem value="Southeast Asian">{t('modelTryonNationalitySoutheastAsian')}</SelectItem>
+                            <SelectItem value="Western / European">{t('modelTryonNationalityWestern')}</SelectItem>
+                            <SelectItem value="Middle Eastern / Latin">{t('modelTryonNationalityMiddleEastern')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonNationalityCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -276,7 +276,7 @@ export default function ModelTryOn() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input placeholder="Enter custom nationality" {...field} data-testid="input-nationality-custom" />
+                            <Input placeholder={t('modelTryonEnterCustomNationality')} {...field} data-testid="input-nationality-custom" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
