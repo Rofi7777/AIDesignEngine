@@ -1,0 +1,200 @@
+
+我想依照這個網頁目前的邏輯, 來建立第二個分頁 - 模特兒試穿, 
+由於過去當我們有新產品時, 往往需要請模特兒試穿, 拍照. 這往往需要耗掉非常多時間與成本, 希望藉由
+生圖模型：
+gemini-2.5-flash-image-preview, 來生成多場景的模特兒試穿圖.
+
+Step 1 : 
+當提供產品圖時 (可以讓用戶選擇上傳), 用戶可以單選或多選產品
+
+1. 帽子
+2. 衣服
+3. 褲子
+4. 鞋子 / 拖鞋 / 
+5. 配件 (包包, 首飾, 手錶, 手套 … 等)
+6. 自定義 (用戶可以自行輸入)
+
+Step 2 : 
+用戶可以選擇要生成的模特兒選項 :
+
+1. 國籍 (下拉式選單, 幫我建議4種類型，最後加上自定義, 讓用戶可以自行輸入)
+2. 髮型 (下拉式選單, 幫我建議4種類型，最後加上自定義, 讓用戶可以自行輸入)
+3. 組合  : (1) 男模特兒 (2) 女模特兒 (3) 一男一女 (4) 兩位男模特兒 (5) 兩位女模特兒 (6) 最後加上自定義, 讓用戶可以自行輸入
+4. 圖片場景 : (下拉式選單, 幫我建議5種類型，最後加上自定義, 讓用戶可以自行輸入)
+5. 拍照姿勢 : (下拉式選單, 幫我建議5種類型，最後加上自定義, 讓用戶可以自行輸入)
+6. 生成圖片的比例 : (1) 1:1 (2) 9:16 (3) 16:9 (4) 4:3 (5) 3:4
+7. 模特兒圖的的拍照角度 (讓用戶可以單選或多選) : (1) 正面 (2) 側面 (3) 背面 (4)最後加上自定義, 讓用戶可以自行輸入
+8. 圖片生成為 png, 可以下載
+
+
+Tab2：Model Try-on
+
+
+⸻
+
+🧩 Step 1：上傳產品圖 & 選擇產品類型
+
+模組名稱：Product Selection
+
+UI 元件：
+	1.	產品圖片上傳區
+	•	Upload product images
+	•	支援單選 / 多選上傳（PNG / JPG）
+	•	以上傳列表方式顯示：
+	•	縮圖 + 檔名
+	•	每一張圖旁邊要選擇「產品類型」
+	2.	產品類型下拉選單（每張圖片對應一個類型）
+Label：Product type
+下拉選項（英文顯示，邏輯如下）：
+	1.	Hat
+	2.	Top / Shirt / Jacket
+	3.	Bottom / Pants / Skirt
+	4.	Shoes / Slippers
+	5.	Accessories (bag, jewelry, watch, gloves, etc.)
+	6.	Custom (user-defined) → 旁邊一個 Text Input
+👉 這樣一張圖片可以設定：
+	•	Product type = Shoes / Slippers
+	•	或 Accessories
+	•	若選 Custom，再用文字描述：「baby carrier」、「scarf」… 等。
+
+⸻
+
+🧩 Step 2：模特兒條件與拍攝設定
+
+模組名稱：Model & Scene Options
+
+1. 國籍（Nationality）
+Label：Model nationality
+
+下拉選單建議：
+	1.	East Asian
+	2.	Southeast Asian
+	3.	Western / European
+	4.	Middle Eastern / Latin
+	5.	Custom → 選此時顯示 Text Input（例如：“Vietnamese”, “Korean”, “Black African”）
+
+⸻
+
+2. 髮型（Hairstyle）
+Label：Hairstyle
+
+下拉選單建議：
+	1.	Short straight hair
+	2.	Medium wavy hair
+	3.	Long straight hair
+	4.	Curly / Afro-textured hair
+	5.	Custom → Text Input（例如：“long ponytail with bangs”）
+
+⸻
+
+3. 模特兒組合（Model Combination）
+Label：Model combination
+
+下拉選單：
+	1.	Single male model
+	2.	Single female model
+	3.	One male + one female
+	4.	Two male models
+	5.	Two female models
+	6.	Custom → Text Input（例如：“family with father, mother and one child”）
+
+⸻
+
+4. 圖片場景（Scene）
+Label：Scene / Location
+
+建議 5 種類型：
+	1.	Studio background (clean, plain)
+	2.	City street / urban environment
+	3.	Home interior (living room / bedroom)
+	4.	Park / nature / outdoor
+	5.	Retail store / shopping mall
+	6.	Custom → Text Input（例如：“beach at sunset”, “Vietnamese coffee shop”）
+
+⸻
+
+5. 拍照姿勢（Pose）
+Label：Pose
+
+建議 5 種類型：
+	1.	Standing front-facing, relaxed
+	2.	Walking mid-step (dynamic pose)
+	3.	Sitting, relaxed pose
+	4.	Close-up pose focusing on product
+	5.	Fashion pose (editorial style)
+	6.	Custom → Text Input（例如：“tying shoelaces”, “checking watch”）
+
+⸻
+
+6. 圖片比例（Aspect Ratio）
+Label：Aspect ratio
+
+選項：
+	1.	1:1 (Square)
+	2.	9:16 (Vertical / Story)
+	3.	16:9 (Horizontal / Wide)
+	4.	4:3
+	5.	3:4
+
+⸻
+
+7. 拍照角度（Camera Angle）——可多選
+Label：Camera angle (multi-select)
+
+選項：
+	1.	Front view
+	2.	Side view
+	3.	Back view
+	4.	Custom → Text Input（例如：“slightly low angle focusing on shoes”）
+
+👉 UI 建議用 checkbox：
+☑ Front view
+☐ Side view
+☐ Back view
+	•	Custom text
+
+⸻
+
+8. 輸出格式
+	•	固定：PNG
+	•	UI：在結果區域每張圖下方放 Download PNG 按鈕
+
+
+Create a high-quality image of real people wearing or using the uploaded product.
+
+Product:
+- Use the uploaded product image as the reference.
+- Keep the product shape and key visual details consistent with the image.
+- Place the product naturally on the model:
+  - If it is a hat, it should be worn on the head.
+  - If it is a top/shirt/jacket, it should be worn on the upper body.
+  - If it is a bottom/pants/skirt, it should be worn on the lower body.
+  - If it is shoes or slippers, they should be worn on the feet.
+  - If it is a bag, it should be carried on the shoulder, across the body, or in the hand.
+  - If it is an accessory (watch, jewelry, gloves, etc.), place it in a realistic position.
+  - Custom product types should be placed in a natural and logical position according to their function.
+
+Models:
+- Nationality / appearance: {{model_nationality_or_custom}}
+- Model combination: {{model_combination_or_custom}}
+- Hairstyle: {{hairstyle_or_custom}}
+- Clothing style: choose outfits that match and highlight the product design.
+
+Scene & composition:
+- Location / scene: {{scene_or_custom}}
+- Pose: {{pose_or_custom}}
+- Camera angle(s): {{camera_angles}} 
+- Make sure the product is clearly visible and visually emphasized in the frame.
+
+Aspect ratio:
+- Generate the image in a {{aspect_ratio}} aspect ratio
+  (e.g. 1:1 square, 9:16 vertical, 16:9 horizontal).
+
+Rendering style:
+- Use realistic human proportions and natural poses.
+- Use lighting that matches the scene (indoor / outdoor / studio).
+- Skin tones, fabric textures, and product materials should look realistic.
+- The overall image should be clean, visually appealing, and suitable for product presentation and marketing use.
+
+Output:
+- A high-quality PNG image of the model(s) naturally wearing or using the product in the specified scene.

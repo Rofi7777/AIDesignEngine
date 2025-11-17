@@ -178,6 +178,75 @@ export const PRESENTATION_STYLES = [
   "Custom",
 ] as const;
 
+// Model Try-On Product Types
+export const MODEL_TRYON_PRODUCT_TYPES = [
+  "Hat",
+  "Top / Shirt / Jacket",
+  "Bottom / Pants / Skirt",
+  "Shoes / Slippers",
+  "Accessories",
+  "Custom",
+] as const;
+
+// Model Try-On Options
+export const MODEL_NATIONALITIES = [
+  "East Asian",
+  "Southeast Asian",
+  "Western / European",
+  "Middle Eastern / Latin",
+  "Custom",
+] as const;
+
+export const MODEL_HAIRSTYLES = [
+  "Short straight hair",
+  "Medium wavy hair",
+  "Long straight hair",
+  "Curly / Afro-textured hair",
+  "Custom",
+] as const;
+
+export const MODEL_COMBINATIONS = [
+  "Single male model",
+  "Single female model",
+  "One male + one female",
+  "Two male models",
+  "Two female models",
+  "Custom",
+] as const;
+
+export const MODEL_SCENES = [
+  "Studio background (clean, plain)",
+  "City street / urban environment",
+  "Home interior (living room / bedroom)",
+  "Park / nature / outdoor",
+  "Retail store / shopping mall",
+  "Custom",
+] as const;
+
+export const MODEL_POSES = [
+  "Standing front-facing, relaxed",
+  "Walking mid-step (dynamic pose)",
+  "Sitting, relaxed pose",
+  "Close-up pose focusing on product",
+  "Fashion pose (editorial style)",
+  "Custom",
+] as const;
+
+export const MODEL_ASPECT_RATIOS = [
+  "1:1",
+  "9:16",
+  "16:9",
+  "4:3",
+  "3:4",
+] as const;
+
+export const MODEL_CAMERA_ANGLES = [
+  "Front view",
+  "Side view",
+  "Back view",
+  "Custom",
+] as const;
+
 // Database Tables
 export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
@@ -240,6 +309,45 @@ export const bomMaterials = pgTable("bom_materials", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Model Try-On table - stores model try-on sessions
+export const modelTryOns = pgTable("model_try_ons", {
+  id: serial("id").primaryKey(),
+  nationality: varchar("nationality", { length: 100 }).notNull(),
+  nationalityCustom: varchar("nationality_custom", { length: 255 }),
+  hairstyle: varchar("hairstyle", { length: 100 }).notNull(),
+  hairstyleCustom: varchar("hairstyle_custom", { length: 255 }),
+  combination: varchar("combination", { length: 100 }).notNull(),
+  combinationCustom: varchar("combination_custom", { length: 255 }),
+  scene: varchar("scene", { length: 100 }).notNull(),
+  sceneCustom: varchar("scene_custom", { length: 255 }),
+  pose: varchar("pose", { length: 100 }).notNull(),
+  poseCustom: varchar("pose_custom", { length: 255 }),
+  aspectRatio: varchar("aspect_ratio", { length: 10 }).notNull(),
+  cameraAngles: text("camera_angles").notNull(), // JSON array of angles
+  cameraAngleCustom: varchar("camera_angle_custom", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Model Try-On Products table - stores product images for each try-on session
+export const modelTryOnProducts = pgTable("model_try_on_products", {
+  id: serial("id").primaryKey(),
+  tryOnId: integer("try_on_id").references(() => modelTryOns.id).notNull(),
+  productImageUrl: text("product_image_url").notNull(),
+  productType: varchar("product_type", { length: 100 }).notNull(),
+  productTypeCustom: varchar("product_type_custom", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Model Try-On Results table - stores generated images
+export const modelTryOnResults = pgTable("model_try_on_results", {
+  id: serial("id").primaryKey(),
+  tryOnId: integer("try_on_id").references(() => modelTryOns.id).notNull(),
+  productId: integer("product_id").references(() => modelTryOnProducts.id).notNull(),
+  cameraAngle: varchar("camera_angle", { length: 100 }).notNull(),
+  imageUrl: text("image_url").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Relations
 export const projectsRelations = relations(projects, ({ many }) => ({
   designs: many(designs),
@@ -260,12 +368,39 @@ export const modelScenesRelations = relations(modelScenes, ({ one }) => ({
   }),
 }));
 
+export const modelTryOnsRelations = relations(modelTryOns, ({ many }) => ({
+  products: many(modelTryOnProducts),
+  results: many(modelTryOnResults),
+}));
+
+export const modelTryOnProductsRelations = relations(modelTryOnProducts, ({ one, many }) => ({
+  tryOn: one(modelTryOns, {
+    fields: [modelTryOnProducts.tryOnId],
+    references: [modelTryOns.id],
+  }),
+  results: many(modelTryOnResults),
+}));
+
+export const modelTryOnResultsRelations = relations(modelTryOnResults, ({ one }) => ({
+  tryOn: one(modelTryOns, {
+    fields: [modelTryOnResults.tryOnId],
+    references: [modelTryOns.id],
+  }),
+  product: one(modelTryOnProducts, {
+    fields: [modelTryOnResults.productId],
+    references: [modelTryOnProducts.id],
+  }),
+}));
+
 // Insert and Select Schemas
 export const insertProjectSchema = createInsertSchema(projects).omit({ id: true, createdAt: true });
 export const insertDesignSchema = createInsertSchema(designs).omit({ id: true, createdAt: true });
 export const insertModelSceneSchema = createInsertSchema(modelScenes).omit({ id: true, createdAt: true });
 export const insertBrandColorSchema = createInsertSchema(brandColors).omit({ id: true, createdAt: true });
 export const insertBomMaterialSchema = createInsertSchema(bomMaterials).omit({ id: true, createdAt: true });
+export const insertModelTryOnSchema = createInsertSchema(modelTryOns).omit({ id: true, createdAt: true });
+export const insertModelTryOnProductSchema = createInsertSchema(modelTryOnProducts).omit({ id: true, createdAt: true });
+export const insertModelTryOnResultSchema = createInsertSchema(modelTryOnResults).omit({ id: true, createdAt: true });
 
 // Types
 export type Project = typeof projects.$inferSelect;
@@ -278,3 +413,35 @@ export type BrandColor = typeof brandColors.$inferSelect;
 export type InsertBrandColor = z.infer<typeof insertBrandColorSchema>;
 export type BomMaterial = typeof bomMaterials.$inferSelect;
 export type InsertBomMaterial = z.infer<typeof insertBomMaterialSchema>;
+export type ModelTryOn = typeof modelTryOns.$inferSelect;
+export type InsertModelTryOn = z.infer<typeof insertModelTryOnSchema>;
+export type ModelTryOnProduct = typeof modelTryOnProducts.$inferSelect;
+export type InsertModelTryOnProduct = z.infer<typeof insertModelTryOnProductSchema>;
+export type ModelTryOnResult = typeof modelTryOnResults.$inferSelect;
+export type InsertModelTryOnResult = z.infer<typeof insertModelTryOnResultSchema>;
+
+// Model Try-On Request Schema (for API validation)
+export const modelTryOnRequestSchema = z.object({
+  products: z.array(z.object({
+    productImageId: z.string(),
+    productType: z.string(),
+    productTypeCustom: z.string().optional(),
+  })).min(1, "At least one product is required"),
+  modelOptions: z.object({
+    nationality: z.string().min(1, "Nationality is required"),
+    nationalityCustom: z.string().optional(),
+    hairstyle: z.string().min(1, "Hairstyle is required"),
+    hairstyleCustom: z.string().optional(),
+    combination: z.string().min(1, "Model combination is required"),
+    combinationCustom: z.string().optional(),
+    scene: z.string().min(1, "Scene is required"),
+    sceneCustom: z.string().optional(),
+    pose: z.string().min(1, "Pose is required"),
+    poseCustom: z.string().optional(),
+    aspectRatio: z.string().min(1, "Aspect ratio is required"),
+    cameraAngles: z.array(z.string()).min(1, "At least one camera angle is required"),
+    cameraAngleCustom: z.string().optional(),
+  }),
+});
+
+export type ModelTryOnRequest = z.infer<typeof modelTryOnRequestSchema>;

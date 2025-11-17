@@ -10,11 +10,20 @@ import {
   type InsertBrandColor,
   type BomMaterial,
   type InsertBomMaterial,
+  type ModelTryOn,
+  type InsertModelTryOn,
+  type ModelTryOnProduct,
+  type InsertModelTryOnProduct,
+  type ModelTryOnResult,
+  type InsertModelTryOnResult,
   designs,
   modelScenes,
   projects,
   brandColors,
   bomMaterials,
+  modelTryOns,
+  modelTryOnProducts,
+  modelTryOnResults,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -64,6 +73,13 @@ export interface IStorage {
   // BOM Materials
   createBomMaterial(material: InsertBomMaterial): Promise<BomMaterial>;
   getBomMaterials(): Promise<BomMaterial[]>;
+  
+  // Model Try-On
+  createModelTryOn(tryOn: InsertModelTryOn): Promise<number>;
+  createModelTryOnProduct(product: InsertModelTryOnProduct): Promise<number>;
+  createModelTryOnResult(result: InsertModelTryOnResult): Promise<ModelTryOnResult>;
+  getModelTryOns(): Promise<ModelTryOn[]>;
+  getModelTryOnResults(tryOnId: number): Promise<ModelTryOnResult[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -335,6 +351,30 @@ export class DatabaseStorage implements IStorage {
 
   async getBomMaterials(): Promise<BomMaterial[]> {
     return await db.select().from(bomMaterials).orderBy(bomMaterials.materialName);
+  }
+
+  // Model Try-On methods
+  async createModelTryOn(tryOn: InsertModelTryOn): Promise<number> {
+    const [newTryOn] = await db.insert(modelTryOns).values(tryOn).returning();
+    return newTryOn.id;
+  }
+
+  async createModelTryOnProduct(product: InsertModelTryOnProduct): Promise<number> {
+    const [newProduct] = await db.insert(modelTryOnProducts).values(product).returning();
+    return newProduct.id;
+  }
+
+  async createModelTryOnResult(result: InsertModelTryOnResult): Promise<ModelTryOnResult> {
+    const [newResult] = await db.insert(modelTryOnResults).values(result).returning();
+    return newResult;
+  }
+
+  async getModelTryOns(): Promise<ModelTryOn[]> {
+    return await db.select().from(modelTryOns).orderBy(desc(modelTryOns.createdAt));
+  }
+
+  async getModelTryOnResults(tryOnId: number): Promise<ModelTryOnResult[]> {
+    return await db.select().from(modelTryOnResults).where(eq(modelTryOnResults.tryOnId, tryOnId));
   }
 }
 

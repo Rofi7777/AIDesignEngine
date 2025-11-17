@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateProductDesignEnhanced, generateModelSceneEnhanced } from "./geminiEnhanced";
 import { extractDesignSpecification, type DesignSpecification } from "./designSpecExtractor";
+import { generateModelTryOn } from "./modelTryOnGenerator";
 import multer from "multer";
 import { readFileSync } from "fs";
 
@@ -339,6 +340,164 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error fetching generated images:", error);
       res.status(500).json({
         error: "Failed to fetch generated images",
+        message: error.message,
+      });
+    }
+  });
+
+  // Model Try-On API Route
+  app.post("/api/generate-model-tryon", upload.array('productImages', 10), async (req, res) => {
+    try {
+      const files = req.files as Express.Multer.File[] | undefined;
+      const { modelOptions, productTypes, productTypesCustom } = req.body;
+
+      console.log('[Model Try-On API] Request received');
+      console.log('[Model Try-On API] Files:', files?.length || 0);
+
+      if (!files || files.length === 0) {
+        return res.status(400).json({
+          error: "No product images uploaded. Please upload at least one product image.",
+        });
+      }
+
+      if (!modelOptions) {
+        return res.status(400).json({
+          error: "Model options are required",
+        });
+      }
+
+      // Parse model options
+      const options = JSON.parse(modelOptions);
+      const parsedProductTypes = JSON.parse(productTypes || '[]');
+      const parsedProductTypesCustom = JSON.parse(productTypesCustom || '[]');
+
+      if (!options.nationality || !options.hairstyle || !options.combination || 
+          !options.scene || !options.pose || !options.aspectRatio) {
+        return res.status(400).json({
+          error: "Missing required model options",
+        });
+      }
+
+      if (!options.cameraAngles || options.cameraAngles.length === 0) {
+        return res.status(400).json({
+          error: "At least one camera angle is required",
+        });
+      }
+
+      // Save try-on session to database
+      const tryOnId = await storage.createModelTryOn({
+        nationality: options.nationality,
+        nationalityCustom: options.nationalityCustom || null,
+        hairstyle: options.hairstyle,
+        hairstyleCustom: options.hairstyleCustom || null,
+        combination: options.combination,
+        combinationCustom: options.combinationCustom || null,
+        scene: options.scene,
+        sceneCustom: options.sceneCustom || null,
+        pose: options.pose,
+        poseCustom: options.poseCustom || null,
+        aspectRatio: options.aspectRatio,
+        cameraAngles: JSON.stringify(options.cameraAngles),
+        cameraAngleCustom: options.cameraAngleCustom || null,
+      });
+
+      // Save product images
+      const productInfos: Array<{
+        id: number;
+        productType: string;
+        productTypeCustom?: string;
+        imageBuffer: Buffer;
+        imageMimeType: string;
+      }> = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const productType = parsedProductTypes[i] || 'Accessories';
+        const productTypeCustom = parsedProductTypesCustom[i] || null;
+        
+        // Convert image to base64 data URL for storage
+        const base64Image = file.buffer.toString('base64');
+        const dataUrl = `data:${file.mimetype};base64,${base64Image}`;
+
+        const productId = await storage.createModelTryOnProduct({
+          tryOnId,
+          productImageUrl: dataUrl,
+          productType,
+          productTypeCustom,
+        });
+
+        productInfos.push({
+          id: productId,
+          productType,
+          productTypeCustom: productTypeCustom || undefined,
+          imageBuffer: file.buffer,
+          imageMimeType: file.mimetype,
+        });
+      }
+
+      console.log(`[Model Try-On API] Generating ${options.cameraAngles.length} angle(s) for ${productInfos.length} product(s)...`);
+
+      // Generate images for each camera angle
+      const results: Array<{
+        cameraAngle: string;
+        imageUrl: string;
+        productId: number;
+      }> = [];
+
+      for (const cameraAngle of options.cameraAngles) {
+        console.log(`[Model Try-On API] Generating ${cameraAngle} view...`);
+
+        const imageUrl = await generateModelTryOn(
+          productInfos.map(p => ({
+            productType: p.productType,
+            productTypeCustom: p.productTypeCustom,
+            imageBuffer: p.imageBuffer,
+            imageMimeType: p.imageMimeType,
+          })),
+          {
+            ...options,
+            cameraAngle,
+          }
+        );
+
+        // Save each result for each product (for multi-product scenarios)
+        // In practice, all products appear in the same generated image
+        for (const productInfo of productInfos) {
+          await storage.createModelTryOnResult({
+            tryOnId,
+            productId: productInfo.id,
+            cameraAngle,
+            imageUrl,
+          });
+
+          results.push({
+            cameraAngle,
+            imageUrl,
+            productId: productInfo.id,
+          });
+        }
+
+        console.log(`[Model Try-On API] ✅ ${cameraAngle} view generated successfully`);
+      }
+
+      console.log(`[Model Try-On API] ✅ All ${options.cameraAngles.length} angle(s) generated successfully`);
+
+      res.json({
+        tryOnId,
+        results,
+        message: `Successfully generated ${options.cameraAngles.length} angle(s)`,
+      });
+
+    } catch (error: any) {
+      console.error("[Model Try-On API] ❌ Error:", error);
+      
+      const isClientError = 
+        error.message?.includes("required") || 
+        error.message?.includes("invalid") ||
+        error.message?.includes("INVALID_ARGUMENT");
+      
+      res.status(isClientError ? 400 : 500).json({
+        error: isClientError ? error.message : "Failed to generate model try-on images",
         message: error.message,
       });
     }
