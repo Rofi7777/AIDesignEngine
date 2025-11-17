@@ -1,0 +1,133 @@
+三大功能模組：參考同業電商海報工具的典型設計
+
+我用「你給的示意圖 + 市面常見電商設計工具（比如各種 AI 海報生成器、Canva 類工具）」來抽象出三大核心功能模組：
+
+Module A — 場景 &目標（Campaign & Scene）
+Module B — 視覺風格 & 版式（Visual Style & Layout）
+Module C — 文案 & 元件設定（Copy & Elements）
+
+每一模組都用「下拉式選單 + 自定義輸入」來控制。
+
+⸻
+
+🅰️ Module A：Campaign & Scene（使用場景 + 圖像輸入）
+
+目的：
+讓 AI 知道「這是什麼活動」＋「我要用哪張產品圖 / 參考圖」。
+
+UI 區塊設計：
+	1.	使用場景 / Campaign Type（剛剛那 6+1）
+	•	Select campaign type → 下拉（Discount / New Product / Best-seller / Festival / Brand Story / Bundle / Custom）
+	•	若選 Custom → 顯示 Custom campaign description 文本輸入框。
+	2.	產品圖上傳 / Product Images
+	•	Upload product image(s) → 支援單/多檔案（PNG/JPG）
+	•	類似你「我的產品 → AI 給的」範例：產品圖是主輸入。
+	3.	參考海報 / Reference Poster（選用）
+	•	Checkbox：Use reference poster for style & layout
+	•	若打勾 → 顯示：
+	•	Upload reference image（你貼的那種示例圖：飲料/房屋/沙灘…）
+	•	Follow reference level 下拉：
+	1.	Copy overall layout only（構圖與光線）
+	2.	Copy layout + color mood（版式+色調）
+	3.	Loose inspiration（只當靈感）
+	4.	Custom → Text Input（例如「只學構圖，不要字體」）
+
+⸻
+
+🅱️ Module B：Visual Style & Layout（視覺風格 + 构圖）
+
+目的：
+決定「畫面長什麼樣子」——風格、場景、構圖、比例，讓 AI 生成出類似你截圖中的那種「專業商業視覺」。
+
+在同業工具裡，最常見的做法是把這些拆成幾個下拉選單 + 強調「一鍵套模板」。
+
+UI 區塊設計：
+	1.	視覺風格 / Visual Style Preset
+下拉選：Visual style
+建議選項（參考你給的飲料、乳液、卡通美團例子）：
+	1.	Fresh drink style（清爽飲品風）
+	•	適合飲料、水果、夏日產品（粉/嫩/清涼）
+	2.	Cute 3D / Cartoon style（可愛 3D 插畫風）
+	•	類似美團那種卡通建築、小角色。
+	3.	Premium minimal（高級極簡風）
+	•	乳液、保養品、3C，強調高級感與留白。
+	4.	Taobao promotion style（淘系促銷數字風）
+	•	大數字、強烈配色，適合大折扣活動。
+	5.	Natural lifestyle（自然場景生活感）
+	•	在家/咖啡館/沙灘等真實場景。
+	6.	Custom style → 顯示 Describe your style 輸入框
+	•	例：「日系小清新 + 手繪插畫」、「韓系簡約＋高對比光線」
+	2.	背景場景 / Background Scene
+下拉選：Background scene
+建議選項：
+	1.	Solid gradient / abstract color blocks（漸層/色塊背景）
+	2.	Studio tabletop（棚拍桌面）
+	3.	Outdoor nature（海邊 / 草地 / 花園）
+	4.	Urban / street（城市 / 商場 / 街景）
+	5.	Indoor lifestyle（客廳 / 廚房 / 咖啡館）
+	6.	Custom scene → Text Input（例如「越南河內老街、市集」）
+	3.	構圖版式 / Layout
+下拉選：Layout
+參考你附的範例（單品居中、大數字、左右分屏）：
+	1.	Single product centered（單產品居中）
+	2.	Product + big number（產品 + 巨大折扣數字）
+	3.	Left product / right text（左右分屏）
+	4.	Top visual / bottom info（上下分區）
+	5.	Grid / collage（多產品拼貼）
+	6.	Custom layout → Text Input（例如「產品在右下角，左上放大標語」）
+	4.	畫面比例 / Aspect Ratio
+下拉選：Aspect ratio
+	•	1:1（Square / 小紅書、IG）
+	•	9:16（Vertical / Reels、Shorts、抖音）
+	•	16:9（Landscape / 橫幅）
+	•	4:3
+	•	3:4
+
+⸻
+
+🅲 Module C：Copy & Elements（文字與附加元件）
+
+目的：
+幫你控制主標、副標、賣點、價格、Logo 等，類似你截圖中「輸入指令 → AI 幫你拆成 Design Directions + 圖像」。
+
+UI 區塊設計：
+	1.	主標語風格 / Headline Style
+下拉選：Headline style
+	1.	Emotional slogan（情緒標語）
+	•	例：「一起瓜分夏天的快樂」、「這個夏天不缺甜」
+	2.	Benefit-focused（功能賣點）
+	•	例：「補水潤燥 天然果糖 清爽解膩」
+	3.	Price / Discount-focused（價格導向）
+	•	例：「限時 18 元」「買一送一」
+	4.	Brand story tone（品牌故事句）
+	•	例：「來自喜馬拉雅的高山泉水」
+	5.	Custom headline → Textarea（使用者自己寫整句）
+再加一個選項：Auto-generate headline（checkbox）
+	•	若勾選，用 AI 根據使用場景 +產品自動寫。
+	2.	副標與賣點 / Sub-heading & Selling Points
+	•	Checkbox：Auto-generate 3–5 selling points
+	•	若不勾 → 手動輸入：
+	•	Bullet 1 / Bullet 2 / Bullet 3
+下拉選 Bullet style：
+	1.	短句列表
+	2.	Icon + text（未來可以加）
+	3.	Custom
+	3.	價格區塊 / Price Display
+下拉選：Price block style
+	1.	Show big main price only（只顯示大價格）
+	2.	Show original + discounted（原價 / 現價）
+	3.	Coupon style（券樣式：滿減 / 折扣碼）
+	4.	No price（只做品牌圖）
+	5.	Custom（例如「只顯示折扣百分比」）
+搭配輸入欄位：
+	•	Original price
+	•	Current price
+	•	Discount text（例：「限時特價」「今日限定」）
+	4.	Logo & Brand Elements
+	•	Upload logo
+	•	下拉：Logo position
+	•	Top left / Top right / Bottom left / Bottom right / Center / Custom
+	•	Brand tagline 文本框（例：「自然堂 Himalaya」）
+	5.	導出選項 / Export
+	•	固定 PNG
+	•	Checkbox：Export with editable text layers (for future use)（先保留為未來版本）
