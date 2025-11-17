@@ -9,10 +9,10 @@ import {
 import { useTranslation } from "@/contexts/LanguageContext";
 import type { Language } from "@/lib/translations";
 
-const languageOptions: Record<Language, { label: string; flag: string }> = {
-  'en': { label: 'English', flag: '🇺🇸' },
-  'zh-TW': { label: '繁體中文', flag: '🇹🇼' },
-  'vi': { label: 'Tiếng Việt', flag: '🇻🇳' },
+const languageOptions: Record<Language, { label: string; code: string }> = {
+  'en': { label: 'English', code: 'EN' },
+  'zh-TW': { label: '繁體中文', code: '中' },
+  'vi': { label: 'Tiếng Việt', code: 'VI' },
 };
 
 export function LanguageSelector() {
@@ -27,14 +27,16 @@ export function LanguageSelector() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" data-testid="dropdown-language-menu">
-        {Object.entries(languageOptions).map(([lang, { label, flag }]) => (
+        {Object.entries(languageOptions).map(([lang, { label, code }]) => (
           <DropdownMenuItem
             key={lang}
             onClick={() => setLanguage(lang as Language)}
             data-testid={`dropdown-item-language-${lang}`}
             className={language === lang ? "bg-accent" : ""}
           >
-            <span className="mr-2">{flag}</span>
+            <span className="mr-2 flex h-6 w-6 items-center justify-center rounded bg-primary/10 text-xs font-semibold text-primary">
+              {code}
+            </span>
             {label}
           </DropdownMenuItem>
         ))}
