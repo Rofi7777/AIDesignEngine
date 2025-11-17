@@ -9,18 +9,28 @@ export const translations = {
     
     // Hero
     heroTitle: 'Craft Design Ideas with AI',
-    heroSubtitle: 'Generate stunning slipper concepts and model-wearing scenes in seconds',
+    heroSubtitle: 'Generate stunning design concepts for various fashion products in seconds',
+    
+    // Product Type Selection
+    sectionProductType: '1. Select Product Type',
+    productTypeShoes: 'Shoes',
+    productTypeSlippers: 'Slippers',
+    productTypeClothes: 'Clothes',
+    productTypeBags: 'Bags',
+    productTypeCustom: 'Custom',
+    customProductTypePlaceholder: 'Enter your product type (e.g., Hat, Scarf, Watch)',
+    customProductTypeLabel: 'Custom Product Type',
     
     // Upload Section
-    sectionUpload: '1. Upload Template',
-    uploadAreaTitle: 'Drop slipper template or click to upload',
+    sectionUpload: '2. Upload Template',
+    uploadAreaTitle: 'Drop template or click to upload',
     uploadAreaSubtitle: 'PNG or JPG up to 10MB',
     uploading: 'Uploading...',
     uploadedTemplate: 'Uploaded Template',
     removeTemplate: 'Remove template',
     
     // Design Configuration
-    sectionDesignConfig: '2. Configure Design Parameters',
+    sectionDesignConfig: '3. Configure Design Parameters',
     referenceImage: 'Reference Image',
     referenceImageLabel: 'Reference Image (Optional)',
     referenceImageHint: 'Upload a design style reference image',
@@ -48,7 +58,7 @@ export const translations = {
     generating: 'Generating...',
     
     // Model Configuration
-    sectionModelConfig: '3. Configure Model Scene (Optional)',
+    sectionModelConfig: '4. Configure Model Scene (Optional)',
     nationality: 'Nationality',
     nationalityPlaceholder: 'Select nationality',
     familyCombination: 'Family Combination',
@@ -64,7 +74,7 @@ export const translations = {
     generateModelScene: 'Generate Model Scene',
     
     // Gallery
-    sectionGallery: '4. Generated Designs',
+    sectionGallery: '5. Generated Designs',
     viewMode: 'View Mode',
     topView: 'Top View',
     view45: '45° View',
@@ -81,16 +91,23 @@ export const translations = {
     errorFileTypeMessage: 'Please upload a PNG or JPG image',
     errorFileTooLarge: 'File too large',
     errorFileSizeMessage: 'File must be less than 10MB',
-    errorMissingTemplate: 'Please upload a slipper template first',
-    errorMissingDesign: 'Please generate a slipper design first',
+    errorMissingTemplate: 'Please upload a template first',
+    errorMissingDesign: 'Please generate a design first',
+    errorMissingProductType: 'Please select a product type first',
+    errorMissingCustomProductType: 'Please enter a custom product type name',
     errorGenerationFailed: 'Failed to generate',
     errorPreparationFailed: 'Failed to prepare generation request',
     
     // Alt Text (Accessibility)
     altUploadedTemplate: 'Uploaded template',
-    altTopViewDesign: 'Top view slipper design',
-    alt45ViewDesign: '45° view slipper design',
-    altModelWearing: 'Model wearing slipper',
+    altTopViewDesign: 'Top view design',
+    alt45ViewDesign: '45° view design',
+    altFrontViewDesign: 'Front view design',
+    altBackViewDesign: 'Back view design',
+    altSideViewDesign: 'Side view design',
+    altView1Design: 'View 1 design',
+    altView2Design: 'View 2 design',
+    altModelWearing: 'Model with product',
     
     // Language Names
     languageEnglish: 'English',
@@ -205,18 +222,28 @@ export const translations = {
     
     // Hero
     heroTitle: '用AI創作設計靈感',
-    heroSubtitle: '在幾秒鐘內生成令人驚艷的拖鞋概念和模特兒穿著場景',
+    heroSubtitle: '在幾秒鐘內生成令人驚艷的時尚產品設計概念',
+    
+    // Product Type Selection
+    sectionProductType: '1. 選擇產品類別',
+    productTypeShoes: '鞋子',
+    productTypeSlippers: '拖鞋',
+    productTypeClothes: '衣服',
+    productTypeBags: '包包',
+    productTypeCustom: '自定義',
+    customProductTypePlaceholder: '輸入您的產品類別（例如：帽子、圍巾、手錶）',
+    customProductTypeLabel: '自定義產品類別',
     
     // Upload Section
-    sectionUpload: '1. 上傳模板',
-    uploadAreaTitle: '拖放拖鞋模板或點擊上傳',
+    sectionUpload: '2. 上傳模板',
+    uploadAreaTitle: '拖放模板或點擊上傳',
     uploadAreaSubtitle: 'PNG 或 JPG，最大 10MB',
     uploading: '上傳中...',
     uploadedTemplate: '已上傳模板',
     removeTemplate: '移除模板',
     
     // Design Configuration
-    sectionDesignConfig: '2. 配置設計參數',
+    sectionDesignConfig: '3. 配置設計參數',
     referenceImage: '參考圖片',
     referenceImageLabel: '參考圖片（選填）',
     referenceImageHint: '上傳設計風格參考圖片',
@@ -244,7 +271,7 @@ export const translations = {
     generating: '生成中...',
     
     // Model Configuration
-    sectionModelConfig: '3. 配置模特兒場景（選填）',
+    sectionModelConfig: '4. 配置模特兒場景（選填）',
     nationality: '國籍',
     nationalityPlaceholder: '選擇國籍',
     familyCombination: '家庭組合',
@@ -260,7 +287,7 @@ export const translations = {
     generateModelScene: '生成模特兒場景',
     
     // Gallery
-    sectionGallery: '4. 生成的設計',
+    sectionGallery: '5. 生成的設計',
     viewMode: '檢視模式',
     topView: '俯視圖',
     view45: '45° 視圖',
@@ -277,16 +304,23 @@ export const translations = {
     errorFileTypeMessage: '請上傳 PNG 或 JPG 圖片',
     errorFileTooLarge: '檔案太大',
     errorFileSizeMessage: '檔案必須小於 10MB',
-    errorMissingTemplate: '請先上傳拖鞋模板',
-    errorMissingDesign: '請先生成拖鞋設計',
+    errorMissingTemplate: '請先上傳模板',
+    errorMissingDesign: '請先生成設計',
+    errorMissingProductType: '請先選擇產品類別',
+    errorMissingCustomProductType: '請輸入自定義產品類別名稱',
     errorGenerationFailed: '生成失敗',
     errorPreparationFailed: '準備生成請求失敗',
     
     // Alt Text (Accessibility)
     altUploadedTemplate: '已上傳的模板',
-    altTopViewDesign: '俯視圖拖鞋設計',
-    alt45ViewDesign: '45° 視圖拖鞋設計',
-    altModelWearing: '穿拖鞋的模特兒',
+    altTopViewDesign: '俯視圖設計',
+    alt45ViewDesign: '45° 視圖設計',
+    altFrontViewDesign: '正面視圖設計',
+    altBackViewDesign: '背面視圖設計',
+    altSideViewDesign: '側面視圖設計',
+    altView1Design: '視角 1 設計',
+    altView2Design: '視角 2 設計',
+    altModelWearing: '模特兒與產品',
     
     // Language Names
     languageEnglish: 'English',
@@ -401,18 +435,28 @@ export const translations = {
     
     // Hero
     heroTitle: 'Sáng Tạo Ý Tưởng Thiết Kế Với AI',
-    heroSubtitle: 'Tạo ra các khái niệm dép tuyệt đẹp và cảnh người mẫu đeo trong vài giây',
+    heroSubtitle: 'Tạo ra các khái niệm thiết kế sản phẩm thời trang tuyệt đẹp trong vài giây',
+    
+    // Product Type Selection
+    sectionProductType: '1. Chọn Loại Sản Phẩm',
+    productTypeShoes: 'Giày',
+    productTypeSlippers: 'Dép',
+    productTypeClothes: 'Quần Áo',
+    productTypeBags: 'Túi Xách',
+    productTypeCustom: 'Tùy Chỉnh',
+    customProductTypePlaceholder: 'Nhập loại sản phẩm của bạn (vd: Mũ, Khăn, Đồng Hồ)',
+    customProductTypeLabel: 'Loại Sản Phẩm Tùy Chỉnh',
     
     // Upload Section
-    sectionUpload: '1. Tải Lên Mẫu',
-    uploadAreaTitle: 'Kéo thả mẫu dép hoặc nhấp để tải lên',
+    sectionUpload: '2. Tải Lên Mẫu',
+    uploadAreaTitle: 'Kéo thả mẫu hoặc nhấp để tải lên',
     uploadAreaSubtitle: 'PNG hoặc JPG tối đa 10MB',
     uploading: 'Đang tải lên...',
     uploadedTemplate: 'Mẫu Đã Tải Lên',
     removeTemplate: 'Xóa mẫu',
     
     // Design Configuration
-    sectionDesignConfig: '2. Cấu Hình Tham Số Thiết Kế',
+    sectionDesignConfig: '3. Cấu Hình Tham Số Thiết Kế',
     referenceImage: 'Hình Ảnh Tham Khảo',
     referenceImageLabel: 'Hình Ảnh Tham Khảo (Tùy Chọn)',
     referenceImageHint: 'Tải lên hình ảnh tham khảo phong cách thiết kế',
@@ -440,7 +484,7 @@ export const translations = {
     generating: 'Đang tạo...',
     
     // Model Configuration
-    sectionModelConfig: '3. Cấu Hình Cảnh Người Mẫu (Tùy Chọn)',
+    sectionModelConfig: '4. Cấu Hình Cảnh Người Mẫu (Tùy Chọn)',
     nationality: 'Quốc Tịch',
     nationalityPlaceholder: 'Chọn quốc tịch',
     familyCombination: 'Kết Hợp Gia Đình',
@@ -456,7 +500,7 @@ export const translations = {
     generateModelScene: 'Tạo Cảnh Người Mẫu',
     
     // Gallery
-    sectionGallery: '4. Thiết Kế Đã Tạo',
+    sectionGallery: '5. Thiết Kế Đã Tạo',
     viewMode: 'Chế Độ Xem',
     topView: 'Nhìn Từ Trên',
     view45: 'Nhìn 45°',
@@ -473,16 +517,23 @@ export const translations = {
     errorFileTypeMessage: 'Vui lòng tải lên ảnh PNG hoặc JPG',
     errorFileTooLarge: 'Tệp quá lớn',
     errorFileSizeMessage: 'Tệp phải nhỏ hơn 10MB',
-    errorMissingTemplate: 'Vui lòng tải lên mẫu dép trước',
-    errorMissingDesign: 'Vui lòng tạo thiết kế dép trước',
+    errorMissingTemplate: 'Vui lòng tải lên mẫu trước',
+    errorMissingDesign: 'Vui lòng tạo thiết kế trước',
+    errorMissingProductType: 'Vui lòng chọn loại sản phẩm trước',
+    errorMissingCustomProductType: 'Vui lòng nhập tên loại sản phẩm tùy chỉnh',
     errorGenerationFailed: 'Tạo thất bại',
     errorPreparationFailed: 'Không thể chuẩn bị yêu cầu tạo',
     
     // Alt Text (Accessibility)
     altUploadedTemplate: 'Mẫu đã tải lên',
-    altTopViewDesign: 'Thiết kế dép nhìn từ trên',
-    alt45ViewDesign: 'Thiết kế dép nhìn 45°',
-    altModelWearing: 'Người mẫu đang đi dép',
+    altTopViewDesign: 'Thiết kế nhìn từ trên',
+    alt45ViewDesign: 'Thiết kế nhìn 45°',
+    altFrontViewDesign: 'Thiết kế nhìn phía trước',
+    altBackViewDesign: 'Thiết kế nhìn phía sau',
+    altSideViewDesign: 'Thiết kế nhìn bên',
+    altView1Design: 'Thiết kế góc nhìn 1',
+    altView2Design: 'Thiết kế góc nhìn 2',
+    altModelWearing: 'Người mẫu với sản phẩm',
     
     // Language Names
     languageEnglish: 'English',

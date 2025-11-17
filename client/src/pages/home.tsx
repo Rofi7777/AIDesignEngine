@@ -53,10 +53,12 @@ import {
   SCENARIOS,
   LOCATIONS,
   PRESENTATION_STYLES,
+  PRODUCT_TYPES,
   type GeneratedImage,
   slipperDesignRequestBaseSchema,
   modelWearingRequestSchema,
 } from "@shared/schema";
+import { getProductConfig, type ProductType } from "@shared/productConfig";
 import { z } from "zod";
 
 const createDesignFormSchema = (t: (key: any) => string) => 
@@ -89,7 +91,14 @@ const createDesignFormSchema = (t: (key: any) => string) =>
   );
 
 const createModelFormSchema = (t: (key: any) => string) =>
-  modelWearingRequestSchema.omit({ slipperDesignImage: true }).refine(
+  z.object({
+    nationality: z.string().min(1, "Nationality is required"),
+    familyCombination: z.string().min(1, "Family combination is required"),
+    scenario: z.string().min(1, "Scenario is required"),
+    location: z.string().min(1, "Location is required"),
+    presentationStyle: z.string().min(1, "Presentation style is required"),
+    customStyleText: z.string().optional(),
+  }).refine(
     (data) => {
       if (data.presentationStyle === "Custom") {
         return data.customStyleText && data.customStyleText.trim().length > 0;
@@ -108,6 +117,11 @@ type ModelFormValues = z.infer<ReturnType<typeof createModelFormSchema>>;
 export default function Home() {
   const { toast } = useToast();
   const { t } = useTranslation();
+  
+  // Product Type Selection
+  const [selectedProductType, setSelectedProductType] = useState<ProductType>("slippers");
+  const [customProductType, setCustomProductType] = useState<string>("");
+  
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -133,6 +147,8 @@ export default function Home() {
   const designForm = useForm<DesignFormValues>({
     resolver: zodResolver(designFormSchema),
     defaultValues: {
+      productType: "slippers",
+      customProductType: "",
       theme: "",
       style: "",
       color: "",
@@ -262,7 +278,15 @@ export default function Home() {
   const onDesignSubmit = (data: DesignFormValues) => {
     if (!uploadedFile) {
       toast({
-        description: t('toastMissingTemplate'),
+        description: t('errorMissingTemplate'),
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (selectedProductType === "custom" && !customProductType.trim()) {
+      toast({
+        description: t('errorMissingCustomProductType'),
         variant: "destructive",
       });
       return;
@@ -270,11 +294,18 @@ export default function Home() {
 
     const formData = new FormData();
     formData.append("template", uploadedFile);
+    formData.append("productType", selectedProductType);
+    if (selectedProductType === "custom" && customProductType.trim()) {
+      formData.append("customProductType", customProductType);
+    }
     formData.append("theme", data.theme);
     formData.append("style", data.style);
     formData.append("color", data.color === "Custom" ? data.customColor! : data.color);
     formData.append("material", data.material === "Custom" ? data.customMaterial! : data.material);
-    formData.append("angles", JSON.stringify(["top", "45degree"]));
+    
+    // Get angles for the selected product type
+    const productConfig = getProductConfig(selectedProductType);
+    formData.append("angles", JSON.stringify(Array.from(productConfig.angles)));
     
     // Add new optional fields
     if (referenceImageFile) {
@@ -291,21 +322,25 @@ export default function Home() {
   };
 
   const onModelSubmit = async (data: ModelFormValues) => {
-    const slipperImage = generatedSlipperTop || generatedSlipper45;
-    if (!slipperImage) {
+    const productImage = generatedSlipperTop || generatedSlipper45;
+    if (!productImage) {
       toast({
-        description: t('toastMissingDesign'),
+        description: t('errorMissingDesign'),
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const res = await fetch(slipperImage);
+      const res = await fetch(productImage);
       const blob = await res.blob();
       
       const formData = new FormData();
-      formData.append("slipperImage", blob, "slipper-design.png");
+      formData.append("slipperImage", blob, "product-design.png");
+      formData.append("productType", selectedProductType);
+      if (selectedProductType === "custom" && customProductType.trim()) {
+        formData.append("customProductType", customProductType);
+      }
       formData.append("nationality", data.nationality);
       formData.append("familyCombination", data.familyCombination);
       formData.append("scenario", data.scenario);
@@ -407,6 +442,35 @@ export default function Home() {
 
         <div className="grid gap-12 lg:grid-cols-[2fr,3fr]">
           <div className="space-y-10">
+            {/* Product Type Selection */}
+            <Card className="p-8 rounded-2xl shadow-sm border-border/50">
+              <h3 className="mb-6 text-xl font-light tracking-wide" data-testid="text-section-product-type">{t('sectionProductType')}</h3>
+              <Tabs value={selectedProductType} onValueChange={(value) => setSelectedProductType(value as ProductType)} className="w-full">
+                <TabsList className="grid w-full grid-cols-5 mb-6">
+                  <TabsTrigger value="shoes" data-testid="tab-product-shoes">{t('productTypeShoes')}</TabsTrigger>
+                  <TabsTrigger value="slippers" data-testid="tab-product-slippers">{t('productTypeSlippers')}</TabsTrigger>
+                  <TabsTrigger value="clothes" data-testid="tab-product-clothes">{t('productTypeClothes')}</TabsTrigger>
+                  <TabsTrigger value="bags" data-testid="tab-product-bags">{t('productTypeBags')}</TabsTrigger>
+                  <TabsTrigger value="custom" data-testid="tab-product-custom">{t('productTypeCustom')}</TabsTrigger>
+                </TabsList>
+                {selectedProductType === "custom" && (
+                  <div className="mt-4">
+                    <Label htmlFor="custom-product-type" className="text-sm font-normal">
+                      {t('customProductTypeLabel')}
+                    </Label>
+                    <Input
+                      id="custom-product-type"
+                      placeholder={t('customProductTypePlaceholder')}
+                      value={customProductType}
+                      onChange={(e) => setCustomProductType(e.target.value)}
+                      className="mt-2"
+                      data-testid="input-custom-product-type"
+                    />
+                  </div>
+                )}
+              </Tabs>
+            </Card>
+
             <Card className="p-8 rounded-2xl shadow-sm border-border/50">
               <h3 className="mb-6 text-xl font-light tracking-wide" data-testid="text-section-upload">{t('sectionUpload')}</h3>
               <div
