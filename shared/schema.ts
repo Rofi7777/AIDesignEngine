@@ -21,7 +21,8 @@ export const PRODUCT_ANGLES = {
   custom: ["view1", "view2"] as const,
 } as const;
 
-export const slipperDesignRequestSchema = z.object({
+// Base schema without validation - can be used with .omit() and .extend()
+export const slipperDesignRequestBaseSchema = z.object({
   productType: z.enum(PRODUCT_TYPES),
   customProductType: z.string().optional(),
   templateImage: z.string(),
@@ -33,7 +34,10 @@ export const slipperDesignRequestSchema = z.object({
   referenceImage: z.string().optional(),
   designDescription: z.string().optional(),
   brandLogo: z.string().optional(),
-}).refine(
+});
+
+// Schema with validation for API endpoints
+export const slipperDesignRequestSchema = slipperDesignRequestBaseSchema.refine(
   (data) => data.productType !== "custom" || data.customProductType,
   {
     message: "Custom product type name is required when product type is 'custom'",

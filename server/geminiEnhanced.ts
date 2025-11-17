@@ -4,6 +4,7 @@
 
 import { GoogleGenAI, Modality } from "@google/genai";
 import { generateOptimizedPrompts, type DesignInputs, type ModelSceneInputs } from "./promptOptimizer";
+import { ProductType, getProductConfig } from "../shared/productConfig";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
@@ -13,14 +14,16 @@ const ai = new GoogleGenAI({
   },
 });
 
-export async function generateSlipperDesignEnhanced(
+export async function generateProductDesignEnhanced(
+  productType: ProductType,
+  customProductType: string | undefined,
   templateBuffer: Buffer,
   mimeType: string,
   theme: string,
   style: string,
   color: string,
   material: string,
-  angle: "top" | "45degree",
+  angle: string,
   referenceImageBuffer?: Buffer,
   referenceImageMimeType?: string,
   brandLogoBuffer?: Buffer,
@@ -30,26 +33,31 @@ export async function generateSlipperDesignEnhanced(
   canonicalDesignMimeType?: string
 ): Promise<string> {
   if (templateBuffer.length < 100) {
-    throw new Error("Image file is too small or invalid. Please upload a valid slipper template image.");
+    throw new Error("Image file is too small or invalid. Please upload a valid product template image.");
   }
+  
+  const config = getProductConfig(productType);
+  const productName = productType === 'custom' && customProductType ? customProductType : config.displayName.en;
+  const angleLabel = config.angleLabels[angle]?.en || angle;
 
   let prompt = "";
 
   // CRITICAL: If canonicalDesignBuffer is provided, this is the SECOND generation
   // We use CONSISTENCY-FOCUSED prompts, not the LLM optimizer
   if (canonicalDesignBuffer) {
-    const angleDescription = angle === "top" 
-      ? "top-down view showing the upper surface of the slipper" 
-      : "45-degree angled view showing both the top and side profile of the slipper";
+    // Get first and second angle names
+    const angles = Array.from(config.angles);
+    const firstAngleLabel = config.angleLabels[angles[0]]?.en || angles[0];
+    const currentAngleLabel = angleLabel;
 
-    // For second generation (45° view), use strict consistency prompts
-    prompt = `CRITICAL INSTRUCTION: You are creating an ALTERNATE ANGLE VIEW of an EXISTING slipper design.
+    // For second generation, use strict consistency prompts
+    prompt = `CRITICAL INSTRUCTION: You are creating an ALTERNATE ANGLE VIEW of an EXISTING ${productName} design.
 
-The first image shows the CANONICAL DESIGN (top-down view) that has already been created.
+The first image shows the CANONICAL DESIGN (${firstAngleLabel}) that has already been created.
 The second image is the original template for reference.
 
 YOUR TASK:
-Create a ${angleDescription} of the EXACT SAME slipper design shown in the canonical design image.
+Create a ${currentAngleLabel} of the EXACT SAME ${productName} design shown in the canonical design image.
 
 STRICT CONSISTENCY REQUIREMENTS:
 1. ✓ MUST use the IDENTICAL pattern/graphic design from the canonical image
@@ -57,7 +65,7 @@ STRICT CONSISTENCY REQUIREMENTS:
 3. ✓ MUST maintain the SAME material textures and finishes
 4. ✓ MUST keep the SAME background style and lighting
 5. ✓ MUST preserve the SAME brand logo placement (if present)
-6. ✓ ONLY CHANGE: Camera angle from top-down to 45-degree angled view
+6. ✓ ONLY CHANGE: Camera angle/view from ${firstAngleLabel} to ${currentAngleLabel}
 7. ✓ NO new design elements, NO pattern variations, NO color changes
 
 DESIGN SPECIFICATIONS (for reference only - already applied in canonical design):
@@ -74,9 +82,11 @@ DESIGN SPECIFICATIONS (for reference only - already applied in canonical design)
 
   } else {
     // FIRST generation - Use LLM to generate optimized professional prompt
-    console.log("Stage 1: Generating optimized prompt using professional designer LLM...");
+    console.log(`Stage 1: Generating optimized prompt for ${productName} using professional designer LLM...`);
     
     const designInputs: DesignInputs = {
+      productType,
+      customProductType,
       theme,
       style,
       color,
@@ -88,7 +98,8 @@ DESIGN SPECIFICATIONS (for reference only - already applied in canonical design)
 
     // Generate a placeholder model scene input (will be used properly in model wearing function)
     const modelSceneInputs: ModelSceneInputs = {
-      slipperDesignSummary: `${style} style ${theme} themed slippers in ${color} colors with ${material} materials`,
+      productDesignSummary: `${style} style ${theme} themed ${productName.toLowerCase()} in ${color} colors with ${material} materials`,
+      productType,
       nationality: "International",
       familyCombination: "Adult",
       scenario: "Casual wear",
@@ -101,8 +112,8 @@ DESIGN SPECIFICATIONS (for reference only - already applied in canonical design)
       console.log("Stage 1 complete: Professional prompt generated");
       console.log("Debug notes:", optimizedPrompts.debug_notes);
       
-      // Use the optimized slipper design prompt
-      prompt = optimizedPrompts.slipper_design_prompt;
+      // Use the optimized product design prompt
+      prompt = optimizedPrompts.product_design_prompt;
       
       // Add critical shape preservation rules
       prompt += `\n\nCRITICAL SHAPE PRESERVATION RULES:
@@ -226,8 +237,10 @@ DESIGN SPECIFICATIONS:
   }
 }
 
-export async function generateModelWearingSceneEnhanced(
-  slipperImageBuffer: Buffer,
+export async function generateModelSceneEnhanced(
+  productType: ProductType,
+  customProductType: string | undefined,
+  productImageBuffer: Buffer,
   mimeType: string,
   nationality: string,
   familyCombination: string,
@@ -235,13 +248,18 @@ export async function generateModelWearingSceneEnhanced(
   location: string,
   presentationStyle: string
 ): Promise<string> {
-  if (slipperImageBuffer.length < 100) {
-    throw new Error("Slipper image is too small or invalid. Please use a valid generated slipper design.");
+  if (productImageBuffer.length < 100) {
+    throw new Error("Product image is too small or invalid. Please use a valid generated product design.");
   }
+  
+  const config = getProductConfig(productType);
+  const productName = productType === 'custom' && customProductType ? customProductType : config.displayName.en;
 
-  console.log("Stage 1: Generating optimized model wearing prompt using professional designer LLM...");
+  console.log(`Stage 1: Generating optimized model scene prompt for ${productName} using professional designer LLM...`);
   
   const designInputs: DesignInputs = {
+    productType,
+    customProductType,
     theme: "Seasonal",
     style: "Professional",
     color: "As shown in design",
@@ -249,7 +267,8 @@ export async function generateModelWearingSceneEnhanced(
   };
 
   const modelSceneInputs: ModelSceneInputs = {
-    slipperDesignSummary: "The provided slipper design with its exact colors, patterns, and materials",
+    productDesignSummary: `The provided ${productName.toLowerCase()} design with its exact colors, patterns, and materials`,
+    productType,
     nationality,
     familyCombination,
     scenario,
@@ -261,10 +280,10 @@ export async function generateModelWearingSceneEnhanced(
   
   try {
     const optimizedPrompts = await generateOptimizedPrompts(designInputs, modelSceneInputs);
-    console.log("Stage 1 complete: Professional model wearing prompt generated");
+    console.log("Stage 1 complete: Professional model scene prompt generated");
     console.log("Debug notes:", optimizedPrompts.debug_notes);
     
-    prompt = optimizedPrompts.model_wearing_prompt;
+    prompt = optimizedPrompts.model_scene_prompt;
     
   } catch (error) {
     console.error("Stage 1 failed, using fallback model wearing prompt:", error);
@@ -304,7 +323,7 @@ REQUIREMENTS:
             {
               inlineData: {
                 mimeType,
-                data: slipperImageBuffer.toString("base64"),
+                data: productImageBuffer.toString("base64"),
               },
             },
           ],

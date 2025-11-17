@@ -54,13 +54,13 @@ import {
   LOCATIONS,
   PRESENTATION_STYLES,
   type GeneratedImage,
-  slipperDesignRequestSchema,
+  slipperDesignRequestBaseSchema,
   modelWearingRequestSchema,
 } from "@shared/schema";
 import { z } from "zod";
 
 const createDesignFormSchema = (t: (key: any) => string) => 
-  slipperDesignRequestSchema.omit({ templateImage: true, angles: true }).extend({
+  slipperDesignRequestBaseSchema.omit({ templateImage: true, angles: true }).extend({
     customColor: z.string().optional(),
     customMaterial: z.string().optional(),
     designDescription: z.string().optional(),

@@ -1,8 +1,9 @@
 // Stage 1: LLM-based Prompt Optimizer
-// This service acts as a professional footwear designer with 10+ years of experience
+// This service acts as a professional fashion product designer with 10+ years of experience
 // It transforms structured inputs into optimized prompts for gemini-2.5-flash-image-preview
 
 import { GoogleGenAI } from "@google/genai";
+import { ProductType, getProductConfig } from "../shared/productConfig";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
@@ -12,10 +13,16 @@ const ai = new GoogleGenAI({
   },
 });
 
-const DESIGNER_SYSTEM_PROMPT = `You are the core design brain of **Craft AI Studio**.
+function buildDesignerSystemPrompt(productType: ProductType, customProductType?: string): string {
+  const config = getProductConfig(productType);
+  const productName = productType === 'custom' && customProductType ? customProductType : config.displayName.en.toLowerCase();
+  const expertise = config.designerExpertise;
+  const anglesList = config.angles.map((a, i) => config.angleLabels[a].en).join(' and ');
+  
+  return `You are the core design brain of **Craft AI Studio**.
 
 Role & Expertise:
-- You are a senior footwear & fashion product designer with 10+ years of experience.
+- You are a senior fashion product designer with 10+ years of experience in ${expertise}.
 - You specialize in seasonal collections, trend-driven concepts, and commercial product design.
 - You are also an expert AI image prompt engineer who knows how to write precise, visual prompts for gemini-2.5-flash-image-preview.
 - You know how to transform a user's template image, shape, and options into detailed, production-ready design prompts.
@@ -24,43 +31,37 @@ Goal:
 Given a set of structured inputs from the UI (template upload + dropdowns + custom text), you will:
 1. Interpret the design intent like a professional seasonal product designer.
 2. Turn it into:
-   - A clear image prompt for **slipper design generation**.
-   - A clear image prompt for **model wearing scene generation**.
-3. Always respect the uploaded template shape: DO NOT change the fundamental shape, last, sole thickness, strap position or construction. Only modify graphics, colors, materials, patterns and styling details.
+   - A clear image prompt for **${productName} design generation**.
+   - A clear image prompt for **model wearing/using scene generation**.
+3. Always respect the uploaded template shape: ${config.shapePreservationRules}
 
 Output format:
 You MUST always respond in valid JSON with two main fields:
 
 {
-  "slipper_design_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate slipper design images>",
-  "model_wearing_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate model-wearing images>",
+  "product_design_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate ${productName} design images>",
+  "model_scene_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate model wearing/using scene>",
   "debug_notes": "<optional string: short design rationale for developers, not sent to the image model>"
 }
 
 Design & Prompting Guidelines:
 
-1. Slipper Design Prompt Rules:
+1. ${productName.charAt(0).toUpperCase() + productName.slice(1)} Design Prompt Rules:
    - Explicitly tell the model to:
-     - Use the uploaded slipper template as the base shape.
-     - Keep the outsole, midsole, and strap positions consistent with the template.
-     - Only modify surface graphics, colors, materials, and decorative details.
-   - Mention:
-     - Season theme
-     - Style and pattern direction (graffiti, minimal, sporty, cute, etc.)
-     - Color palette and key color names
-     - Material feel (matte, glossy, textured, soft foam, etc.)
-     - Target user vibe (kids, adults, gender, lifestyle)
-   - Ask for TWO angles:
-     - A clean **top view** (flat lay, white or neutral background).
-     - A **3/4 perspective / 45-degree side view**, showing depth and shape.
-   - Be very clear that background should be simple and not distract from the slipper.
+     - Use the uploaded ${productName} template as the base shape.
+     - ${config.shapePreservationRules}
+   - Focus on these design areas:
+${config.designFocusAreas.map(area => `     - ${area}`).join('\n')}
+   - Ask for TWO angles/views:
+     - ${anglesList}
+   - Be very clear that background should be simple and not distract from the ${productName}.
 
-2. Model Wearing Prompt Rules:
-   - Start by briefly summarizing the slipper design:
+2. Model Scene Prompt Rules:
+   - Start by briefly summarizing the ${productName} design:
      - colors, patterns, style, and overall vibe.
    - Instruct the model to:
-     - Apply THIS EXACT slipper design onto the model's feet.
-     - Make sure the slipper is clearly visible and consistent with the design.
+     - ${config.modelSceneContext}
+     - Make sure the ${productName} is clearly visible and consistent with the design.
    - Add:
      - Nationality and group type
      - Location and scenario
@@ -84,10 +85,13 @@ If some UI fields are empty, intelligently ignore them and still generate a stro
 
 Your main responsibility:
 Turn structured options + template into two excellent, production-quality image prompts for:
-1) slipper design generation;
-2) model wearing scene generation.`;
+1) ${productName} design generation;
+2) model wearing/using scene generation.`;
+}
 
 export interface DesignInputs {
+  productType: ProductType;
+  customProductType?: string;
   templateDescription?: string;
   theme: string;
   style: string;
@@ -99,7 +103,8 @@ export interface DesignInputs {
 }
 
 export interface ModelSceneInputs {
-  slipperDesignSummary: string;
+  productDesignSummary: string;
+  productType: ProductType;
   nationality: string;
   familyCombination: string;
   scenario: string;
@@ -108,8 +113,8 @@ export interface ModelSceneInputs {
 }
 
 export interface OptimizedPrompts {
-  slipper_design_prompt: string;
-  model_wearing_prompt: string;
+  product_design_prompt: string;
+  model_scene_prompt: string;
   debug_notes?: string;
 }
 
@@ -117,10 +122,16 @@ export async function generateOptimizedPrompts(
   designInputs: DesignInputs,
   modelSceneInputs: ModelSceneInputs
 ): Promise<OptimizedPrompts> {
+  const config = getProductConfig(designInputs.productType);
+  const productName = designInputs.productType === 'custom' && designInputs.customProductType 
+    ? designInputs.customProductType 
+    : config.displayName.en;
+  
   // Build structured input for the LLM
   const structuredInput = `Please generate optimized image prompts based on the following inputs:
 
-SLIPPER DESIGN INPUTS:
+PRODUCT DESIGN INPUTS:
+- Product Type: ${productName}
 - Season Theme: ${designInputs.theme}
 - Style Direction: ${designInputs.style}
 - Color Palette: ${designInputs.color}
@@ -130,8 +141,8 @@ ${designInputs.hasReferenceImage ? '- Reference Image: Provided (use for style i
 ${designInputs.hasBrandLogo ? '- Brand Logo: Provided (incorporate into design)' : ''}
 ${designInputs.templateDescription ? `- Template Description: ${designInputs.templateDescription}` : ''}
 
-MODEL WEARING SCENE INPUTS:
-- Slipper Design Summary: ${modelSceneInputs.slipperDesignSummary}
+MODEL SCENE INPUTS:
+- Product Design Summary: ${modelSceneInputs.productDesignSummary}
 - Nationality/Ethnicity: ${modelSceneInputs.nationality}
 - Family Group: ${modelSceneInputs.familyCombination}
 - Scenario: ${modelSceneInputs.scenario}
@@ -140,20 +151,24 @@ MODEL WEARING SCENE INPUTS:
 
 Please provide your response as valid JSON with the following structure:
 {
-  "slipper_design_prompt": "<optimized prompt for slipper design generation>",
-  "model_wearing_prompt": "<optimized prompt for model wearing scene>",
+  "product_design_prompt": "<optimized prompt for ${productName.toLowerCase()} design generation>",
+  "model_scene_prompt": "<optimized prompt for model wearing/using scene>",
   "debug_notes": "<optional design rationale>"
 }`;
 
   try {
-    console.log("[Prompt Optimizer] Calling Gemini text model for prompt generation...");
+    console.log(`[Prompt Optimizer] Calling Gemini text model for ${productName} design prompt generation...`);
+    
+    // Build product-specific system prompt
+    const systemPrompt = buildDesignerSystemPrompt(designInputs.productType, designInputs.customProductType);
+    
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: [
         {
           role: "user",
           parts: [
-            { text: DESIGNER_SYSTEM_PROMPT },
+            { text: systemPrompt },
             { text: structuredInput }
           ],
         },
@@ -196,13 +211,13 @@ Please provide your response as valid JSON with the following structure:
     }
     
     // Validate the response structure
-    if (!optimizedPrompts.slipper_design_prompt || !optimizedPrompts.model_wearing_prompt) {
+    if (!optimizedPrompts.product_design_prompt || !optimizedPrompts.model_scene_prompt) {
       throw new Error("LLM response missing required prompt fields");
     }
 
     console.log("[Prompt Optimizer] ✓ Successfully generated optimized prompts");
-    console.log("[Prompt Optimizer] Slipper prompt length:", optimizedPrompts.slipper_design_prompt.length);
-    console.log("[Prompt Optimizer] Model wearing prompt length:", optimizedPrompts.model_wearing_prompt.length);
+    console.log("[Prompt Optimizer] Product design prompt length:", optimizedPrompts.product_design_prompt.length);
+    console.log("[Prompt Optimizer] Model scene prompt length:", optimizedPrompts.model_scene_prompt.length);
     
     return optimizedPrompts;
   } catch (error: any) {
@@ -211,30 +226,39 @@ Please provide your response as valid JSON with the following structure:
     // Fallback to basic prompts if LLM fails
     console.log("[Prompt Optimizer] Using fallback prompts");
     return {
-      slipper_design_prompt: generateFallbackSlipperPrompt(designInputs),
-      model_wearing_prompt: generateFallbackModelPrompt(modelSceneInputs),
+      product_design_prompt: generateFallbackProductPrompt(designInputs),
+      model_scene_prompt: generateFallbackModelPrompt(modelSceneInputs),
       debug_notes: `Fallback prompts used due to LLM error: ${error.message}`
     };
   }
 }
 
 // Fallback prompt generator if LLM fails
-function generateFallbackSlipperPrompt(inputs: DesignInputs): string {
-  return `Create a professional slipper design based on the template.
+function generateFallbackProductPrompt(inputs: DesignInputs): string {
+  const config = getProductConfig(inputs.productType);
+  const productName = inputs.productType === 'custom' && inputs.customProductType 
+    ? inputs.customProductType 
+    : config.displayName.en.toLowerCase();
+  const angles = config.angles.map(a => config.angleLabels[a].en).join(' and ');
+  
+  return `Create a professional ${productName} design based on the template.
 Season: ${inputs.theme}
 Style: ${inputs.style}
 Colors: ${inputs.color}
 Material: ${inputs.material}
 ${inputs.designDescription ? `Notes: ${inputs.designDescription}` : ''}
-Create both top view and 45-degree angled view with professional product photography lighting.`;
+Create both ${angles} with professional product photography lighting.`;
 }
 
 function generateFallbackModelPrompt(inputs: ModelSceneInputs): string {
-  return `Create a professional model-wearing scene showing the slipper design.
-Design: ${inputs.slipperDesignSummary}
+  const config = getProductConfig(inputs.productType);
+  const productName = config.displayName.en.toLowerCase();
+  
+  return `Create a professional model scene showing the ${productName} design.
+Design: ${inputs.productDesignSummary}
 Models: ${inputs.nationality} ${inputs.familyCombination}
 Setting: ${inputs.location}
 Scenario: ${inputs.scenario}
 Style: ${inputs.presentationStyle}
-Show realistic, professional product photography.`;
+Show realistic, professional product photography with the ${productName} clearly visible.`;
 }
