@@ -24,6 +24,10 @@ import {
   type InsertEcommerceScene,
   type EcommerceSceneAsset,
   type InsertEcommerceSceneAsset,
+  type PosterRequest,
+  type InsertPosterRequest,
+  type PosterProductImage,
+  type InsertPosterProductImage,
   designs,
   modelScenes,
   projects,
@@ -36,6 +40,8 @@ import {
   virtualTryOnProducts,
   ecommerceScenes,
   ecommerceSceneAssets,
+  posterRequests,
+  posterProductImages,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -104,6 +110,12 @@ export interface IStorage {
   createEcommerceSceneAsset(asset: InsertEcommerceSceneAsset): Promise<number>;
   updateEcommerceSceneResult(id: number, resultImageUrl: string): Promise<EcommerceScene>;
   getEcommerceScenes(): Promise<EcommerceScene[]>;
+  
+  // E-commerce Poster Design
+  createPosterRequest(poster: InsertPosterRequest): Promise<number>;
+  createPosterProductImage(image: InsertPosterProductImage): Promise<number>;
+  updatePosterResult(id: number, resultImageUrl: string): Promise<PosterRequest>;
+  getPosterRequests(): Promise<PosterRequest[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -447,6 +459,30 @@ export class DatabaseStorage implements IStorage {
 
   async getEcommerceScenes(): Promise<EcommerceScene[]> {
     return await db.select().from(ecommerceScenes).orderBy(desc(ecommerceScenes.createdAt));
+  }
+
+  // E-commerce Poster Design methods
+  async createPosterRequest(poster: InsertPosterRequest): Promise<number> {
+    const [newPoster] = await db.insert(posterRequests).values(poster).returning();
+    return newPoster.id;
+  }
+
+  async createPosterProductImage(image: InsertPosterProductImage): Promise<number> {
+    const [newImage] = await db.insert(posterProductImages).values(image).returning();
+    return newImage.id;
+  }
+
+  async updatePosterResult(id: number, resultImageUrl: string): Promise<PosterRequest> {
+    const [updated] = await db
+      .update(posterRequests)
+      .set({ resultImageUrl })
+      .where(eq(posterRequests.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getPosterRequests(): Promise<PosterRequest[]> {
+    return await db.select().from(posterRequests).orderBy(desc(posterRequests.createdAt));
   }
 }
 

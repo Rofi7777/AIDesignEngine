@@ -527,3 +527,69 @@ export const modelTryOnRequestSchema = z.object({
 });
 
 export type ModelTryOnRequest = z.infer<typeof modelTryOnRequestSchema>;
+
+// E-commerce Poster Design Tables
+export const posterRequests = pgTable("poster_requests", {
+  id: serial("id").primaryKey(),
+  // Module A: Campaign & Scene
+  campaignType: varchar("campaign_type", { length: 100 }).notNull(), // 'discount', 'new-product', 'bestseller', 'festival', 'brand-story', 'bundle', 'custom'
+  customCampaign: text("custom_campaign"),
+  referenceImageUrl: text("reference_image_url"),
+  referenceLevel: varchar("reference_level", { length: 100 }), // 'layout-only', 'layout-color', 'loose-inspiration', 'custom'
+  customReferenceLevel: text("custom_reference_level"),
+  // Module B: Visual Style & Layout
+  visualStyle: varchar("visual_style", { length: 100 }).notNull(), // 'fresh-drink', 'cute-3d', 'premium-minimal', 'taobao-promo', 'natural-lifestyle', 'custom'
+  customVisualStyle: text("custom_visual_style"),
+  backgroundScene: varchar("background_scene", { length: 100 }).notNull(), // 'gradient', 'studio-tabletop', 'outdoor-nature', 'urban', 'indoor-lifestyle', 'custom'
+  customBackgroundScene: text("custom_background_scene"),
+  layout: varchar("layout", { length: 100 }).notNull(), // 'single-centered', 'product-number', 'left-right-split', 'top-bottom-split', 'grid-collage', 'custom'
+  customLayout: text("custom_layout"),
+  aspectRatio: varchar("aspect_ratio", { length: 10 }).notNull(), // '1:1', '9:16', '16:9', '4:3', '3:4'
+  // Module C: Copy & Elements
+  headlineStyle: varchar("headline_style", { length: 100 }).notNull(), // 'emotional', 'benefit-focused', 'price-focused', 'brand-story', 'custom', 'auto-generate'
+  customHeadline: text("custom_headline"),
+  autoGenerateHeadline: varchar("auto_generate_headline", { length: 10 }).default('no'), // 'yes' or 'no'
+  sellingPoints: text("selling_points").array(), // JSON array of selling points
+  autoGenerateSellingPoints: varchar("auto_generate_selling_points", { length: 10 }).default('no'),
+  priceStyle: varchar("price_style", { length: 100 }), // 'big-price', 'original-discounted', 'coupon', 'no-price', 'custom'
+  originalPrice: varchar("original_price", { length: 50 }),
+  currentPrice: varchar("current_price", { length: 50 }),
+  discountText: varchar("discount_text", { length: 255 }),
+  customPriceStyle: text("custom_price_style"),
+  logoImageUrl: text("logo_image_url"),
+  logoPosition: varchar("logo_position", { length: 50 }), // 'top-left', 'top-right', 'bottom-left', 'bottom-right', 'center', 'custom'
+  brandTagline: varchar("brand_tagline", { length: 255 }),
+  // Generated result
+  resultImageUrl: text("result_image_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const posterProductImages = pgTable("poster_product_images", {
+  id: serial("id").primaryKey(),
+  posterId: integer("poster_id").references(() => posterRequests.id).notNull(),
+  productImageUrl: text("product_image_url").notNull(),
+  productName: varchar("product_name", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Relations for Poster Design
+export const posterRequestsRelations = relations(posterRequests, ({ many }) => ({
+  productImages: many(posterProductImages),
+}));
+
+export const posterProductImagesRelations = relations(posterProductImages, ({ one }) => ({
+  posterRequest: one(posterRequests, {
+    fields: [posterProductImages.posterId],
+    references: [posterRequests.id],
+  }),
+}));
+
+// Insert and Select Schemas for Poster Design
+export const insertPosterRequestSchema = createInsertSchema(posterRequests).omit({ id: true, createdAt: true });
+export const insertPosterProductImageSchema = createInsertSchema(posterProductImages).omit({ id: true, createdAt: true });
+
+// Types for Poster Design
+export type PosterRequest = typeof posterRequests.$inferSelect;
+export type InsertPosterRequest = z.infer<typeof insertPosterRequestSchema>;
+export type PosterProductImage = typeof posterProductImages.$inferSelect;
+export type InsertPosterProductImage = z.infer<typeof insertPosterProductImageSchema>;
