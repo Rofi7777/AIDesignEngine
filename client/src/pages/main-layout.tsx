@@ -2,10 +2,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import Home from "./home";
 import ModelTryOn from "./model-tryon";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/LanguageContext";
 
 export default function MainLayout() {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,10 +27,10 @@ export default function MainLayout() {
         <Tabs defaultValue="product-design" className="w-full">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8" data-testid="tabs-main">
             <TabsTrigger value="product-design" data-testid="tab-product-design">
-              {t('productDesign') || 'Product Design'}
+              Product Design
             </TabsTrigger>
             <TabsTrigger value="model-tryon" data-testid="tab-model-tryon">
-              {t('modelTryOn') || 'Model Try-on'}
+              Model Try-on
             </TabsTrigger>
           </TabsList>
 

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -28,7 +28,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Download, Upload, Loader2, X } from "lucide-react";
 
 export default function ModelTryOn() {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [productImages, setProductImages] = useState<Array<{ file: File; preview: string; type: string; typeCustom?: string }>>([]);
   const [generatedResults, setGeneratedResults] = useState<Array<{ cameraAngle: string; imageUrl: string }>>([]);
