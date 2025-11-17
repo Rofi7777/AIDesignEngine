@@ -44,6 +44,7 @@ export default function VirtualTryOn() {
   const formSchema = z.object({
     tryonMode: z.enum(['single', 'multi']),
     tryonType: z.string().optional(),
+    customTryonType: z.string().optional(),
     preservePose: z.string(),
     style: z.string(),
     aspectRatio: z.string().min(1, "Aspect ratio is required"),
@@ -54,6 +55,7 @@ export default function VirtualTryOn() {
     defaultValues: {
       tryonMode: 'single',
       tryonType: '',
+      customTryonType: '',
       preservePose: 'yes',
       style: 'natural',
       aspectRatio: '9:16',
@@ -78,6 +80,9 @@ export default function VirtualTryOn() {
       formData.append('tryonMode', data.tryonMode);
       if (data.tryonType) {
         formData.append('tryonType', data.tryonType);
+      }
+      if (data.customTryonType) {
+        formData.append('customTryonType', data.customTryonType);
       }
       formData.append('preservePose', data.preservePose);
       formData.append('style', data.style);
@@ -397,8 +402,30 @@ export default function VirtualTryOn() {
                               <SelectItem value="top">{t('virtualTryonTypeTop')}</SelectItem>
                               <SelectItem value="bottom">{t('virtualTryonTypeBottom')}</SelectItem>
                               <SelectItem value="full">{t('virtualTryonTypeFull')}</SelectItem>
+                              <SelectItem value="custom">{t('virtualTryonTypeCustom')}</SelectItem>
                             </SelectContent>
                           </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {/* Custom Try-On Type */}
+                  {tryonMode === 'single' && form.watch('tryonType') === 'custom' && (
+                    <FormField
+                      control={form.control}
+                      name="customTryonType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('virtualTryonCustomTypePlaceholder')}</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder={t('virtualTryonCustomTypePlaceholder')} 
+                              {...field} 
+                              data-testid="input-custom-tryon-type" 
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

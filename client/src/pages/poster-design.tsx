@@ -49,6 +49,7 @@ const formSchema = z.object({
   layout: z.string().min(1, "Layout is required"),
   customLayout: z.string().optional(),
   aspectRatio: z.string().min(1, "Aspect ratio is required"),
+  outputQuantity: z.string().min(1, "Output quantity is required"),
   // Module C
   headlineStyle: z.string().min(1, "Headline style is required"),
   customHeadline: z.string().optional(),
@@ -89,6 +90,7 @@ export default function PosterDesign() {
       backgroundScene: "",
       layout: "",
       aspectRatio: "1:1",
+      outputQuantity: "1",
       headlineStyle: "",
       autoGenerateHeadline: false,
       autoGenerateSellingPoints: false,
@@ -484,6 +486,30 @@ export default function PosterDesign() {
                               <SelectItem value="16:9">{t("posterAspectRatioLandscape")}</SelectItem>
                               <SelectItem value="4:3">{t("posterAspectRatio43")}</SelectItem>
                               <SelectItem value="3:4">{t("posterAspectRatio34")}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="outputQuantity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("posterDesignOutputQuantityLabel")} *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger data-testid="select-output-quantity">
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="1">1</SelectItem>
+                              <SelectItem value="2">2</SelectItem>
+                              <SelectItem value="4">4</SelectItem>
+                              <SelectItem value="8">8</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />

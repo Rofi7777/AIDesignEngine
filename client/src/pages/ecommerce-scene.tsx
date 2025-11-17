@@ -48,6 +48,7 @@ export default function EcommerceScene() {
     lighting: z.string().min(1, "Lighting is required"),
     composition: z.string().min(1, "Composition is required"),
     aspectRatio: z.string().min(1, "Aspect ratio is required"),
+    outputQuantity: z.string().min(1, "Output quantity is required"),
   }).refine((data) => {
     if (data.sceneType === 'custom' && !data.customSceneType) {
       return false;
@@ -66,6 +67,7 @@ export default function EcommerceScene() {
       lighting: 'natural',
       composition: 'rule-of-thirds',
       aspectRatio: '16:9',
+      outputQuantity: '1',
     },
   });
 
@@ -91,6 +93,7 @@ export default function EcommerceScene() {
       formData.append('lighting', data.lighting);
       formData.append('composition', data.composition);
       formData.append('aspectRatio', data.aspectRatio);
+      formData.append('outputQuantity', data.outputQuantity);
       formData.append('assetTypes', JSON.stringify(assetImages.map(img => img.assetType)));
       formData.append('assetNames', JSON.stringify(assetImages.map(img => img.name || '')));
 
@@ -507,6 +510,31 @@ export default function EcommerceScene() {
                             <SelectItem value="4:3">{t('aspectRatio43')}</SelectItem>
                             <SelectItem value="9:16">{t('aspectRatio916')}</SelectItem>
                             <SelectItem value="16:9">{t('aspectRatio169')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Output Quantity */}
+                  <FormField
+                    control={form.control}
+                    name="outputQuantity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('ecommerceSceneOutputQuantityLabel')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-output-quantity">
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="1">1</SelectItem>
+                            <SelectItem value="2">2</SelectItem>
+                            <SelectItem value="4">4</SelectItem>
+                            <SelectItem value="8">8</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
