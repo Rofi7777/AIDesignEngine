@@ -21,22 +21,29 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/generate-design", upload.fields([
+    // Legacy single template support
     { name: "template", maxCount: 1 },
+    // Multi-angle template support (4 angles)
+    { name: "template_top", maxCount: 1 },
+    { name: "template_45degree", maxCount: 1 },
+    { name: "template_side", maxCount: 1 },
+    { name: "template_bottom", maxCount: 1 },
+    { name: "template_front", maxCount: 1 },
+    { name: "template_back", maxCount: 1 },
+    { name: "template_detail", maxCount: 1 },
+    { name: "template_view1", maxCount: 1 },
+    { name: "template_view2", maxCount: 1 },
+    { name: "template_view3", maxCount: 1 },
+    { name: "template_view4", maxCount: 1 },
+    // Enhancement images
     { name: "referenceImage", maxCount: 1 },
     { name: "brandLogo", maxCount: 1 },
   ]), async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
       
-      if (!files || !files.template || files.template.length === 0) {
-        return res.status(400).json({
-          error: "No template file uploaded",
-        });
-      }
-
-      const templateFile = files.template[0];
-      const referenceImageFile = files.referenceImage?.[0];
-      const brandLogoFile = files.brandLogo?.[0];
+      const referenceImageFile = files?.referenceImage?.[0];
+      const brandLogoFile = files?.brandLogo?.[0];
 
       const { theme, style, color, material, angles, designDescription } = req.body;
 
@@ -50,6 +57,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const productType = req.body.productType || 'slippers';
       const customProductType = req.body.customProductType;
 
+      // Build angle-to-template mapping
+      const angleTemplates: Record<string, Express.Multer.File> = {};
+      let fallbackTemplate: Express.Multer.File | null = null;
+
+      // Check for angle-specific templates first
+      for (const angle of anglesArray) {
+        const angleKey = `template_${angle}`;
+        if (files?.[angleKey] && files[angleKey].length > 0) {
+          angleTemplates[angle] = files[angleKey][0];
+          if (!fallbackTemplate) fallbackTemplate = files[angleKey][0];
+        }
+      }
+
+      // If no angle-specific templates, check for legacy single template
+      if (Object.keys(angleTemplates).length === 0 && files?.template && files.template.length > 0) {
+        fallbackTemplate = files.template[0];
+        // Use it for all angles
+        for (const angle of anglesArray) {
+          angleTemplates[angle] = fallbackTemplate;
+        }
+      }
+
+      // Validate at least one template exists
+      if (!fallbackTemplate) {
+        return res.status(400).json({
+          error: "No template file uploaded. Please upload at least one template image.",
+        });
+      }
+
+      console.log(`[Multi-Angle Generation] Product: ${productType}, Angles: ${anglesArray.join(', ')}`);
+      console.log(`[Template Mapping] Uploaded templates for angles:`, Object.keys(angleTemplates).join(', '));
+
       const results: Record<string, string> = {};
       let canonicalImageBuffer: Buffer | undefined;
       let canonicalImageMimeType: string | undefined;
@@ -57,53 +96,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // STEP 1: Generate first angle as canonical design (always generate this first)
       // Uses two-stage architecture: LLM generates optimized prompt → Gemini generates image
       const firstAngle = anglesArray[0];
-      console.log(`Generating canonical design (${firstAngle} view) with professional designer prompts...`);
-      results[firstAngle] = await generateProductDesignEnhanced(
-        productType,
-        customProductType,
-        templateFile.buffer,
-        templateFile.mimetype,
-        theme,
-        style,
-        color,
-        material,
-        firstAngle,
-        referenceImageFile?.buffer,
-        referenceImageFile?.mimetype,
-        brandLogoFile?.buffer,
-        brandLogoFile?.mimetype,
-        designDescription
-      );
-
-      // Extract canonical image for subsequent angles
-      const canonicalBase64 = results[firstAngle].split(',')[1];
-      canonicalImageBuffer = Buffer.from(canonicalBase64, 'base64');
-      canonicalImageMimeType = results[firstAngle].match(/data:([^;]+);/)?.[1] || 'image/png';
-
-      // STEP 2: Generate remaining angles using canonical as reference for consistency
-      for (let i = 1; i < anglesArray.length; i++) {
-        const angle = anglesArray[i];
-        console.log(`Generating ${angle} view with design consistency enforcement...`);
-        
-        results[angle] = await generateProductDesignEnhanced(
+      const firstTemplate = angleTemplates[firstAngle] || fallbackTemplate;
+      
+      console.log(`[Canonical Generation] Generating ${firstAngle} view as design reference...`);
+      console.log(`[Template] Using ${angleTemplates[firstAngle] ? 'angle-specific' : 'fallback'} template for ${firstAngle}`);
+      
+      try {
+        results[firstAngle] = await generateProductDesignEnhanced(
           productType,
           customProductType,
-          templateFile.buffer,
-          templateFile.mimetype,
+          firstTemplate.buffer,
+          firstTemplate.mimetype,
           theme,
           style,
           color,
           material,
-          angle,
+          firstAngle,
           referenceImageFile?.buffer,
           referenceImageFile?.mimetype,
           brandLogoFile?.buffer,
           brandLogoFile?.mimetype,
-          designDescription,
-          canonicalImageBuffer,
-          canonicalImageMimeType
+          designDescription
         );
+        
+        if (!results[firstAngle]) {
+          throw new Error(`Failed to generate canonical angle: ${firstAngle}`);
+        }
+      } catch (error: any) {
+        console.error(`[CRITICAL] Canonical angle ${firstAngle} generation failed:`, error.message);
+        throw new Error(`Failed to generate canonical design (${firstAngle}). Please try again or use a different template.`);
       }
+
+      // Extract canonical image for subsequent angles
+      const canonicalBase64 = results[firstAngle].split(',')[1];
+      if (!canonicalBase64) {
+        throw new Error('Invalid canonical image format - cannot extract base64 data');
+      }
+      canonicalImageBuffer = Buffer.from(canonicalBase64, 'base64');
+      canonicalImageMimeType = results[firstAngle].match(/data:([^;]+);/)?.[1] || 'image/png';
+
+      // STEP 2: Generate remaining angles using canonical as reference for STRICT consistency
+      for (let i = 1; i < anglesArray.length; i++) {
+        const angle = anglesArray[i];
+        const angleTemplate = angleTemplates[angle] || fallbackTemplate;
+        
+        console.log(`[Consistency Generation] Generating ${angle} view using canonical ${firstAngle} as design reference...`);
+        console.log(`[Template] Using ${angleTemplates[angle] ? 'angle-specific' : 'fallback'} template for ${angle}`);
+        console.log(`[Consistency] STRICT requirement: maintain EXACT design from ${firstAngle}`);
+        
+        try {
+          results[angle] = await generateProductDesignEnhanced(
+            productType,
+            customProductType,
+            angleTemplate.buffer,
+            angleTemplate.mimetype,
+            theme,
+            style,
+            color,
+            material,
+            angle,
+            referenceImageFile?.buffer,
+            referenceImageFile?.mimetype,
+            brandLogoFile?.buffer,
+            brandLogoFile?.mimetype,
+            designDescription,
+            canonicalImageBuffer,
+            canonicalImageMimeType
+          );
+          
+          if (!results[angle]) {
+            throw new Error(`Failed to generate angle: ${angle}`);
+          }
+        } catch (error: any) {
+          console.error(`[ERROR] Angle ${angle} generation failed:`, error.message);
+          // Continue with partial results but log the failure
+          console.log(`[WARNING] Proceeding with ${i} of ${anglesArray.length} angles successfully generated`);
+          throw new Error(`Failed to generate angle ${i + 1}/${anglesArray.length} (${angle}): ${error.message}`);
+        }
+      }
+      
+      // Validate all expected angles were generated
+      const missingAngles = anglesArray.filter(angle => !results[angle]);
+      if (missingAngles.length > 0) {
+        throw new Error(`Generation incomplete: missing angles ${missingAngles.join(', ')}`);
+      }
+      
+      console.log(`[SUCCESS] All ${anglesArray.length} angles generated successfully with strict consistency`);
+
       
       // Map to legacy field names for backward compatibility
       const legacyResults: any = { ...results };
@@ -126,10 +205,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         brandLogoUrl = `data:${brandLogoFile.mimetype};base64,${brandLogoFile.buffer.toString('base64')}`;
       }
 
-      // Save both angles as a single design record
+      // Save all 4 angles as a single design record
       await storage.saveCompleteDesign({
         view1Url: results[anglesArray[0]] || null,
         view2Url: results[anglesArray[1]] || null,
+        view3Url: results[anglesArray[2]] || null,
+        view4Url: results[anglesArray[3]] || null,
         productType,
         customProductType,
         theme,

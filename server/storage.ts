@@ -24,10 +24,12 @@ export interface IStorage {
   saveGeneratedImage(image: Omit<GeneratedImage, 'id' | 'timestamp'>): Promise<GeneratedImage>;
   getGeneratedImages(): Promise<GeneratedImage[]>;
   
-  // Save both angles as a single design record
+  // Save all 4 angles as a single design record
   saveCompleteDesign(params: {
     view1Url: string | null;
     view2Url: string | null;
+    view3Url?: string | null;
+    view4Url?: string | null;
     productType?: string;
     customProductType?: string;
     theme: string;
@@ -132,7 +134,7 @@ export class DatabaseStorage implements IStorage {
     
     const images: GeneratedImage[] = [];
     
-    // Add product designs
+    // Add product designs (all 4 angles)
     for (const design of allDesigns) {
       if (design.view1Url) {
         images.push({
@@ -168,6 +170,40 @@ export class DatabaseStorage implements IStorage {
           },
         });
       }
+      if (design.view3Url) {
+        images.push({
+          id: `${design.id}-view3`,
+          type: 'product_design',
+          imageUrl: design.view3Url,
+          angle: 'view3',
+          productType: design.productType as any,
+          timestamp: design.createdAt.getTime(),
+          metadata: {
+            productType: design.productType,
+            theme: design.theme,
+            style: design.style,
+            color: design.color,
+            material: design.material,
+          },
+        });
+      }
+      if (design.view4Url) {
+        images.push({
+          id: `${design.id}-view4`,
+          type: 'product_design',
+          imageUrl: design.view4Url,
+          angle: 'view4',
+          productType: design.productType as any,
+          timestamp: design.createdAt.getTime(),
+          metadata: {
+            productType: design.productType,
+            theme: design.theme,
+            style: design.style,
+            color: design.color,
+            material: design.material,
+          },
+        });
+      }
     }
     
     // Add model scenes
@@ -191,10 +227,12 @@ export class DatabaseStorage implements IStorage {
     return images.sort((a, b) => b.timestamp - a.timestamp);
   }
 
-  // Save both angles as a single design record
+  // Save all 4 angles as a single design record
   async saveCompleteDesign(params: {
     view1Url: string | null;
     view2Url: string | null;
+    view3Url?: string | null;
+    view4Url?: string | null;
     productType?: string;
     customProductType?: string;
     theme: string;
@@ -208,7 +246,7 @@ export class DatabaseStorage implements IStorage {
     templateUrl?: string | null;
   }): Promise<Design> {
     // Validate that at least one URL is present
-    if (!params.view1Url && !params.view2Url) {
+    if (!params.view1Url && !params.view2Url && !params.view3Url && !params.view4Url) {
       throw new Error('At least one view must be generated');
     }
     
@@ -226,6 +264,8 @@ export class DatabaseStorage implements IStorage {
       brandLogoUrl: params.brandLogoUrl || null,
       view1Url: params.view1Url,
       view2Url: params.view2Url,
+      view3Url: params.view3Url || null,
+      view4Url: params.view4Url || null,
     });
     
     return design;

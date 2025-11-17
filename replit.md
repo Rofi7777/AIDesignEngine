@@ -29,27 +29,34 @@ The application features a single-page layout with a two-column structure (40% c
 - **AI Integration:** Google Gemini 2.5 Flash Image Preview via Replit AI Integrations.
 - **Validation:** Zod with drizzle-zod for robust form validation.
 - **Internationalization (i18n):** A React Context-based translation system with localStorage persistence supporting English, Traditional Chinese, and Vietnamese.
-- **Multi-Product Type System:** Supports 5 product categories with dynamic viewing angle configuration:
-  - **Shoes/Slippers:** top view + 45° view
-  - **Clothes:** front view + back view
-  - **Bags:** front view + side view
-  - **Custom:** user-defined view1 + view2
-- **Two-Step Design Generation:** Ensures consistency between viewing angles. The first angle is generated as a canonical reference, and the second angle uses this reference to maintain identical patterns, colors, and backgrounds, only changing the camera angle.
+- **Multi-Product Type System:** Supports 5 product categories with **4-angle configuration**:
+  - **All Products:** top view + 45° view + side view + bottom view
+  - Each product type has 4 professionally labeled viewing angles with multi-language support
+- **4-Angle Template Upload System:**
+  - Users can upload **up to 4 optional templates** (one per angle) in a responsive 2x2 grid layout
+  - Angle-specific template upload (e.g., template_top, template_45degree, template_side, template_bottom)
+  - Fallback mechanism: if no angle-specific template, uses first uploaded template for all angles
+  - Validation ensures at least one template is provided
+- **Sequential Generation with ULTRA-STRICT Consistency:**
+  - **Step 1:** First angle generated as canonical design using two-stage AI architecture
+  - **Step 2-4:** Remaining angles use canonical design as reference with ZERO-TOLERANCE consistency requirements
+  - Enhanced AI prompts explicitly forbid any design variations (colors, patterns, materials, placement)
+  - Think of it as rotating a 3D model - design is FIXED, only camera angle changes
 - **Shape Preservation System:** AI prompts strictly enforce preservation of the exact product silhouette, dimensions, proportions, and 3D structure from the template. Only surface design elements (colors, patterns, materials, textures, logos) are modified, treating generation as a "skin wrap."
 - **Enhanced Design Input:** Supports optional reference image uploads, detailed design descriptions (text input), and brand logo uploads to guide AI generation.
-- **Multi-Image Gemini API Integration:** The Gemini API calls accept multiple images (template + reference + logo) in a single request.
+- **Multi-Image Gemini API Integration:** The Gemini API calls accept multiple images (template + canonical design + reference + logo) in a single request for perfect consistency.
 - **Click-to-Enlarge Image Zoom:** All generated images include a click-to-zoom feature, displaying images in a dialog modal for detailed inspection.
 - **Custom Options:** Users can specify custom colors, materials, presentation styles, and custom product types with associated validation.
-- **Database Schema:** `SlipperDesign` (product_type, custom_product_type, template, theme, style, color, material, view1Url, view2Url, custom options) and `ModelScene` (product image reference, product_type, nationality, family, scenario, location, presentation style, generated scene image). Schemas are defined in `shared/schema.ts`.
-- **Two-Angle Storage Design:** Each product design is stored with two view URLs (view1Url, view2Url) which align perfectly with all current product configurations (shoes/slippers: top+45°, clothes: front+back, bags: front+side, custom: view1+view2). Future expansion to >2 angles would require schema migration with JSON column or separate angle table.
+- **Database Schema:** `SlipperDesign` (product_type, custom_product_type, template, theme, style, color, material, **view1Url, view2Url, view3Url, view4Url**, custom options) and `ModelScene` (product image reference, product_type, nationality, family, scenario, location, presentation style, generated scene image). Schemas are defined in `shared/schema.ts`.
+- **4-Angle Storage Design:** Each product design is stored with four view URLs (view1Url through view4Url) supporting the new 4-angle system across all product types. Database schema extended with view3Url and view4Url columns.
 
 ### Feature Specifications
-- Product Template Upload (PNG/JPG up to 10MB) for 5 product categories: shoes, slippers, clothes, bags, custom.
-- AI-generated product designs with category-specific viewing angles (shoes/slippers: top+45°, clothes: front+back, bags: front+side, custom: view1+view2).
-- AI-generated model-wearing scenes with configurable elements (nationality, family, scenario, location, presentation).
-- High-resolution PNG download for all generated images.
-- Multi-language interface with English, Traditional Chinese, and Vietnamese.
-- Comprehensive form validation and custom field clearing.
+- **4-Angle Template Upload:** Upload up to 4 optional product templates (PNG/JPG up to 10MB each) for 5 product categories: shoes, slippers, clothes, bags, custom. Each template corresponds to a specific viewing angle.
+- **AI-Generated 4-Angle Product Designs:** All products are generated with 4 viewing angles (top view, 45° view, side view, bottom view) with ULTRA-STRICT design consistency across all angles.
+- **AI-Generated Model-Wearing Scenes:** Configurable elements (nationality, family, scenario, location, presentation) for realistic product visualization.
+- **High-Resolution PNG Download:** All generated images support full-resolution downloads.
+- **Multi-Language Interface:** Complete support for English, Traditional Chinese, and Vietnamese across all UI elements.
+- **Comprehensive Validation:** Form validation with user-friendly error messages and custom field clearing.
 
 ## External Dependencies
 - **Google Gemini 2.5 Flash Image Preview:** For AI image generation.

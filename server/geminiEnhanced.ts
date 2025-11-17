@@ -42,43 +42,78 @@ export async function generateProductDesignEnhanced(
 
   let prompt = "";
 
-  // CRITICAL: If canonicalDesignBuffer is provided, this is the SECOND generation
-  // We use CONSISTENCY-FOCUSED prompts, not the LLM optimizer
+  // CRITICAL: If canonicalDesignBuffer is provided, this is NOT the first generation
+  // We use ULTRA-STRICT CONSISTENCY-FOCUSED prompts to ensure PERFECT design matching
   if (canonicalDesignBuffer) {
-    // Get first and second angle names
+    // Get first and current angle names
     const angles = Array.from(config.angles);
     const firstAngleLabel = config.angleLabels[angles[0]]?.en || angles[0];
     const currentAngleLabel = angleLabel;
 
-    // For second generation, use strict consistency prompts
-    prompt = `CRITICAL INSTRUCTION: You are creating an ALTERNATE ANGLE VIEW of an EXISTING ${productName} design.
+    // For subsequent generations, use MAXIMUM STRICTNESS consistency prompts
+    prompt = `🎯 CRITICAL RENDERING INSTRUCTION 🎯
 
-The first image shows the CANONICAL DESIGN (${firstAngleLabel}) that has already been created.
-The second image is the original template for reference.
+You are a 3D rendering specialist creating an ALTERNATE CAMERA ANGLE of an EXISTING PRODUCT DESIGN.
 
-YOUR TASK:
-Create a ${currentAngleLabel} of the EXACT SAME ${productName} design shown in the canonical design image.
+📸 IMAGE INPUTS:
+- Image 1: CANONICAL DESIGN (${firstAngleLabel}) - THIS IS YOUR DESIGN REFERENCE
+- Image 2: Product template - THIS IS YOUR SHAPE REFERENCE
 
-STRICT CONSISTENCY REQUIREMENTS:
-1. ✓ MUST use the IDENTICAL pattern/graphic design from the canonical image
-2. ✓ MUST use the EXACT SAME colors and color scheme
-3. ✓ MUST maintain the SAME material textures and finishes
-4. ✓ MUST keep the SAME background style and lighting
-5. ✓ MUST preserve the SAME brand logo placement (if present)
-6. ✓ ONLY CHANGE: Camera angle/view from ${firstAngleLabel} to ${currentAngleLabel}
-7. ✓ NO new design elements, NO pattern variations, NO color changes
+🎨 YOUR TASK:
+Render the ${currentAngleLabel} of the EXACT SAME ${productName} design shown in the canonical image (Image 1).
+Think of this as rotating a 3D model to show it from a different camera angle.
 
-DESIGN SPECIFICATIONS (for reference only - already applied in canonical design):
-- Seasonal Theme: ${theme}
-- Design Style: ${style}
-- Color Palette: ${color}
+⚠️ ULTRA-STRICT CONSISTENCY REQUIREMENTS - ZERO TOLERANCE FOR VARIATION:
+
+🔴 DESIGN ELEMENTS - MUST BE PIXEL-PERFECT IDENTICAL:
+1. ✓ Copy the EXACT SAME pattern/graphic/artwork from canonical image
+2. ✓ Use the IDENTICAL color values (same hex codes, same gradients)
+3. ✓ Match the EXACT SAME color placement and distribution
+4. ✓ Replicate the SAME decorative elements, motifs, and details
+5. ✓ Preserve the EXACT SAME material texture appearance
+6. ✓ Maintain the SAME surface finish (matte/glossy/metallic)
+
+🔴 BRANDING - MUST BE IDENTICAL:
+7. ✓ If logo present: EXACT SAME logo, SAME size, SAME position (adjusted for angle)
+8. ✓ If text present: EXACT SAME text, SAME font, SAME color
+
+🔴 STYLING - MUST MATCH PERFECTLY:
+9. ✓ Same background color/environment
+10. ✓ Same lighting direction and intensity
+11. ✓ Same shadow style and color temperature
+12. ✓ Same overall mood and aesthetic
+
+🔴 SHAPE CONSISTENCY:
+13. ✓ Maintain the product silhouette from the template (Image 2)
+14. ✓ Preserve structural proportions and dimensions
+
+✅ THE ONLY ALLOWED CHANGE:
+- Camera viewpoint: From ${firstAngleLabel} → to ${currentAngleLabel}
+- This means you show the SAME DESIGN from a different viewing angle
+
+❌ ABSOLUTELY FORBIDDEN:
+- NO creative reinterpretation
+- NO color adjustments or "variations"
+- NO adding new design elements
+- NO changing pattern complexity
+- NO artistic liberty whatsoever
+
+📋 DESIGN PARAMETERS (already applied in canonical - for context only):
+- Theme: ${theme}
+- Style: ${style}
+- Colors: ${color}
 - Material: ${material}`;
 
     if (designDescription && designDescription.trim()) {
       prompt += `\n- Design Notes: ${designDescription}`;
     }
 
-    prompt += `\n\nThis is a RENDERING TASK, not a creative design task. Your goal is to show the SAME design from a different camera angle with perfect consistency.`;
+    prompt += `\n\n🎬 THINK OF THIS AS:
+You are a product photographer taking multiple shots of the SAME physical product from different angles.
+The product design is FIXED and UNCHANGEABLE. Only your camera position changes.
+
+Your success metric: Someone comparing all angles should see the EXACT SAME DESIGN, just from different viewpoints.`;
+
 
   } else {
     // FIRST generation - Use LLM to generate optimized professional prompt
