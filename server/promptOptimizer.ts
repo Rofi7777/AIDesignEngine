@@ -163,7 +163,7 @@ Please provide your response as valid JSON with the following structure:
     const systemPrompt = buildDesignerSystemPrompt(designInputs.productType, designInputs.customProductType);
     
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: [
         {
           role: "user",
