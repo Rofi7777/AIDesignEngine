@@ -26,12 +26,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Download, Upload, Loader2, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function ModelTryOn() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [productImages, setProductImages] = useState<Array<{ file: File; preview: string; type: string; typeCustom?: string }>>([]);
   const [generatedResults, setGeneratedResults] = useState<Array<{ cameraAngle: string; imageUrl: string }>>([]);
+  const [selectedImage, setSelectedImage] = useState<{ url: string; angle: string } | null>(null);
 
   const getCameraAngleLabel = (angle: string): string => {
     const angleMap: Record<string, string> = {
@@ -163,7 +170,7 @@ export default function ModelTryOn() {
     link.href = imageUrl;
     const localizedAngle = getCameraAngleLabel(angle)
       .toLowerCase()
-      .replace(/[^\p{L}\p{N}\s-]/gu, '') // Remove special characters but keep Unicode letters/numbers
+      .replace(/[^a-z0-9\u4e00-\u9fff\s-]/g, '') // Remove special characters but keep letters/numbers/Chinese
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/^-+|-+$/g, ''); // Trim hyphens from start/end
@@ -582,6 +589,7 @@ export default function ModelTryOn() {
                         src={result.imageUrl}
                         alt={`${t('modelTryonResultAlt')} - ${result.cameraAngle}`}
                         className="w-full h-auto rounded-lg mb-4 cursor-pointer hover-elevate"
+                        onClick={() => setSelectedImage({ url: result.imageUrl, angle: result.cameraAngle })}
                         data-testid={`img-result-${index}`}
                       />
                       <div className="flex items-center justify-between">
@@ -604,6 +612,25 @@ export default function ModelTryOn() {
           </div>
         </div>
       </div>
+
+      {/* Image Zoom Dialog */}
+      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden rounded-2xl" data-testid="dialog-image-zoom">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{selectedImage ? getCameraAngleLabel(selectedImage.angle) : t('modelTryonResult')}</DialogTitle>
+          </DialogHeader>
+          <div className="relative w-full h-full flex items-center justify-center bg-background/95 backdrop-blur-sm p-4">
+            {selectedImage && (
+              <img
+                src={selectedImage.url}
+                alt={`${t('modelTryonResultAlt')} - ${selectedImage.angle}`}
+                className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
+                data-testid="img-zoomed"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
