@@ -33,19 +33,31 @@ export default function ModelTryOn() {
   const [productImages, setProductImages] = useState<Array<{ file: File; preview: string; type: string; typeCustom?: string }>>([]);
   const [generatedResults, setGeneratedResults] = useState<Array<{ cameraAngle: string; imageUrl: string }>>([]);
 
+  const getCameraAngleLabel = (angle: string): string => {
+    const angleMap: Record<string, string> = {
+      "Front view": t('modelTryonCameraAngleFront'),
+      "Side view": t('modelTryonCameraAngleSide'),
+      "Back view": t('modelTryonCameraAngleBack'),
+    };
+    
+    // Return mapped translation if it exists, otherwise return the original value
+    // (which would be a custom angle description provided by the user)
+    return angleMap[angle] || angle;
+  };
+
   const formSchema = z.object({
-    nationality: z.string().min(1, "Nationality is required"),
+    nationality: z.string().min(1, t('modelTryonValidationNationality')),
     nationalityCustom: z.string().optional(),
-    hairstyle: z.string().min(1, "Hairstyle is required"),
+    hairstyle: z.string().min(1, t('modelTryonValidationHairstyle')),
     hairstyleCustom: z.string().optional(),
-    combination: z.string().min(1, "Model combination is required"),
+    combination: z.string().min(1, t('modelTryonValidationCombination')),
     combinationCustom: z.string().optional(),
-    scene: z.string().min(1, "Scene is required"),
+    scene: z.string().min(1, t('modelTryonValidationScene')),
     sceneCustom: z.string().optional(),
-    pose: z.string().min(1, "Pose is required"),
+    pose: z.string().min(1, t('modelTryonValidationPose')),
     poseCustom: z.string().optional(),
-    aspectRatio: z.string().min(1, "Aspect ratio is required"),
-    cameraAngles: z.array(z.string()).min(1, "At least one camera angle is required"),
+    aspectRatio: z.string().min(1, t('modelTryonValidationAspectRatio')),
+    cameraAngles: z.array(z.string()).min(1, t('modelTryonValidationCameraAngles')),
     cameraAngleCustom: z.string().optional(),
   });
 
@@ -86,8 +98,7 @@ export default function ModelTryOn() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Generation failed');
+        throw new Error('Generation failed');
       }
 
       return response.json();
@@ -95,15 +106,15 @@ export default function ModelTryOn() {
     onSuccess: (data) => {
       setGeneratedResults(data.results);
       toast({
-        title: "Success!",
-        description: data.message || "Model try-on images generated successfully",
+        title: t('modelTryonSuccessTitle'),
+        description: data.message || t('modelTryonSuccessMessage'),
       });
     },
-    onError: (error: Error) => {
+    onError: () => {
       toast({
         variant: "destructive",
-        title: "Generation failed",
-        description: error.message,
+        title: t('toastErrorTitle'),
+        description: t('modelTryonErrorGeneration'),
       });
     },
   });
@@ -138,8 +149,8 @@ export default function ModelTryOn() {
     if (productImages.length === 0) {
       toast({
         variant: "destructive",
-        title: "No products",
-        description: "Please upload at least one product image",
+        title: t('modelTryonNoProducts'),
+        description: t('modelTryonNoProductsDesc'),
       });
       return;
     }
@@ -150,7 +161,13 @@ export default function ModelTryOn() {
   const downloadImage = (imageUrl: string, angle: string) => {
     const link = document.createElement('a');
     link.href = imageUrl;
-    link.download = `model-tryon-${angle}-${Date.now()}.png`;
+    const localizedAngle = getCameraAngleLabel(angle)
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s-]/gu, '') // Remove special characters but keep Unicode letters/numbers
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .replace(/^-+|-+$/g, ''); // Trim hyphens from start/end
+    link.download = `model-tryon-${localizedAngle || 'image'}-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -193,7 +210,7 @@ export default function ModelTryOn() {
                         <div className="flex gap-4">
                           <img
                             src={img.preview}
-                            alt={`Product ${index + 1}`}
+                            alt={`${t('modelTryonProductAlt')} ${index + 1}`}
                             className="w-20 h-20 object-cover rounded-lg"
                           />
                           <div className="flex-1 space-y-2">
@@ -290,19 +307,19 @@ export default function ModelTryOn() {
                     name="hairstyle"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Hairstyle</FormLabel>
+                        <FormLabel>{t('modelTryonHairstyle')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-hairstyle">
-                              <SelectValue placeholder="Select hairstyle" />
+                              <SelectValue placeholder={t('modelTryonSelectHairstyle')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Short straight hair">Short straight hair</SelectItem>
-                            <SelectItem value="Medium wavy hair">Medium wavy hair</SelectItem>
-                            <SelectItem value="Long straight hair">Long straight hair</SelectItem>
-                            <SelectItem value="Curly / Afro-textured hair">Curly / Afro-textured hair</SelectItem>
-                            <SelectItem value="Custom">Custom</SelectItem>
+                            <SelectItem value="Short straight hair">{t('modelTryonHairstyleShortStraight')}</SelectItem>
+                            <SelectItem value="Medium wavy hair">{t('modelTryonHairstyleMediumWavy')}</SelectItem>
+                            <SelectItem value="Long straight hair">{t('modelTryonHairstyleLongStraight')}</SelectItem>
+                            <SelectItem value="Curly / Afro-textured hair">{t('modelTryonHairstyleCurly')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonHairstyleCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -317,7 +334,7 @@ export default function ModelTryOn() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input placeholder="Enter custom hairstyle" {...field} data-testid="input-hairstyle-custom" />
+                            <Input placeholder={t('modelTryonEnterCustomHairstyle')} {...field} data-testid="input-hairstyle-custom" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -331,20 +348,20 @@ export default function ModelTryOn() {
                     name="combination"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Model Combination</FormLabel>
+                        <FormLabel>{t('modelTryonCombination')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-combination">
-                              <SelectValue placeholder="Select combination" />
+                              <SelectValue placeholder={t('modelTryonSelectCombination')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Single male model">Single male model</SelectItem>
-                            <SelectItem value="Single female model">Single female model</SelectItem>
-                            <SelectItem value="One male + one female">One male + one female</SelectItem>
-                            <SelectItem value="Two male models">Two male models</SelectItem>
-                            <SelectItem value="Two female models">Two female models</SelectItem>
-                            <SelectItem value="Custom">Custom</SelectItem>
+                            <SelectItem value="Single male model">{t('modelTryonCombinationSingleMale')}</SelectItem>
+                            <SelectItem value="Single female model">{t('modelTryonCombinationSingleFemale')}</SelectItem>
+                            <SelectItem value="One male + one female">{t('modelTryonCombinationMaleFemale')}</SelectItem>
+                            <SelectItem value="Two male models">{t('modelTryonCombinationTwoMale')}</SelectItem>
+                            <SelectItem value="Two female models">{t('modelTryonCombinationTwoFemale')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonCombinationCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -359,7 +376,7 @@ export default function ModelTryOn() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input placeholder="Enter custom combination" {...field} data-testid="input-combination-custom" />
+                            <Input placeholder={t('modelTryonEnterCustomCombination')} {...field} data-testid="input-combination-custom" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -373,20 +390,20 @@ export default function ModelTryOn() {
                     name="scene"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Scene / Location</FormLabel>
+                        <FormLabel>{t('modelTryonScene')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-scene">
-                              <SelectValue placeholder="Select scene" />
+                              <SelectValue placeholder={t('modelTryonSelectScene')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Studio background (clean, plain)">Studio background</SelectItem>
-                            <SelectItem value="City street / urban environment">City street / urban</SelectItem>
-                            <SelectItem value="Home interior (living room / bedroom)">Home interior</SelectItem>
-                            <SelectItem value="Park / nature / outdoor">Park / nature / outdoor</SelectItem>
-                            <SelectItem value="Retail store / shopping mall">Retail store / mall</SelectItem>
-                            <SelectItem value="Custom">Custom</SelectItem>
+                            <SelectItem value="Studio background (clean, plain)">{t('modelTryonSceneStudio')}</SelectItem>
+                            <SelectItem value="City street / urban environment">{t('modelTryonSceneCityStreet')}</SelectItem>
+                            <SelectItem value="Home interior (living room / bedroom)">{t('modelTryonSceneHomeInterior')}</SelectItem>
+                            <SelectItem value="Park / nature / outdoor">{t('modelTryonSceneParkNature')}</SelectItem>
+                            <SelectItem value="Retail store / shopping mall">{t('modelTryonSceneRetail')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonSceneCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -401,7 +418,7 @@ export default function ModelTryOn() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input placeholder="Enter custom scene" {...field} data-testid="input-scene-custom" />
+                            <Input placeholder={t('modelTryonEnterCustomScene')} {...field} data-testid="input-scene-custom" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -415,20 +432,20 @@ export default function ModelTryOn() {
                     name="pose"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Pose</FormLabel>
+                        <FormLabel>{t('modelTryonPose')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-pose">
-                              <SelectValue placeholder="Select pose" />
+                              <SelectValue placeholder={t('modelTryonSelectPose')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Standing front-facing, relaxed">Standing relaxed</SelectItem>
-                            <SelectItem value="Walking mid-step (dynamic pose)">Walking mid-step</SelectItem>
-                            <SelectItem value="Sitting, relaxed pose">Sitting relaxed</SelectItem>
-                            <SelectItem value="Close-up pose focusing on product">Close-up on product</SelectItem>
-                            <SelectItem value="Fashion pose (editorial style)">Fashion editorial</SelectItem>
-                            <SelectItem value="Custom">Custom</SelectItem>
+                            <SelectItem value="Standing front-facing, relaxed">{t('modelTryonPoseStanding')}</SelectItem>
+                            <SelectItem value="Walking mid-step (dynamic pose)">{t('modelTryonPoseWalking')}</SelectItem>
+                            <SelectItem value="Sitting, relaxed pose">{t('modelTryonPoseSitting')}</SelectItem>
+                            <SelectItem value="Close-up pose focusing on product">{t('modelTryonPoseCloseup')}</SelectItem>
+                            <SelectItem value="Fashion pose (editorial style)">{t('modelTryonPoseFashion')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonPoseCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -443,7 +460,7 @@ export default function ModelTryOn() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input placeholder="Enter custom pose" {...field} data-testid="input-pose-custom" />
+                            <Input placeholder={t('modelTryonEnterCustomPose')} {...field} data-testid="input-pose-custom" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -457,19 +474,19 @@ export default function ModelTryOn() {
                     name="aspectRatio"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Aspect Ratio</FormLabel>
+                        <FormLabel>{t('modelTryonAspectRatio')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-aspect-ratio">
-                              <SelectValue placeholder="Select aspect ratio" />
+                              <SelectValue placeholder={t('aspectRatioLabel')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="1:1">1:1 (Square)</SelectItem>
-                            <SelectItem value="9:16">9:16 (Vertical / Story)</SelectItem>
-                            <SelectItem value="16:9">16:9 (Horizontal / Wide)</SelectItem>
-                            <SelectItem value="4:3">4:3</SelectItem>
-                            <SelectItem value="3:4">3:4</SelectItem>
+                            <SelectItem value="1:1">{t('aspectRatio11')}</SelectItem>
+                            <SelectItem value="9:16">{t('aspectRatio916')}</SelectItem>
+                            <SelectItem value="16:9">{t('aspectRatio169')}</SelectItem>
+                            <SelectItem value="4:3">{t('aspectRatio43')}</SelectItem>
+                            <SelectItem value="3:4">{t('aspectRatio34')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -483,27 +500,32 @@ export default function ModelTryOn() {
                     name="cameraAngles"
                     render={() => (
                       <FormItem>
-                        <FormLabel>Camera Angles (multi-select)</FormLabel>
+                        <FormLabel>{t('modelTryonCameraAngles')}</FormLabel>
                         <div className="space-y-2">
-                          {["Front view", "Side view", "Back view", "Custom"].map((angle) => (
+                          {[
+                            { value: "Front view", label: t('modelTryonCameraAngleFront') },
+                            { value: "Side view", label: t('modelTryonCameraAngleSide') },
+                            { value: "Back view", label: t('modelTryonCameraAngleBack') },
+                            { value: "Custom", label: t('modelTryonCameraAngleCustom') }
+                          ].map(({ value, label }) => (
                             <FormField
-                              key={angle}
+                              key={value}
                               control={form.control}
                               name="cameraAngles"
                               render={({ field }) => (
                                 <FormItem className="flex items-center space-x-2 space-y-0">
                                   <FormControl>
                                     <Checkbox
-                                      checked={field.value?.includes(angle)}
+                                      checked={field.value?.includes(value)}
                                       onCheckedChange={(checked) => {
                                         return checked
-                                          ? field.onChange([...field.value, angle])
-                                          : field.onChange(field.value?.filter((val) => val !== angle));
+                                          ? field.onChange([...field.value, value])
+                                          : field.onChange(field.value?.filter((val) => val !== value));
                                       }}
-                                      data-testid={`checkbox-angle-${angle.toLowerCase().replace(/ /g, '-')}`}
+                                      data-testid={`checkbox-angle-${value.toLowerCase().replace(/ /g, '-')}`}
                                     />
                                   </FormControl>
-                                  <FormLabel className="font-normal">{angle}</FormLabel>
+                                  <FormLabel className="font-normal">{label}</FormLabel>
                                 </FormItem>
                               )}
                             />
@@ -521,7 +543,7 @@ export default function ModelTryOn() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input placeholder="Enter custom camera angle" {...field} data-testid="input-angle-custom" />
+                            <Input placeholder={t('modelTryonEnterCustomAngle')} {...field} data-testid="input-angle-custom" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -536,7 +558,7 @@ export default function ModelTryOn() {
                     data-testid="button-generate"
                   >
                     {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {mutation.isPending ? "Generating..." : "Generate Model Try-on"}
+                    {mutation.isPending ? t('modelTryonGenerating') : t('modelTryonGenerate')}
                   </Button>
                 </form>
               </Form>
@@ -546,11 +568,11 @@ export default function ModelTryOn() {
           {/* Results Gallery */}
           <div className="lg:col-span-3">
             <Card className="p-8">
-              <h2 className="text-2xl font-light tracking-wide mb-6">Generated Results</h2>
+              <h2 className="text-2xl font-light tracking-wide mb-6">{t('modelTryonResult')}</h2>
               
               {generatedResults.length === 0 ? (
                 <div className="text-center py-16 text-muted-foreground">
-                  <p>No results yet. Configure and generate your model try-on images.</p>
+                  <p>{t('modelTryonEmptyState')}</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -558,12 +580,12 @@ export default function ModelTryOn() {
                     <Card key={index} className="p-4">
                       <img
                         src={result.imageUrl}
-                        alt={result.cameraAngle}
+                        alt={`${t('modelTryonResultAlt')} - ${result.cameraAngle}`}
                         className="w-full h-auto rounded-lg mb-4 cursor-pointer hover-elevate"
                         data-testid={`img-result-${index}`}
                       />
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{result.cameraAngle}</span>
+                        <span className="text-sm font-medium">{getCameraAngleLabel(result.cameraAngle)}</span>
                         <Button
                           variant="outline"
                           size="sm"
@@ -571,7 +593,7 @@ export default function ModelTryOn() {
                           data-testid={`button-download-${index}`}
                         >
                           <Download className="w-4 h-4 mr-2" />
-                          Download PNG
+                          {t('downloadPNG')}
                         </Button>
                       </div>
                     </Card>
