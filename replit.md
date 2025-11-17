@@ -21,10 +21,11 @@ The application features a single-page layout with a two-column structure (40% c
 - **Frontend:** React, TypeScript, shadcn UI, React Hook Form, TanStack Query, Tailwind CSS, Wouter for routing.
 - **Backend:** Node.js, Express, Multer (for file uploads).
 - **Database:** PostgreSQL with Drizzle ORM for data persistence.
-- **Professional Two-Stage AI Architecture:**
+- **Advanced Three-Stage AI Architecture for Maximum Design Consistency:**
   - **Stage 1 (Prompt Optimizer):** LLM acts as professional designer with 10+ years product design experience, transforms structured inputs into optimized prompts using gemini-2.5-flash text model
   - **Stage 2 (Image Generation):** Uses expertly-crafted prompts with gemini-2.5-flash-image for superior design quality
-  - Intelligent fallback system ensures stability if Stage 1 encounters issues
+  - **Stage 3 (Design Spec Extraction - NEW):** After canonical design generation, extracts structured JSON specification containing all design elements (colors, patterns, textures, materials, branding, decorative elements, structural features) for ultra-strict consistency enforcement
+  - Intelligent fallback system ensures stability if any stage encounters issues
   - Comprehensive debug logging for monitoring and troubleshooting
 - **AI Integration:** Google Gemini 2.5 Flash Image Preview via Replit AI Integrations.
 - **Validation:** Zod with drizzle-zod for robust form validation.
@@ -37,11 +38,13 @@ The application features a single-page layout with a two-column structure (40% c
   - Angle-specific template upload (e.g., template_top, template_45degree, template_side, template_bottom)
   - Fallback mechanism: if no angle-specific template, uses first uploaded template for all angles
   - Validation ensures at least one template is provided
-- **Sequential Generation with ULTRA-STRICT Consistency:**
-  - **Step 1:** First angle generated as canonical design using two-stage AI architecture
-  - **Step 2-4:** Remaining angles use canonical design as reference with ZERO-TOLERANCE consistency requirements
-  - Enhanced AI prompts explicitly forbid any design variations (colors, patterns, materials, placement)
-  - Think of it as rotating a 3D model - design is FIXED, only camera angle changes
+- **Sequential Generation with Structured Specification Consistency:**
+  - **Step 1:** First angle generated as canonical design using three-stage AI architecture
+  - **Step 1.5:** Extract structured design specification (JSON) from canonical containing all design elements: colors, patterns, textures, materials, branding, decorative elements, structural features
+  - **Step 2-4:** Remaining angles use BOTH canonical image AND structured specification as dual control inputs
+  - Each subsequent generation receives explicit positive/negative prompt blocks derived from extracted specification
+  - Fallback to visual-only consistency if specification extraction fails
+  - Think of it as rotating a 3D model with locked design properties - only camera angle changes
 - **Shape Preservation System:** AI prompts strictly enforce preservation of the exact product silhouette, dimensions, proportions, and 3D structure from the template. Only surface design elements (colors, patterns, materials, textures, logos) are modified, treating generation as a "skin wrap."
 - **Enhanced Design Input:** Supports optional reference image uploads, detailed design descriptions (text input), and brand logo uploads to guide AI generation.
 - **Multi-Image Gemini API Integration:** The Gemini API calls accept multiple images (template + canonical design + reference + logo) in a single request for perfect consistency.

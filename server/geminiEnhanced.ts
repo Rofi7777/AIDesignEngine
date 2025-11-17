@@ -1,10 +1,12 @@
-// Enhanced Gemini service with two-stage architecture:
+// Enhanced Gemini service with three-stage architecture:
 // Stage 1: LLM generates optimized prompts (professional designer)
 // Stage 2: Use optimized prompts with gemini-2.5-flash-image-preview
+// Stage 3: Extract structured design spec from canonical design (for consistency)
 
 import { GoogleGenAI, Modality } from "@google/genai";
 import { generateOptimizedPrompts, type DesignInputs, type ModelSceneInputs } from "./promptOptimizer";
 import { ProductType, getProductConfig } from "../shared/productConfig";
+import { extractDesignSpecification, createConsistencyPrompt, type DesignSpecification } from "./designSpecExtractor";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
@@ -30,7 +32,8 @@ export async function generateProductDesignEnhanced(
   brandLogoMimeType?: string,
   designDescription?: string,
   canonicalDesignBuffer?: Buffer,
-  canonicalDesignMimeType?: string
+  canonicalDesignMimeType?: string,
+  designSpecification?: DesignSpecification
 ): Promise<string> {
   if (templateBuffer.length < 100) {
     throw new Error("Image file is too small or invalid. Please upload a valid product template image.");
@@ -43,77 +46,27 @@ export async function generateProductDesignEnhanced(
   let prompt = "";
 
   // CRITICAL: If canonicalDesignBuffer is provided, this is NOT the first generation
-  // We use ULTRA-STRICT CONSISTENCY-FOCUSED prompts to ensure PERFECT design matching
-  if (canonicalDesignBuffer) {
-    // Get first and current angle names
-    const angles = Array.from(config.angles);
-    const firstAngleLabel = config.angleLabels[angles[0]]?.en || angles[0];
-    const currentAngleLabel = angleLabel;
-
-    // For subsequent generations, use MAXIMUM STRICTNESS consistency prompts
-    prompt = `🎯 CRITICAL RENDERING INSTRUCTION 🎯
-
-You are a 3D rendering specialist creating an ALTERNATE CAMERA ANGLE of an EXISTING PRODUCT DESIGN.
-
-📸 IMAGE INPUTS:
-- Image 1: CANONICAL DESIGN (${firstAngleLabel}) - THIS IS YOUR DESIGN REFERENCE
-- Image 2: Product template - THIS IS YOUR SHAPE REFERENCE
-
-🎨 YOUR TASK:
-Render the ${currentAngleLabel} of the EXACT SAME ${productName} design shown in the canonical image (Image 1).
-Think of this as rotating a 3D model to show it from a different camera angle.
-
-⚠️ ULTRA-STRICT CONSISTENCY REQUIREMENTS - ZERO TOLERANCE FOR VARIATION:
-
-🔴 DESIGN ELEMENTS - MUST BE PIXEL-PERFECT IDENTICAL:
-1. ✓ Copy the EXACT SAME pattern/graphic/artwork from canonical image
-2. ✓ Use the IDENTICAL color values (same hex codes, same gradients)
-3. ✓ Match the EXACT SAME color placement and distribution
-4. ✓ Replicate the SAME decorative elements, motifs, and details
-5. ✓ Preserve the EXACT SAME material texture appearance
-6. ✓ Maintain the SAME surface finish (matte/glossy/metallic)
-
-🔴 BRANDING - MUST BE IDENTICAL:
-7. ✓ If logo present: EXACT SAME logo, SAME size, SAME position (adjusted for angle)
-8. ✓ If text present: EXACT SAME text, SAME font, SAME color
-
-🔴 STYLING - MUST MATCH PERFECTLY:
-9. ✓ Same background color/environment
-10. ✓ Same lighting direction and intensity
-11. ✓ Same shadow style and color temperature
-12. ✓ Same overall mood and aesthetic
-
-🔴 SHAPE CONSISTENCY:
-13. ✓ Maintain the product silhouette from the template (Image 2)
-14. ✓ Preserve structural proportions and dimensions
-
-✅ THE ONLY ALLOWED CHANGE:
-- Camera viewpoint: From ${firstAngleLabel} → to ${currentAngleLabel}
-- This means you show the SAME DESIGN from a different viewing angle
-
-❌ ABSOLUTELY FORBIDDEN:
-- NO creative reinterpretation
-- NO color adjustments or "variations"
-- NO adding new design elements
-- NO changing pattern complexity
-- NO artistic liberty whatsoever
-
-📋 DESIGN PARAMETERS (already applied in canonical - for context only):
+  // Use structured design specification for MAXIMUM consistency
+  if (canonicalDesignBuffer && designSpecification) {
+    // Use the structured design specification for ultra-strict consistency
+    prompt = createConsistencyPrompt(designSpecification, angleLabel);
+    
+    // Add product-specific context
+    prompt += `\n\n📋 DESIGN PARAMETERS (Reference Only):
+- Product: ${productName}
 - Theme: ${theme}
 - Style: ${style}
-- Colors: ${color}
+- Base Colors: ${color}
 - Material: ${material}`;
 
     if (designDescription && designDescription.trim()) {
       prompt += `\n- Design Notes: ${designDescription}`;
     }
 
-    prompt += `\n\n🎬 THINK OF THIS AS:
-You are a product photographer taking multiple shots of the SAME physical product from different angles.
-The product design is FIXED and UNCHANGEABLE. Only your camera position changes.
-
-Your success metric: Someone comparing all angles should see the EXACT SAME DESIGN, just from different viewpoints.`;
-
+    prompt += `\n\n🎯 FINAL INSTRUCTION:
+Generate a ${angleLabel} view of this ${productName} that PERFECTLY matches the design specification above.
+Use the provided canonical design image as your visual reference.
+Use the template image to maintain the correct product shape and structure.`;
 
   } else {
     // FIRST generation - Use LLM to generate optimized professional prompt

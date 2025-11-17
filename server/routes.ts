@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateProductDesignEnhanced, generateModelSceneEnhanced } from "./geminiEnhanced";
+import { extractDesignSpecification, type DesignSpecification } from "./designSpecExtractor";
 import multer from "multer";
 import { readFileSync } from "fs";
 
@@ -135,6 +136,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       canonicalImageBuffer = Buffer.from(canonicalBase64, 'base64');
       canonicalImageMimeType = results[firstAngle].match(/data:([^;]+);/)?.[1] || 'image/png';
 
+      // STEP 1.5: Extract design specification from canonical for maximum consistency
+      console.log('[Design Spec Extraction] Analyzing canonical design to extract structured specification...');
+      let designSpec: DesignSpecification | undefined;
+      try {
+        designSpec = await extractDesignSpecification(canonicalBase64, productType);
+        
+        // Check if extraction returned empty/useless spec
+        const hasColors = designSpec.primaryColors.length > 0 || designSpec.secondaryColors.length > 0;
+        const hasPatterns = designSpec.patterns.length > 0;
+        const hasBranding = designSpec.brandingElements.length > 0;
+        const hasAnyDetails = hasColors || hasPatterns || hasBranding;
+        
+        if (hasAnyDetails) {
+          console.log('[Design Spec Extraction] ✅ SUCCESS - Rich specification extracted for consistency enforcement');
+          console.log('[Design Spec] Primary Colors:', designSpec.primaryColors.slice(0, 3).join(', ') || '(none)');
+          console.log('[Design Spec] Patterns:', designSpec.patterns.slice(0, 2).join(', ') || '(none)');
+          console.log('[Design Spec] Branding:', designSpec.brandingElements.slice(0, 2).join(', ') || '(none)');
+        } else {
+          console.warn('[Design Spec Extraction] ⚠️  WARNING - Extraction returned empty specification');
+          console.warn('[Design Spec] Falling back to visual-only consistency (canonical image reference)');
+          designSpec = undefined; // Use visual reference only
+        }
+      } catch (error: any) {
+        console.error('[Design Spec Extraction] ❌ FAILED:', error.message);
+        console.log('[Design Spec] Falling back to visual-only consistency prompts');
+        designSpec = undefined; // Will use visual reference only without structured spec
+      }
+
       // STEP 2: Generate remaining angles using canonical as reference for STRICT consistency
       for (let i = 1; i < anglesArray.length; i++) {
         const angle = anglesArray[i];
@@ -161,7 +190,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             brandLogoFile?.mimetype,
             designDescription,
             canonicalImageBuffer,
-            canonicalImageMimeType
+            canonicalImageMimeType,
+            designSpec // Pass structured design specification for maximum consistency
           );
           
           if (!results[angle]) {
@@ -176,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Validate all expected angles were generated
-      const missingAngles = anglesArray.filter(angle => !results[angle]);
+      const missingAngles = anglesArray.filter((angle: string) => !results[angle]);
       if (missingAngles.length > 0) {
         throw new Error(`Generation incomplete: missing angles ${missingAngles.join(', ')}`);
       }
