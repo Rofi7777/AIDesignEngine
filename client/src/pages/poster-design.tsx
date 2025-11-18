@@ -434,6 +434,26 @@ export default function PosterDesign() {
                       )}
                     />
 
+                    {form.watch("visualStyle") === "custom" && (
+                      <FormField
+                        control={form.control}
+                        name="customVisualStyle"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("posterDesignCustomVisualStyle")}</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={t("posterDesignCustomVisualStylePlaceholder")}
+                                {...field}
+                                data-testid="input-custom-visual-style"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+
                     <FormField
                       control={form.control}
                       name="backgroundScene"
@@ -460,6 +480,26 @@ export default function PosterDesign() {
                       )}
                     />
 
+                    {form.watch("backgroundScene") === "custom" && (
+                      <FormField
+                        control={form.control}
+                        name="customBackgroundScene"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("posterDesignCustomBackgroundScene")}</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={t("posterDesignCustomBackgroundScenePlaceholder")}
+                                {...field}
+                                data-testid="input-custom-background-scene"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+
                     <FormField
                       control={form.control}
                       name="layout"
@@ -485,6 +525,26 @@ export default function PosterDesign() {
                         </FormItem>
                       )}
                     />
+
+                    {form.watch("layout") === "custom" && (
+                      <FormField
+                        control={form.control}
+                        name="customLayout"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("posterDesignCustomLayout")}</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={t("posterDesignCustomLayoutPlaceholder")}
+                                {...field}
+                                data-testid="input-custom-layout"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
                     <FormField
                       control={form.control}
