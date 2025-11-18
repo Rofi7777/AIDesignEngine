@@ -68,7 +68,8 @@ The application features a single-page layout with a two-column structure (40% c
   - **Single-Product Mode:** Precise garment replacement maintaining exact fit and proportions
   - **Multi-Product Mode:** Flexible outfit composition with multiple garments
 - **Smart Garment Integration:** AI intelligently replaces specific clothing items while preserving model pose, lighting, and background
-- **Supported Product Types:** Tops, bottoms, dresses, shoes, accessories, full outfits
+- **Supported Product Types:** Tops, bottoms, dresses, shoes, accessories, full outfits, custom (with customTryonType parameter support)
+- **Custom Type Support:** Users can specify custom garment types when selecting 'custom' tryon type, enabling flexible virtual try-on for specialized products
 
 #### Feature 4: E-commerce Scene Composition (NEW)
 - **Multi-Asset Support:** Combine products and props (max 6 assets), with optional model image for lifestyle scenes
@@ -76,6 +77,9 @@ The application features a single-page layout with a two-column structure (40% c
 - **Asset Type System:** Products (primary focus) and props (supporting elements like plants, furniture, decorative items)
 - **Scene Configuration:** Multiple scene types (home, office, outdoor, cafe, studio, white background, custom), lighting options, composition styles, and aspect ratios
 - **Professional Marketing Scenes:** Generate complete e-commerce photography with proper product placement and styling
+- **Multi-Image Generation:** Support for generating 1, 2, 4, or 8 scene variations in a single request with server-side validation (1-8 range)
+- **Responsive Gallery Display:** Generated scenes displayed in responsive grid layout (1, 2, or 3 columns) with click-to-enlarge functionality
+- **Backward Compatibility:** API returns both single imageUrl (first image) and imageUrls array for legacy support
 
 #### Feature 5: E-commerce Poster Design (NEW)
 - **Three-Module Configuration System:**
@@ -85,12 +89,17 @@ The application features a single-page layout with a two-column structure (40% c
 - **Product Image Management:** Upload 1-6 product images (PNG/JPG, max 10MB each) as main poster elements
 - **AI-Powered Poster Generation:** Three-stage architecture (prompt optimizer → image generation → spec extraction) creates professional marketing posters with integrated products, copy, pricing, and branding
 - **Flexible Asset Integration:** Supports reference images for style guidance and brand logos for identity consistency
+- **Multi-Poster Generation:** Support for generating 1, 2, 4, or 8 poster variations in a single request with server-side validation (1-8 range)
+- **Responsive Gallery Display:** Generated posters displayed in responsive grid layout (1, 2, or 3 columns) with click-to-enlarge functionality in dialog modal
+- **Backward Compatibility:** API returns both single imageUrl (first poster) and imageUrls array for legacy support
 
 #### Cross-Feature Capabilities
-- **High-Resolution PNG Download:** All generated images support full-resolution downloads.
+- **High-Resolution PNG Download:** All generated images support full-resolution downloads (single image mode).
 - **Multi-Language Interface:** Complete support for English, Traditional Chinese, and Vietnamese across all major UI elements.
-- **Comprehensive Validation:** Form validation with user-friendly error messages and custom field clearing.
-- **Click-to-Enlarge:** All generated images include zoom functionality for detailed inspection.
+- **Comprehensive Validation:** Form validation with user-friendly error messages, custom field clearing, and server-side parameter validation.
+- **Click-to-Enlarge:** All generated images include zoom functionality for detailed inspection via dialog modals.
+- **Multi-Image Generation:** E-commerce Scene and Poster Design features support generating 1-8 variations per request with responsive gallery display.
+- **State Management:** Automatic cleanup of previous results when starting new generation requests to prevent UI inconsistencies.
 
 ## External Dependencies
 - **Google Gemini 2.5 Flash Image Preview:** For AI image generation.
