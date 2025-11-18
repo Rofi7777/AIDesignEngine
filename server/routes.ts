@@ -778,6 +778,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         layout,
         customLayout,
         aspectRatio,
+        customWidth,
+        customHeight,
         outputQuantity,
         headlineStyle,
         customHeadline,
@@ -829,6 +831,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({
           error: "Missing required fields: campaignType, visualStyle, backgroundScene, layout, aspectRatio, headlineStyle",
         });
+      }
+
+      // Validate custom dimensions if aspect ratio is custom
+      if (aspectRatio === 'custom') {
+        if (!customWidth || !customHeight) {
+          return res.status(400).json({
+            error: "Custom width and height are required when using custom aspect ratio",
+          });
+        }
+        const width = parseInt(customWidth, 10);
+        const height = parseInt(customHeight, 10);
+        if (isNaN(width) || isNaN(height) || width < 100 || height < 100 || width > 4096 || height > 4096) {
+          return res.status(400).json({
+            error: "Custom dimensions must be between 100 and 4096 pixels",
+          });
+        }
       }
 
       // Parse selling points if provided as JSON string
@@ -892,6 +910,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         layout,
         customLayout,
         aspectRatio,
+        customWidth: customWidth ? parseInt(customWidth, 10) : undefined,
+        customHeight: customHeight ? parseInt(customHeight, 10) : undefined,
         headlineStyle,
         customHeadline,
         autoGenerateHeadline,
@@ -924,6 +944,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         backgroundScene,
         layout,
         aspectRatio,
+        customWidth: customWidth ? parseInt(customWidth, 10) : null,
+        customHeight: customHeight ? parseInt(customHeight, 10) : null,
         headlineStyle,
         priceStyle: priceStyle || null,
         logoPosition: logoPosition || null,

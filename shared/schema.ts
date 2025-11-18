@@ -544,7 +544,9 @@ export const posterRequests = pgTable("poster_requests", {
   customBackgroundScene: text("custom_background_scene"),
   layout: varchar("layout", { length: 100 }).notNull(), // 'single-centered', 'product-number', 'left-right-split', 'top-bottom-split', 'grid-collage', 'custom'
   customLayout: text("custom_layout"),
-  aspectRatio: varchar("aspect_ratio", { length: 10 }).notNull(), // '1:1', '9:16', '16:9', '4:3', '3:4'
+  aspectRatio: varchar("aspect_ratio", { length: 20 }).notNull(), // '1:1', '9:16', '16:9', '4:3', '3:4', '1080x1080', '1080x1920', '1920x1080', '800x600', 'custom'
+  customWidth: integer("custom_width"), // Custom width in pixels (e.g., 1024)
+  customHeight: integer("custom_height"), // Custom height in pixels (e.g., 768)
   // Module C: Copy & Elements
   headlineStyle: varchar("headline_style", { length: 100 }).notNull(), // 'emotional', 'benefit-focused', 'price-focused', 'brand-story', 'custom', 'auto-generate'
   customHeadline: text("custom_headline"),

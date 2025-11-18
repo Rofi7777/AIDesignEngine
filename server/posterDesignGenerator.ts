@@ -23,6 +23,8 @@ export interface PosterDesignOptions {
   layout: string;
   customLayout?: string;
   aspectRatio: string;
+  customWidth?: number;
+  customHeight?: number;
   
   // Module C: Copy & Elements
   headlineStyle: string;
@@ -139,7 +141,11 @@ function buildPromptOptimizerRequest(assets: PosterAssets, options: PosterDesign
   request += `- Visual Style: ${options.visualStyle}${options.customVisualStyle ? ` (${options.customVisualStyle})` : ''}\n`;
   request += `- Background Scene: ${options.backgroundScene}${options.customBackgroundScene ? ` (${options.customBackgroundScene})` : ''}\n`;
   request += `- Layout: ${options.layout}${options.customLayout ? ` (${options.customLayout})` : ''}\n`;
-  request += `- Aspect Ratio: ${options.aspectRatio}\n`;
+  if (options.aspectRatio === 'custom' && options.customWidth && options.customHeight) {
+    request += `- Dimensions: ${options.customWidth}×${options.customHeight} pixels (custom size)\n`;
+  } else {
+    request += `- Aspect Ratio: ${options.aspectRatio}\n`;
+  }
   request += `\n`;
   
   // Module C: Copy & Elements
@@ -199,7 +205,11 @@ function buildFallbackPrompt(assets: PosterAssets, options: PosterDesignOptions)
   prompt += `VISUAL STYLE: ${options.visualStyle}${options.customVisualStyle ? ` (${options.customVisualStyle})` : ''}\n`;
   prompt += `- Background: ${options.backgroundScene}${options.customBackgroundScene ? ` - ${options.customBackgroundScene}` : ''}\n`;
   prompt += `- Layout: ${options.layout}${options.customLayout ? ` - ${options.customLayout}` : ''}\n`;
-  prompt += `- Aspect Ratio: ${options.aspectRatio}\n\n`;
+  if (options.aspectRatio === 'custom' && options.customWidth && options.customHeight) {
+    prompt += `- Dimensions: ${options.customWidth}×${options.customHeight} pixels (custom size)\n\n`;
+  } else {
+    prompt += `- Aspect Ratio: ${options.aspectRatio}\n\n`;
+  }
   
   // Product placement
   prompt += `PRODUCT DISPLAY:\n`;

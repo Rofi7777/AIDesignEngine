@@ -50,6 +50,8 @@ const formSchema = z.object({
   layout: z.string().min(1, "Layout is required"),
   customLayout: z.string().optional(),
   aspectRatio: z.string().min(1, "Aspect ratio is required"),
+  customWidth: z.string().optional(),
+  customHeight: z.string().optional(),
   outputQuantity: z.string().min(1, "Output quantity is required"),
   // Module C
   headlineStyle: z.string().min(1, "Headline style is required"),
@@ -66,6 +68,19 @@ const formSchema = z.object({
   customPriceStyle: z.string().optional(),
   logoPosition: z.string().optional(),
   brandTagline: z.string().optional(),
+}).refine((data) => {
+  if (data.aspectRatio === 'custom') {
+    if (!data.customWidth || !data.customHeight) {
+      return false;
+    }
+    const width = parseInt(data.customWidth, 10);
+    const height = parseInt(data.customHeight, 10);
+    return !isNaN(width) && !isNaN(height) && width >= 100 && width <= 4096 && height >= 100 && height <= 4096;
+  }
+  return true;
+}, {
+  message: "Custom dimensions must be between 100 and 4096 pixels",
+  path: ["customWidth"],
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -92,6 +107,8 @@ export default function PosterDesign() {
       backgroundScene: "",
       layout: "",
       aspectRatio: "1:1",
+      customWidth: "",
+      customHeight: "",
       outputQuantity: "1",
       headlineStyle: "",
       autoGenerateHeadline: false,
@@ -154,8 +171,12 @@ export default function PosterDesign() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to generate poster");
+        const errorData = await response.json();
+        const errorMessage = errorData.error || errorData.message || "Failed to generate poster";
+        const error: any = new Error(errorMessage);
+        error.error = errorData.error;
+        error.message = errorMessage;
+        throw error;
       }
 
       return await response.json();
@@ -174,10 +195,11 @@ export default function PosterDesign() {
         description: t("posterDesignSuccessMessage"),
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
+      const errorMessage = error?.message || error?.error || "Failed to generate poster. Please check your inputs and try again.";
       toast({
         title: t("posterDesignErrorTitle"),
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -554,7 +576,7 @@ export default function PosterDesign() {
                           <FormLabel>{t("posterDesignAspectRatio")} *</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger data-testid="select-aspect-ratio">
                                 <SelectValue />
                               </SelectTrigger>
                             </FormControl>
@@ -564,12 +586,59 @@ export default function PosterDesign() {
                               <SelectItem value="16:9">{t("posterAspectRatioLandscape")}</SelectItem>
                               <SelectItem value="4:3">{t("posterAspectRatio43")}</SelectItem>
                               <SelectItem value="3:4">{t("posterAspectRatio34")}</SelectItem>
+                              <SelectItem value="1080x1080">{t("posterAspectRatio1080x1080")}</SelectItem>
+                              <SelectItem value="1080x1920">{t("posterAspectRatio1080x1920")}</SelectItem>
+                              <SelectItem value="1920x1080">{t("posterAspectRatio1920x1080")}</SelectItem>
+                              <SelectItem value="800x600">{t("posterAspectRatio800x600")}</SelectItem>
+                              <SelectItem value="1200x1600">{t("posterAspectRatio1200x1600")}</SelectItem>
+                              <SelectItem value="custom">{t("posterAspectRatioCustom")}</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+
+                    {form.watch("aspectRatio") === "custom" && (
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="customWidth"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t("posterCustomWidth")} *</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  placeholder={t("posterCustomWidthPlaceholder")}
+                                  {...field}
+                                  data-testid="input-custom-width"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="customHeight"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t("posterCustomHeight")} *</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  placeholder={t("posterCustomHeightPlaceholder")}
+                                  {...field}
+                                  data-testid="input-custom-height"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
 
                     <FormField
                       control={form.control}
