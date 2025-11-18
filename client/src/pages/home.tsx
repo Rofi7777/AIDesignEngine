@@ -34,7 +34,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useTranslation } from "@/contexts/LanguageContext";
-import { LanguageSelector } from "@/components/LanguageSelector";
 import {
   Upload,
   Sparkles,
@@ -571,20 +570,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary" data-testid="logo-icon">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <h1 className="text-2xl font-light tracking-wide" data-testid="text-app-title">{t('appTitle')}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <LanguageSelector />
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto px-6 py-16">
         <div className="mb-16 text-center space-y-4">
           <h2 className="text-4xl font-light tracking-wide text-foreground" data-testid="text-hero-title">
