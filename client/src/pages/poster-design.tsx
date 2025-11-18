@@ -108,12 +108,16 @@ export default function PosterDesign() {
       setSelectedPoster(null);
     },
     mutationFn: async (data: FormData) => {
+      console.log('[Poster Design] Form data received:', data);
+      console.log('[Poster Design] Output Quantity from form:', data.outputQuantity);
+      
       const formData = new FormData();
       
       // Add form fields
       Object.entries(data).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== "") {
           formData.append(key, String(value));
+          console.log(`[Poster Design] Added field ${key}:`, value);
         }
       });
       
@@ -157,8 +161,13 @@ export default function PosterDesign() {
       return await response.json();
     },
     onSuccess: (data) => {
+      console.log('[Poster Design] API Response:', data);
+      console.log('[Poster Design] imageUrls:', data.imageUrls);
+      console.log('[Poster Design] imageUrl:', data.imageUrl);
+      
       // Support both single and multiple posters
       const posters = data.imageUrls || [data.imageUrl];
+      console.log('[Poster Design] Setting posters:', posters);
       setGeneratedPosters(posters);
       toast({
         title: t("posterDesignSuccessTitle"),
