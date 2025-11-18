@@ -303,13 +303,42 @@ async function generatePosterImage(
     },
   });
 
+  console.log('[Poster Generation] Full response:', JSON.stringify({
+    candidatesCount: response.candidates?.length,
+    firstCandidate: response.candidates?.[0] ? {
+      finishReason: response.candidates[0].finishReason,
+      safetyRatings: response.candidates[0].safetyRatings,
+      partsCount: response.candidates[0].content?.parts?.length,
+      parts: response.candidates[0].content?.parts?.map((p: any) => ({
+        hasText: !!p.text,
+        hasInlineData: !!p.inlineData,
+        inlineDataMimeType: p.inlineData?.mimeType,
+        inlineDataSize: p.inlineData?.data?.length
+      }))
+    } : null,
+    promptFeedback: response.promptFeedback
+  }, null, 2));
+
   const candidate = response.candidates?.[0];
-  const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
+  
+  if (!candidate) {
+    console.error('[Poster Generation] No candidates in response');
+    throw new Error(`No response from Gemini. Prompt feedback: ${JSON.stringify(response.promptFeedback)}`);
+  }
+
+  if (candidate.finishReason && candidate.finishReason !== 'STOP') {
+    console.error('[Poster Generation] Unusual finish reason:', candidate.finishReason);
+    throw new Error(`Generation stopped: ${candidate.finishReason}. Safety ratings: ${JSON.stringify(candidate.safetyRatings)}`);
+  }
+
+  const imagePart = candidate.content?.parts?.find((part: any) => part.inlineData);
 
   if (!imagePart?.inlineData?.data) {
+    console.error('[Poster Generation] No image data found in response parts');
     throw new Error("No image data in response from Gemini");
   }
 
   const resultMimeType = imagePart.inlineData.mimeType || "image/png";
+  console.log('[Poster Generation] ✅ Image generated successfully');
   return `data:${resultMimeType};base64,${imagePart.inlineData.data}`;
 }
