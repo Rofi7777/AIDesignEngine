@@ -94,6 +94,7 @@ The application features a single-page layout with a two-column structure (40% c
 - **Backward Compatibility:** API returns both single imageUrl (first poster) and imageUrls array for legacy support
 
 #### Cross-Feature Capabilities
+- **Custom Pixel Dimension Support (NEW):** Model Try-on, Virtual Try-on, and E-commerce Scene features support custom pixel dimensions (100-4096 pixel range) with 5 preset options (1080×1080, 1080×1920, 1920×1080, 800×600, 1200×1600) plus custom input. Frontend validates range before submission, backend enforces 100-4096 bounds with clear error messages, and generators use exact pixel specifications in prompts to Gemini AI.
 - **High-Resolution PNG Download:** All generated images support full-resolution downloads (single image mode).
 - **Multi-Language Interface:** Complete support for English, Traditional Chinese, and Vietnamese across all major UI elements.
 - **Comprehensive Validation:** Form validation with user-friendly error messages, custom field clearing, and server-side parameter validation.

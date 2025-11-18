@@ -387,6 +387,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Validate custom dimensions if aspectRatio is 'custom'
+      let customWidth: number | null = null;
+      let customHeight: number | null = null;
+      
+      if (options.aspectRatio === 'custom') {
+        const width = parseInt(options.customWidth || '');
+        const height = parseInt(options.customHeight || '');
+        
+        if (isNaN(width) || isNaN(height)) {
+          return res.status(400).json({
+            error: "Custom dimensions are required when using custom aspect ratio",
+          });
+        }
+        
+        if (width < 100 || width > 4096 || height < 100 || height > 4096) {
+          return res.status(400).json({
+            error: "Custom dimensions must be between 100 and 4096 pixels",
+          });
+        }
+        
+        customWidth = width;
+        customHeight = height;
+      }
+
       // Save try-on session to database
       const tryOnId = await storage.createModelTryOn({
         nationality: options.nationality,
@@ -400,6 +424,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         pose: options.pose,
         poseCustom: options.poseCustom || null,
         aspectRatio: options.aspectRatio,
+        customWidth,
+        customHeight,
         cameraAngles: JSON.stringify(options.cameraAngles),
         cameraAngleCustom: options.cameraAngleCustom || null,
       });
@@ -460,6 +486,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           {
             ...options,
             cameraAngle,
+            customWidth,
+            customHeight,
           }
         );
 
@@ -548,6 +576,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Validate custom dimensions if aspectRatio is 'custom'
+      let customWidth: number | null = null;
+      let customHeight: number | null = null;
+      const { customWidth: reqCustomWidth, customHeight: reqCustomHeight } = req.body;
+      
+      if (aspectRatio === 'custom') {
+        const width = parseInt(reqCustomWidth || '');
+        const height = parseInt(reqCustomHeight || '');
+        
+        if (isNaN(width) || isNaN(height)) {
+          return res.status(400).json({
+            error: "Custom dimensions are required when using custom aspect ratio",
+          });
+        }
+        
+        if (width < 100 || width > 4096 || height < 100 || height > 4096) {
+          return res.status(400).json({
+            error: "Custom dimensions must be between 100 and 4096 pixels",
+          });
+        }
+        
+        customWidth = width;
+        customHeight = height;
+      }
+
       const parsedProductTypes = JSON.parse(productTypes || '[]');
       const parsedProductNames = JSON.parse(productNames || '[]');
 
@@ -558,6 +611,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tryonType: tryonMode === 'single' ? tryonType : null,
         preservePose: preservePose || 'yes',
         style: style || 'natural',
+        aspectRatio,
+        customWidth,
+        customHeight,
       });
 
       // Save product images
@@ -597,6 +653,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           preservePose: preservePose || 'yes',
           style: style || 'natural',
           aspectRatio,
+          customWidth,
+          customHeight,
         }
       );
 
@@ -673,6 +731,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Validate custom dimensions if aspectRatio is 'custom'
+      let customWidth: number | null = null;
+      let customHeight: number | null = null;
+      const { customWidth: reqCustomWidth, customHeight: reqCustomHeight } = req.body;
+      
+      if (aspectRatio === 'custom') {
+        const width = parseInt(reqCustomWidth || '');
+        const height = parseInt(reqCustomHeight || '');
+        
+        if (isNaN(width) || isNaN(height)) {
+          return res.status(400).json({
+            error: "Custom dimensions are required when using custom aspect ratio",
+          });
+        }
+        
+        if (width < 100 || width > 4096 || height < 100 || height > 4096) {
+          return res.status(400).json({
+            error: "Custom dimensions must be between 100 and 4096 pixels",
+          });
+        }
+        
+        customWidth = width;
+        customHeight = height;
+      }
+
       const parsedAssetTypes = JSON.parse(assetTypes || '[]');
       const parsedAssetNames = JSON.parse(assetNames || '[]');
 
@@ -685,6 +768,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lighting,
         composition,
         aspectRatio,
+        customWidth,
+        customHeight,
       });
 
       // Save asset images
@@ -725,6 +810,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             lighting,
             composition,
             aspectRatio,
+            customWidth,
+            customHeight,
           }
         );
         

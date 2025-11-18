@@ -322,7 +322,9 @@ export const modelTryOns = pgTable("model_try_ons", {
   sceneCustom: varchar("scene_custom", { length: 255 }),
   pose: varchar("pose", { length: 100 }).notNull(),
   poseCustom: varchar("pose_custom", { length: 255 }),
-  aspectRatio: varchar("aspect_ratio", { length: 10 }).notNull(),
+  aspectRatio: varchar("aspect_ratio", { length: 20 }).notNull(),
+  customWidth: integer("custom_width"), // Custom width in pixels for 'custom' aspect ratio
+  customHeight: integer("custom_height"), // Custom height in pixels for 'custom' aspect ratio
   cameraAngles: text("camera_angles").notNull(), // JSON array of angles
   cameraAngleCustom: varchar("camera_angle_custom", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -428,6 +430,9 @@ export const virtualTryOns = pgTable("virtual_try_ons", {
   tryonType: varchar("tryon_type", { length: 100 }), // for single mode: 'accessory', 'top', 'bottom', 'full'
   preservePose: varchar("preserve_pose", { length: 10 }).default('yes'),
   style: varchar("style", { length: 100 }).default('natural'), // 'natural' or 'fashion'
+  aspectRatio: varchar("aspect_ratio", { length: 20 }).notNull().default('9:16'),
+  customWidth: integer("custom_width"), // Custom width in pixels for 'custom' aspect ratio
+  customHeight: integer("custom_height"), // Custom height in pixels for 'custom' aspect ratio
   resultImageUrl: text("result_image_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -448,7 +453,9 @@ export const ecommerceScenes = pgTable("ecommerce_scenes", {
   sceneType: varchar("scene_type", { length: 100 }).notNull(), // 'home', 'office', 'outdoor', 'cafe', etc.
   lighting: varchar("lighting", { length: 100 }).notNull(), // 'natural', 'warm', 'bright', 'soft'
   composition: varchar("composition", { length: 100 }).notNull(), // 'center', 'rule-of-thirds', 'diagonal'
-  aspectRatio: varchar("aspect_ratio", { length: 10 }).notNull(),
+  aspectRatio: varchar("aspect_ratio", { length: 20 }).notNull(),
+  customWidth: integer("custom_width"), // Custom width in pixels for 'custom' aspect ratio
+  customHeight: integer("custom_height"), // Custom height in pixels for 'custom' aspect ratio
   resultImageUrl: text("result_image_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

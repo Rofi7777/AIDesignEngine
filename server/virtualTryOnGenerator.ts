@@ -14,6 +14,8 @@ interface VirtualTryOnOptions {
   preservePose: string;
   style: string;
   aspectRatio: string;
+  customWidth?: number;
+  customHeight?: number;
 }
 
 interface ProductInput {
@@ -172,7 +174,9 @@ TECHNICAL SPECIFICATIONS:
 - Natural shadows and highlights on the products
 - Seamless integration between model and products
 - Maintain proper proportions and fit
-- Aspect ratio: ${options.aspectRatio}
+- ${options.aspectRatio === 'custom' && options.customWidth && options.customHeight 
+    ? `Image dimensions: exactly ${options.customWidth}×${options.customHeight} pixels` 
+    : `Aspect ratio: ${options.aspectRatio}`}
 
 INPUTS PROVIDED:
 1. Model image (reference for body, face, and ${preservePose ? 'exact pose' : 'general pose'})

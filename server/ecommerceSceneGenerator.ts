@@ -14,6 +14,8 @@ interface EcommerceSceneOptions {
   lighting: string;
   composition: string;
   aspectRatio: string;
+  customWidth?: number;
+  customHeight?: number;
 }
 
 interface SceneAsset {
@@ -102,6 +104,10 @@ function buildEcommerceScenePrompt(
   const products = assets.filter(a => a.assetType === 'product');
   const props = assets.filter(a => a.assetType === 'prop');
 
+  const aspectRatioText = options.aspectRatio === 'custom' && options.customWidth && options.customHeight
+    ? `Image dimensions: exactly ${options.customWidth}×${options.customHeight} pixels`
+    : `Aspect Ratio: ${options.aspectRatio}`;
+
   let prompt = hasModel 
     ? `You are an expert e-commerce photographer and scene compositor. Create a professional marketing photograph that combines the provided model with products and props into a cohesive, compelling scene.
 
@@ -109,7 +115,7 @@ SCENE SPECIFICATION:
 - Scene Type: ${options.sceneType}
 - Lighting Style: ${options.lighting}
 - Composition: ${options.composition}
-- Aspect Ratio: ${options.aspectRatio}
+- ${aspectRatioText}
 
 `
     : `You are an expert e-commerce product photographer. Create a professional marketing photograph that showcases the provided products and props in an appealing, commercial-ready display scene.
@@ -118,7 +124,7 @@ SCENE SPECIFICATION:
 - Scene Type: ${options.sceneType}
 - Lighting Style: ${options.lighting}
 - Composition: ${options.composition}
-- Aspect Ratio: ${options.aspectRatio}
+- ${aspectRatioText}
 
 `;
 

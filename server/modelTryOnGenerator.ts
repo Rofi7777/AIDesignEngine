@@ -22,6 +22,8 @@ interface ModelTryOnOptions {
   aspectRatio: string;
   cameraAngle: string;
   cameraAngleCustom?: string;
+  customWidth?: number;
+  customHeight?: number;
 }
 
 interface ProductInfo {
@@ -169,7 +171,9 @@ Scene & composition:
   - Make sure the product(s) is clearly visible and visually emphasized in the frame
 
 Aspect ratio:
-  - Generate the image in a ${options.aspectRatio} aspect ratio
+  - ${options.aspectRatio === 'custom' && options.customWidth && options.customHeight 
+      ? `Generate the image at exactly ${options.customWidth}×${options.customHeight} pixels` 
+      : `Generate the image in a ${options.aspectRatio} aspect ratio`}
 
 Rendering style:
   - Use realistic human proportions and natural poses

@@ -48,7 +48,22 @@ export default function VirtualTryOn() {
     preservePose: z.string(),
     style: z.string(),
     aspectRatio: z.string().min(1, "Aspect ratio is required"),
-  });
+    customWidth: z.string().optional(),
+    customHeight: z.string().optional(),
+  }).refine(
+    (data) => {
+      if (data.aspectRatio === 'custom') {
+        const width = parseInt(data.customWidth || '');
+        const height = parseInt(data.customHeight || '');
+        return !isNaN(width) && !isNaN(height) && width >= 100 && width <= 4096 && height >= 100 && height <= 4096;
+      }
+      return true;
+    },
+    {
+      message: "Custom dimensions must be between 100 and 4096 pixels",
+      path: ['customWidth'],
+    }
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,6 +74,8 @@ export default function VirtualTryOn() {
       preservePose: 'yes',
       style: 'natural',
       aspectRatio: '9:16',
+      customWidth: '',
+      customHeight: '',
     },
   });
 
@@ -96,8 +113,12 @@ export default function VirtualTryOn() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Generation failed');
+        const errorData = await response.json();
+        const errorMessage = errorData.error || errorData.message || "Failed to generate virtual try-on";
+        const error: any = new Error(errorMessage);
+        error.error = errorData.error;
+        error.message = errorMessage;
+        throw error;
       }
 
       return response.json();
@@ -109,11 +130,12 @@ export default function VirtualTryOn() {
         description: t('toastModelSuccess'),
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
+      const errorMessage = error?.message || error?.error || 'Generation failed';
       toast({
         variant: "destructive",
         title: t('toastErrorTitle'),
-        description: error.message,
+        description: errorMessage,
       });
     },
   });
@@ -497,12 +519,60 @@ export default function VirtualTryOn() {
                             <SelectItem value="4:3">{t('aspectRatio43')}</SelectItem>
                             <SelectItem value="9:16">{t('aspectRatio916')}</SelectItem>
                             <SelectItem value="16:9">{t('aspectRatio169')}</SelectItem>
+                            <SelectItem value="1080x1080">{t('posterDesignPixelSize1080x1080')}</SelectItem>
+                            <SelectItem value="1080x1920">{t('posterDesignPixelSize1080x1920')}</SelectItem>
+                            <SelectItem value="1920x1080">{t('posterDesignPixelSize1920x1080')}</SelectItem>
+                            <SelectItem value="800x600">{t('posterDesignPixelSize800x600')}</SelectItem>
+                            <SelectItem value="1200x1600">{t('posterDesignPixelSize1200x1600')}</SelectItem>
+                            <SelectItem value="custom">{t('posterDesignPixelSizeCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* Custom Dimensions - Show only when custom aspect ratio is selected */}
+                  {form.watch('aspectRatio') === 'custom' && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="customWidth"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('posterDesignCustomWidth')}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder={t('posterDesignCustomWidthPlaceholder')}
+                                {...field}
+                                data-testid="input-custom-width"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="customHeight"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('posterDesignCustomHeight')}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder={t('posterDesignCustomHeightPlaceholder')}
+                                {...field}
+                                data-testid="input-custom-height"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
 
                   <Button 
                     type="submit" 
