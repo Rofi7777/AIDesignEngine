@@ -111,7 +111,7 @@ Key expertise areas:
           parts: [
             { text: promptOptimizerSystemPrompt },
             { text: "\n\nUser Requirements:\n" + userRequest },
-            { text: "\n\nPlease create a detailed, professional image generation prompt that will produce a high-converting e-commerce poster based on these requirements. Focus on visual details, composition, typography, and marketing effectiveness." }
+            { text: "\n\n⚠️ CRITICAL INSTRUCTION: The user has uploaded specific product images that MUST be used exactly as shown. Create a detailed image generation prompt that:\n1. MANDATES using the uploaded product images without any modifications\n2. Emphasizes that products must appear exactly as shown (same colors, shape, details, logos)\n3. Clarifies that ONLY background, text, and decorative elements should be generated\n4. Makes product consistency the HIGHEST priority\n5. Includes all marketing elements and design specifications from the requirements\n\nThe prompt should produce a high-converting e-commerce poster while preserving 100% product fidelity." }
           ],
         },
       ],
@@ -186,11 +186,17 @@ function buildPromptOptimizerRequest(assets: PosterAssets, options: PosterDesign
     request += `- Brand Tagline: "${options.brandTagline}"\n`;
   }
   
-  request += `\n## Product Information\n`;
+  request += `\n## Product Information (CRITICAL - HIGHEST PRIORITY)\n`;
+  request += `⚠️ MANDATORY REQUIREMENT: The uploaded product images MUST be used exactly as provided\n`;
+  request += `⚠️ DO NOT create new products, alter product appearance, or substitute with similar items\n`;
+  request += `⚠️ PRESERVE all product details: exact shape, colors, textures, logos, patterns, and features\n`;
+  request += `⚠️ The products in the uploaded images are the SOURCE OF TRUTH - they must appear exactly as shown\n`;
   request += `- Number of Products: ${assets.productImages.length}\n`;
   if (assets.productImages.some(p => p.name)) {
     request += `- Product Names: ${assets.productImages.map(p => p.name).filter(Boolean).join(', ')}\n`;
   }
+  request += `- The poster design should enhance these specific products with marketing elements, NOT create new ones\n`;
+  request += `- Only the background, text, and decorative elements should be generated - the products must remain unchanged\n`;
   
   return request;
 }
@@ -211,14 +217,21 @@ function buildFallbackPrompt(assets: PosterAssets, options: PosterDesignOptions)
     prompt += `- Aspect Ratio: ${options.aspectRatio}\n\n`;
   }
   
-  // Product placement
-  prompt += `PRODUCT DISPLAY:\n`;
+  // Product placement - CRITICAL: Product consistency
+  prompt += `PRODUCT DISPLAY (CRITICAL - HIGHEST PRIORITY):\n`;
+  prompt += `⚠️ MANDATORY: You MUST use the exact products shown in the uploaded product images\n`;
+  prompt += `⚠️ DO NOT create new products or modify the product appearance\n`;
+  prompt += `⚠️ PRESERVE all product details: shape, colors, textures, logos, and features\n`;
   if (assets.productImages.length === 1) {
-    prompt += `- Single product as main hero element\n`;
+    prompt += `- Display the single uploaded product image as the main hero element\n`;
+    prompt += `- The product must be the focal point and clearly recognizable\n`;
   } else {
-    prompt += `- ${assets.productImages.length} products arranged in ${options.layout} layout\n`;
+    prompt += `- Display all ${assets.productImages.length} uploaded product images in ${options.layout} layout\n`;
+    prompt += `- Each product must remain exactly as shown in its uploaded image\n`;
   }
-  prompt += `- Ensure products are prominently displayed and clearly visible\n\n`;
+  prompt += `- Products should be prominently displayed and clearly visible\n`;
+  prompt += `- Only add marketing elements (text, background, decorations) around the products\n`;
+  prompt += `- The uploaded product images are the SOURCE OF TRUTH - use them exactly\n\n`;
   
   // Marketing copy
   prompt += `MARKETING ELEMENTS:\n`;
