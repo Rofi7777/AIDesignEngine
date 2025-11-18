@@ -33,6 +33,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Upload, X, Download, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
@@ -75,7 +76,8 @@ export default function PosterDesign() {
   const [productImages, setProductImages] = useState<File[]>([]);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [logoImage, setLogoImage] = useState<File | null>(null);
-  const [generatedPoster, setGeneratedPoster] = useState<string | null>(null);
+  const [generatedPosters, setGeneratedPosters] = useState<string[]>([]);
+  const [selectedPoster, setSelectedPoster] = useState<string | null>(null);
   const [activeModule, setActiveModule] = useState<string>("module-a");
   
   const productInputRef = useRef<HTMLInputElement>(null);
@@ -100,6 +102,11 @@ export default function PosterDesign() {
   });
 
   const generateMutation = useMutation({
+    onMutate: () => {
+      // Clear previous results when starting new generation
+      setGeneratedPosters([]);
+      setSelectedPoster(null);
+    },
     mutationFn: async (data: FormData) => {
       const formData = new FormData();
       
@@ -150,7 +157,9 @@ export default function PosterDesign() {
       return await response.json();
     },
     onSuccess: (data) => {
-      setGeneratedPoster(data.imageUrl);
+      // Support both single and multiple posters
+      const posters = data.imageUrls || [data.imageUrl];
+      setGeneratedPosters(posters);
       toast({
         title: t("posterDesignSuccessTitle"),
         description: t("posterDesignSuccessMessage"),
@@ -198,9 +207,9 @@ export default function PosterDesign() {
   };
 
   const downloadPoster = () => {
-    if (!generatedPoster) return;
+    if (generatedPosters.length === 0) return;
     const link = document.createElement("a");
-    link.href = generatedPoster;
+    link.href = generatedPosters[0];
     link.download = `poster-${Date.now()}.png`;
     link.click();
   };
@@ -816,22 +825,37 @@ export default function PosterDesign() {
         <div className="space-y-4">
           <Card className="min-h-[600px] flex items-center justify-center">
             <CardContent className="pt-6">
-              {generatedPoster ? (
+              {generatedPosters.length > 0 ? (
                 <div className="space-y-4">
-                  <img
-                    src={generatedPoster}
-                    alt="Generated Poster"
-                    className="max-w-full rounded-lg shadow-lg cursor-pointer"
-                    data-testid="img-generated-poster"
-                  />
-                  <Button
-                    onClick={downloadPoster}
-                    className="w-full"
-                    data-testid="button-download-poster"
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    {t("posterDesignDownload")}
-                  </Button>
+                  <div className={`grid gap-4 ${generatedPosters.length === 1 ? 'grid-cols-1' : generatedPosters.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
+                    {generatedPosters.map((posterUrl, index) => (
+                      <div 
+                        key={index}
+                        className="relative group cursor-pointer"
+                        onClick={() => setSelectedPoster(posterUrl)}
+                        data-testid={`img-generated-poster-${index}`}
+                      >
+                        <img
+                          src={posterUrl}
+                          alt={`Generated Poster ${index + 1}`}
+                          className="w-full rounded-lg shadow-lg"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg flex items-center justify-center">
+                          <Upload className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {generatedPosters.length === 1 && (
+                    <Button
+                      onClick={downloadPoster}
+                      className="w-full"
+                      data-testid="button-download-poster"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      {t("posterDesignDownload")}
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground p-8">
@@ -843,6 +867,15 @@ export default function PosterDesign() {
           </Card>
         </div>
       </div>
+
+      {/* Poster Preview Dialog */}
+      <Dialog open={!!selectedPoster} onOpenChange={(open) => !open && setSelectedPoster(null)}>
+        <DialogContent className="max-w-4xl">
+          {selectedPoster && (
+            <img src={selectedPoster} alt="Poster Preview" className="w-full rounded-lg" />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

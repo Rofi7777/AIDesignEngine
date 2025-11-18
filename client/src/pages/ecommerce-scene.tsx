@@ -39,7 +39,7 @@ export default function EcommerceScene() {
     assetType: 'product' | 'prop';
     name?: string;
   }>>([]);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const formSchema = z.object({
@@ -72,6 +72,11 @@ export default function EcommerceScene() {
   });
 
   const mutation = useMutation({
+    onMutate: () => {
+      // Clear previous results when starting new generation
+      setGeneratedImages([]);
+      setSelectedImage(null);
+    },
     mutationFn: async (data: z.infer<typeof formSchema>) => {
       if (assetImages.length === 0) {
         throw new Error("At least one asset (product or prop) is required");
@@ -110,7 +115,9 @@ export default function EcommerceScene() {
       return response.json();
     },
     onSuccess: (data) => {
-      setGeneratedImage(data.imageUrl);
+      // Support both single and multiple images
+      const images = data.imageUrls || [data.imageUrl];
+      setGeneratedImages(images);
       toast({
         title: t('toastSuccessTitle'),
         description: t('toastModelSuccess'),
@@ -567,31 +574,38 @@ export default function EcommerceScene() {
             <Card className="p-8">
               <h2 className="text-2xl font-light tracking-wide mb-6">{t('ecommerceSceneResult')}</h2>
               
-              {generatedImage ? (
+              {generatedImages.length > 0 ? (
                 <div className="space-y-4">
-                  <div 
-                    className="relative group cursor-pointer"
-                    onClick={() => setSelectedImage(generatedImage)}
-                    data-testid="image-generated-result"
-                  >
-                    <img 
-                      src={generatedImage} 
-                      alt="E-commerce Scene Result" 
-                      className="w-full rounded-xl"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-xl flex items-center justify-center">
-                      <ImageIcon className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
+                  <div className={`grid gap-4 ${generatedImages.length === 1 ? 'grid-cols-1' : generatedImages.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
+                    {generatedImages.map((imageUrl, index) => (
+                      <div 
+                        key={index}
+                        className="relative group cursor-pointer"
+                        onClick={() => setSelectedImage(imageUrl)}
+                        data-testid={`image-generated-result-${index}`}
+                      >
+                        <img 
+                          src={imageUrl} 
+                          alt={`E-commerce Scene Result ${index + 1}`} 
+                          className="w-full rounded-xl"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-xl flex items-center justify-center">
+                          <ImageIcon className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   
-                  <Button 
-                    onClick={() => downloadImage(generatedImage)}
-                    className="w-full"
-                    data-testid="button-download"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    {t('downloadPNG')}
-                  </Button>
+                  {generatedImages.length === 1 && (
+                    <Button 
+                      onClick={() => downloadImage(generatedImages[0])}
+                      className="w-full"
+                      data-testid="button-download"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {t('downloadPNG')}
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground py-20">

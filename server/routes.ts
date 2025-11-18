@@ -513,10 +513,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   ]), async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const { tryonMode, tryonType, preservePose, style, aspectRatio, productTypes, productNames } = req.body;
+      const { tryonMode, tryonType, customTryonType, preservePose, style, aspectRatio, productTypes, productNames } = req.body;
 
       console.log('[Virtual Try-On API] Request received');
       console.log('[Virtual Try-On API] Mode:', tryonMode);
+      if (customTryonType) {
+        console.log('[Virtual Try-On API] Custom Type:', customTryonType);
+      }
 
       const modelImageFile = files?.modelImage?.[0];
       const productImageFiles = files?.productImages || [];
@@ -574,6 +577,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate virtual try-on image
       console.log('[Virtual Try-On API] Generating virtual try-on image...');
       
+      // Use customTryonType if tryonType is 'custom', otherwise use tryonType
+      const effectiveTryonType = tryonType === 'custom' && customTryonType 
+        ? customTryonType 
+        : tryonType;
+      
       const imageUrl = await generateVirtualTryOn(
         modelImageFile.buffer,
         modelImageFile.mimetype,
@@ -585,7 +593,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })),
         {
           tryonMode,
-          tryonType: tryonMode === 'single' ? tryonType : undefined,
+          tryonType: tryonMode === 'single' ? effectiveTryonType : undefined,
           preservePose: preservePose || 'yes',
           style: style || 'natural',
           aspectRatio,
@@ -794,13 +802,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   ]), async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const { sceneType, customSceneType, lighting, composition, aspectRatio, assetTypes, assetNames } = req.body;
+      const { sceneType, customSceneType, lighting, composition, aspectRatio, outputQuantity, assetTypes, assetNames } = req.body;
 
       console.log('[E-commerce Scene API] Request received');
       console.log('[E-commerce Scene API] Scene Type:', sceneType);
       if (customSceneType) {
         console.log('[E-commerce Scene API] Custom Scene Type:', customSceneType);
       }
+      
+      const quantity = parseInt(outputQuantity || '1', 10);
+      
+      // Validate output quantity
+      if (isNaN(quantity) || quantity < 1 || quantity > 8) {
+        return res.status(400).json({
+          error: "Output quantity must be a number between 1 and 8",
+        });
+      }
+      
+      console.log('[E-commerce Scene API] Output Quantity:', quantity);
 
       const modelImageFile = files?.modelImage?.[0];
       const assetImageFiles = files?.assetImages || [];
@@ -851,37 +870,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Generate e-commerce scene
-      console.log('[E-commerce Scene API] Generating e-commerce scene...');
+      // Generate e-commerce scenes (multiple if outputQuantity > 1)
+      console.log('[E-commerce Scene API] Generating e-commerce scene(s)...');
       console.log('[E-commerce Scene API] Has model image:', !!modelImageFile);
       
-      const imageUrl = await generateEcommerceScene(
-        modelImageFile ? modelImageFile.buffer : null,
-        modelImageFile ? modelImageFile.mimetype : null,
-        assetImageFiles.map((file, i) => ({
-          assetType: parsedAssetTypes[i] || 'product',
-          imageBuffer: file.buffer,
-          imageMimeType: file.mimetype,
-          assetName: parsedAssetNames[i] || undefined,
-        })),
-        {
-          sceneType,
-          customSceneType,
-          lighting,
-          composition,
-          aspectRatio,
-        }
-      );
+      const imageUrls: string[] = [];
+      
+      for (let i = 0; i < quantity; i++) {
+        console.log(`[E-commerce Scene API] Generating image ${i + 1}/${quantity}...`);
+        
+        const imageUrl = await generateEcommerceScene(
+          modelImageFile ? modelImageFile.buffer : null,
+          modelImageFile ? modelImageFile.mimetype : null,
+          assetImageFiles.map((file, idx) => ({
+            assetType: parsedAssetTypes[idx] || 'product',
+            imageBuffer: file.buffer,
+            imageMimeType: file.mimetype,
+            assetName: parsedAssetNames[idx] || undefined,
+          })),
+          {
+            sceneType,
+            customSceneType,
+            lighting,
+            composition,
+            aspectRatio,
+          }
+        );
+        
+        imageUrls.push(imageUrl);
+      }
 
-      // Update result
-      await storage.updateEcommerceSceneResult(sceneId, imageUrl);
+      // Update result (save first image as primary)
+      await storage.updateEcommerceSceneResult(sceneId, imageUrls[0]);
 
-      console.log('[E-commerce Scene API] ✅ Generation successful');
+      console.log(`[E-commerce Scene API] ✅ Successfully generated ${quantity} image(s)`);
 
       res.json({
         sceneId,
-        imageUrl,
-        message: "E-commerce scene generated successfully",
+        imageUrl: imageUrls[0], // For backward compatibility
+        imageUrls, // All generated images
+        message: `E-commerce scene generated successfully (${quantity} image${quantity > 1 ? 's' : ''})`,
       });
 
     } catch (error: any) {
@@ -919,6 +947,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         layout,
         customLayout,
         aspectRatio,
+        outputQuantity,
         headlineStyle,
         customHeadline,
         autoGenerateHeadline,
@@ -936,6 +965,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[Poster Design API] Request received');
       console.log('[Poster Design API] Campaign Type:', campaignType);
       console.log('[Poster Design API] Visual Style:', visualStyle);
+      
+      const quantity = parseInt(outputQuantity || '1', 10);
+      
+      // Validate output quantity
+      if (isNaN(quantity) || quantity < 1 || quantity > 8) {
+        return res.status(400).json({
+          error: "Output quantity must be a number between 1 and 8",
+        });
+      }
+      
+      console.log('[Poster Design API] Output Quantity:', quantity);
 
       const productImageFiles = files?.productImages || [];
       const referenceImageFile = files?.referenceImage?.[0];
@@ -1035,14 +1075,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         brandTagline,
       };
 
-      // Generate poster first (don't save to DB until generation succeeds)
-      console.log('[Poster Design API] Generating poster...');
-      const posterUrl = await generatePosterDesign(assets, options);
+      // Generate poster(s) first (don't save to DB until generation succeeds)
+      console.log('[Poster Design API] Generating poster(s)...');
+      
+      const posterUrls: string[] = [];
+      
+      for (let i = 0; i < quantity; i++) {
+        console.log(`[Poster Design API] Generating poster ${i + 1}/${quantity}...`);
+        const posterUrl = await generatePosterDesign(assets, options);
+        posterUrls.push(posterUrl);
+      }
 
       // Only save to database after successful generation
       const posterId = await storage.createPosterRequest({
         campaignType,
         visualStyle,
+        backgroundScene,
         layout,
         aspectRatio,
         headlineStyle,
@@ -1051,15 +1099,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         brandTagline: brandTagline || null,
       });
 
-      // Update with generated result
-      await storage.updatePosterResult(posterId, posterUrl);
+      // Update with generated result (save first poster as primary)
+      await storage.updatePosterResult(posterId, posterUrls[0]);
 
-      console.log('[Poster Design API] ✅ Generation successful');
+      console.log(`[Poster Design API] ✅ Successfully generated ${quantity} poster(s)`);
 
       res.json({
         posterId,
-        imageUrl: posterUrl,  // Frontend expects 'imageUrl'
-        message: "Poster generated successfully",
+        imageUrl: posterUrls[0],  // For backward compatibility
+        imageUrls: posterUrls, // All generated posters
+        message: `Poster generated successfully (${quantity} poster${quantity > 1 ? 's' : ''})`,
       });
 
     } catch (error: any) {
