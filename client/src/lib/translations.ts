@@ -157,6 +157,7 @@ export const translations = {
     themeMinimalist: 'Minimalist',
     themeBohemian: 'Bohemian',
     themeAthleticSporty: 'Athletic/Sporty',
+    themeCustom: 'Custom',
     
     // Styles
     styleGraffiti: 'Graffiti',
@@ -167,6 +168,7 @@ export const translations = {
     styleLuxury: 'Luxury',
     styleEcoFriendly: 'Eco-Friendly',
     styleFuturistic: 'Futuristic',
+    styleCustom: 'Custom',
     
     // Colors
     colorPastel: 'Pastel',
@@ -503,7 +505,6 @@ export const translations = {
     stylePremiumMinimal: 'Premium Minimal',
     styleTaobaoPromo: 'Taobao Promo Style',
     styleNaturalLifestyle: 'Natural Lifestyle',
-    styleCustom: 'Custom',
     
     // Poster Design - Background Scene Options
     bgGradient: 'Gradient',
@@ -715,6 +716,7 @@ export const translations = {
     themeMinimalist: '極簡主義',
     themeBohemian: '波希米亞',
     themeAthleticSporty: '運動風',
+    themeCustom: '自訂',
     
     // Styles
     styleGraffiti: '塗鴉',
@@ -725,6 +727,7 @@ export const translations = {
     styleLuxury: '奢華',
     styleEcoFriendly: '環保',
     styleFuturistic: '未來主義',
+    styleCustom: '自訂',
     
     // Colors
     colorPastel: '粉彩',
@@ -1061,7 +1064,6 @@ export const translations = {
     stylePremiumMinimal: '極簡高級',
     styleTaobaoPromo: '淘寶促銷風',
     styleNaturalLifestyle: '自然生活風',
-    styleCustom: '自訂',
     
     // Poster Design - Background Scene Options
     bgGradient: '漸層背景',
@@ -1273,6 +1275,7 @@ export const translations = {
     themeMinimalist: 'Tối Giản',
     themeBohemian: 'Bohemia',
     themeAthleticSporty: 'Thể Thao',
+    themeCustom: 'Tùy Chỉnh',
     
     // Styles
     styleGraffiti: 'Graffiti',
@@ -1283,6 +1286,7 @@ export const translations = {
     styleLuxury: 'Sang Trọng',
     styleEcoFriendly: 'Thân Thiện Môi Trường',
     styleFuturistic: 'Tương Lai',
+    styleCustom: 'Tùy Chỉnh',
     
     // Colors
     colorPastel: 'Pastel',
@@ -1619,7 +1623,6 @@ export const translations = {
     stylePremiumMinimal: 'Tối Giản Cao Cấp',
     styleTaobaoPromo: 'Phong Cách Khuyến Mãi',
     styleNaturalLifestyle: 'Phong Cách Tự Nhiên',
-    styleCustom: 'Tùy Chỉnh',
     
     // Poster Design - Background Scene Options
     bgGradient: 'Nền Gradient',
