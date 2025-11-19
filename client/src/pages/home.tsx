@@ -48,7 +48,6 @@ import {
   COLOR_PALETTES,
   MATERIALS,
   NATIONALITIES,
-  FAMILY_COMBINATIONS,
   SCENARIOS,
   LOCATIONS,
   PRESENTATION_STYLES,
@@ -116,11 +115,12 @@ const createDesignFormSchema = (t: (key: any) => string) =>
 const createModelFormSchema = (t: (key: any) => string) =>
   z.object({
     nationality: z.string().min(1, "Nationality is required"),
-    familyCombination: z.string().min(1, "Family combination is required"),
+    modelCombination: z.string().min(1, "Model combination is required"),
     scenario: z.string().min(1, "Scenario is required"),
     location: z.string().min(1, "Location is required"),
     presentationStyle: z.string().min(1, "Presentation style is required"),
     customStyleText: z.string().optional(),
+    customCombination: z.string().optional(),
     description: z.string().optional(),
   }).refine(
     (data) => {
@@ -132,6 +132,17 @@ const createModelFormSchema = (t: (key: any) => string) =>
     {
       message: t('errorCustomStyleRequired'),
       path: ["customStyleText"],
+    }
+  ).refine(
+    (data) => {
+      if (data.modelCombination === "Custom") {
+        return data.customCombination && data.customCombination.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomCombinationRequired'),
+      path: ["customCombination"],
     }
   );
 
@@ -233,11 +244,12 @@ export default function Home() {
     resolver: zodResolver(modelFormSchema),
     defaultValues: {
       nationality: "",
-      familyCombination: "",
+      modelCombination: "",
       scenario: "",
       location: "",
       presentationStyle: "",
       customStyleText: "",
+      customCombination: "",
       description: "",
     },
   });
@@ -429,10 +441,10 @@ export default function Home() {
         productType: selectedProductType,
         customProductType: selectedProductType === 'custom' ? customProductType : undefined,
         nationality: formData.nationality,
-        familyCombination: formData.familyCombination,
+        modelCombination: formData.modelCombination === "Custom" ? formData.customCombination : formData.modelCombination,
         scenario: formData.scenario,
         location: formData.location,
-        presentationStyle: formData.presentationStyle,
+        presentationStyle: formData.presentationStyle === "Custom" ? formData.customStyleText : formData.presentationStyle,
         description: formData.description,
       });
       
@@ -639,7 +651,7 @@ export default function Home() {
         formData.append("customProductType", customProductType);
       }
       formData.append("nationality", data.nationality);
-      formData.append("familyCombination", data.familyCombination);
+      formData.append("modelCombination", data.modelCombination === "Custom" ? data.customCombination || "" : data.modelCombination);
       formData.append("scenario", data.scenario);
       formData.append("location", data.location);
       formData.append("presentationStyle", data.presentationStyle === "Custom" ? data.customStyleText || "" : data.presentationStyle);
@@ -701,9 +713,17 @@ export default function Home() {
     return t(key) || value;
   };
 
-  const getFamilyLabel = (value: string) => {
-    const key = `family${value.replace(/\s/g, '').replace(/[()]/g, '')}` as any;
-    return t(key) || value;
+  const getModelCombinationLabel = (value: string): string => {
+    const combinationMap: Record<string, string> = {
+      "Single Male Model": t('modelTryonCombinationSingleMale'),
+      "Single Female Model": t('modelTryonCombinationSingleFemale'),
+      "Male & Female Duo": t('modelTryonCombinationMaleFemale'),
+      "Three Models": t('modelTryonCombinationThree'),
+      "Model Group": t('modelTryonCombinationGroup'),
+      "Child Model": t('modelTryonCombinationChild'),
+      "Custom": t('modelTryonCombinationCustom'),
+    };
+    return combinationMap[value] || value;
   };
 
   const getScenarioLabel = (value: string) => {
@@ -1308,28 +1328,45 @@ export default function Home() {
 
                   <FormField
                     control={modelForm.control}
-                    name="familyCombination"
+                    name="modelCombination"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel data-testid="label-family">{t('familyCombination')}</FormLabel>
+                        <FormLabel data-testid="label-model-combination">{t('modelTryonCombination')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger data-testid="select-family">
-                              {field.value ? getFamilyLabel(field.value) : t('familyCombinationPlaceholder')}
+                            <SelectTrigger data-testid="select-model-combination">
+                              {field.value ? getModelCombinationLabel(field.value) : t('modelTryonSelectCombination')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {FAMILY_COMBINATIONS.map((family) => (
-                              <SelectItem key={family} value={family} data-testid={`option-family-${family.toLowerCase().replace(/\s+/g, '-')}`}>
-                                {getFamilyLabel(family)}
-                              </SelectItem>
-                            ))}
+                            <SelectItem value="Single Male Model">{t('modelTryonCombinationSingleMale')}</SelectItem>
+                            <SelectItem value="Single Female Model">{t('modelTryonCombinationSingleFemale')}</SelectItem>
+                            <SelectItem value="Male & Female Duo">{t('modelTryonCombinationMaleFemale')}</SelectItem>
+                            <SelectItem value="Three Models">{t('modelTryonCombinationThree')}</SelectItem>
+                            <SelectItem value="Model Group">{t('modelTryonCombinationGroup')}</SelectItem>
+                            <SelectItem value="Child Model">{t('modelTryonCombinationChild')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonCombinationCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {modelForm.watch("modelCombination") === "Custom" && (
+                    <FormField
+                      control={modelForm.control}
+                      name="customCombination"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder={t('modelTryonEnterCustomCombination')} {...field} data-testid="input-custom-combination" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={modelForm.control}
@@ -1453,7 +1490,7 @@ export default function Home() {
                       type="button"
                       variant="outline"
                       onClick={async () => {
-                        const isValid = await modelForm.trigger(['nationality', 'familyCombination', 'scenario', 'location', 'presentationStyle']);
+                        const isValid = await modelForm.trigger(['nationality', 'modelCombination', 'scenario', 'location', 'presentationStyle']);
                         if (!isValid) {
                           toast({
                             variant: "destructive",
