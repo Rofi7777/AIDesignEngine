@@ -647,6 +647,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         scenario,
         location,
         presentationStyle,
+        viewAngles,
       } = req.body;
 
       if (!nationality || !familyCombination || !scenario || !location || !presentationStyle) {
@@ -655,32 +656,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      console.log("Generating model wearing scene with professional designer prompts...");
-      const modelImage = await generateModelSceneEnhanced(
-        req.body.productType || 'slippers',
-        req.body.customProductType,
-        req.file.buffer,
-        req.file.mimetype,
-        nationality,
-        familyCombination,
-        scenario,
-        location,
-        presentationStyle
-      );
+      // Parse viewAngles from JSON string
+      let parsedViewAngles: string[] = [];
+      try {
+        parsedViewAngles = viewAngles ? JSON.parse(viewAngles) : ["Front View"];
+      } catch (e) {
+        parsedViewAngles = ["Front View"];
+      }
 
-      await storage.saveGeneratedImage({
-        type: "model_wearing",
-        imageUrl: modelImage,
-        metadata: {
+      if (parsedViewAngles.length === 0) {
+        parsedViewAngles = ["Front View"];
+      }
+
+      console.log(`Generating model wearing scene with ${parsedViewAngles.length} view angle(s): ${parsedViewAngles.join(', ')}`);
+
+      // Generate images for each view angle
+      const modelImages: Array<{ viewAngle: string; imageUrl: string }> = [];
+      
+      for (const viewAngle of parsedViewAngles) {
+        console.log(`Generating ${viewAngle}...`);
+        const modelImage = await generateModelSceneEnhanced(
+          req.body.productType || 'slippers',
+          req.body.customProductType,
+          req.file.buffer,
+          req.file.mimetype,
           nationality,
           familyCombination,
           scenario,
           location,
           presentationStyle,
-        },
-      });
+          viewAngle
+        );
 
-      res.json({ modelImage });
+        modelImages.push({
+          viewAngle,
+          imageUrl: modelImage,
+        });
+
+        // Save each generated image
+        await storage.saveGeneratedImage({
+          type: "model_wearing",
+          imageUrl: modelImage,
+          metadata: {
+            nationality,
+            familyCombination,
+            scenario,
+            location,
+            presentationStyle,
+            viewAngle,
+          },
+        });
+      }
+
+      console.log(`✅ Successfully generated ${modelImages.length} model scene(s)`);
+      res.json({ modelImages });
     } catch (error: any) {
       console.error("Error generating model scene:", error);
       

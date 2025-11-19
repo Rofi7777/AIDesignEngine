@@ -76,6 +76,7 @@ export const generatedImageSchema = z.object({
     scenario: z.string().optional(),
     location: z.string().optional(),
     presentationStyle: z.string().optional(),
+    viewAngle: z.string().optional(),
     productImageUrl: z.string().optional(),
   }).optional(),
 });

@@ -275,7 +275,8 @@ export async function generateModelSceneEnhanced(
   familyCombination: string,
   scenario: string,
   location: string,
-  presentationStyle: string
+  presentationStyle: string,
+  viewAngle?: string
 ): Promise<string> {
   if (productImageBuffer.length < 100) {
     throw new Error("Product image is too small or invalid. Please use a valid generated product design.");
@@ -284,7 +285,8 @@ export async function generateModelSceneEnhanced(
   const config = getProductConfig(productType);
   const productName = productType === 'custom' && customProductType ? customProductType : config.displayName.en;
 
-  console.log(`Stage 1: Generating optimized model scene prompt for ${productName} using professional designer LLM...`);
+  const angleInfo = viewAngle ? ` (${viewAngle})` : '';
+  console.log(`Stage 1: Generating optimized model scene prompt for ${productName}${angleInfo} using professional designer LLM...`);
   
   const designInputs: DesignInputs = {
     productType,
@@ -325,6 +327,7 @@ SCENE SPECIFICATIONS:
 - Scenario: ${scenario}
 - Location: ${location}
 - Presentation Style: ${presentationStyle}
+${viewAngle ? `- Camera View/Angle: ${viewAngle}` : ''}
 
 REQUIREMENTS:
 1. Show the model(s) naturally wearing the exact slipper design from the provided image
@@ -336,7 +339,8 @@ REQUIREMENTS:
 7. Show proper foot positioning and natural wearing posture
 8. Ensure skin tones, clothing, and setting match the ${nationality} context
 9. Make it look like a professional product photography shoot
-10. The slipper design must match exactly what was provided`;
+10. The slipper design must match exactly what was provided
+${viewAngle ? `11. IMPORTANT: Capture the scene from the ${viewAngle} perspective` : ''}`;
   }
 
   try {

@@ -243,7 +243,7 @@ export default function Home() {
 
   // Dynamic product images storage - keyed by angle name
   const [generatedImages, setGeneratedImages] = useState<Record<string, string>>({});
-  const [generatedModelImage, setGeneratedModelImage] = useState<string | null>(null);
+  const [generatedModelImages, setGeneratedModelImages] = useState<Array<{ viewAngle: string; imageUrl: string }>>([]);
   const [activeView, setActiveView] = useState<string>("");
   
   // Image zoom modal state
@@ -598,7 +598,14 @@ export default function Home() {
       setModelOptimizedPrompt("");
       setShowModelOptimizedPrompt(false);
       
-      setGeneratedModelImage(data.modelImage || null);
+      // Handle both old single image response and new multi-image response
+      if (data.modelImages && Array.isArray(data.modelImages)) {
+        setGeneratedModelImages(data.modelImages);
+      } else if (data.modelImage) {
+        // Backward compatibility with old API response
+        setGeneratedModelImages([{ viewAngle: "Front View", imageUrl: data.modelImage }]);
+      }
+      
       queryClient.invalidateQueries({ queryKey: ["/api/generated-images"] });
       toast({
         description: t('toastModelSuccess'),
@@ -1786,7 +1793,7 @@ export default function Home() {
                 )}
               </div>
 
-              {Object.keys(generatedImages).length === 0 && !generatedModelImage ? (
+              {Object.keys(generatedImages).length === 0 && generatedModelImages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/50 py-32" data-testid="empty-state">
                   <ImageIcon className="mb-4 h-20 w-20 text-primary/20" data-testid="icon-empty-state" />
                   <p className="text-xl font-light text-muted-foreground" data-testid="text-empty-title">
@@ -1843,30 +1850,41 @@ export default function Home() {
                     );
                   })()}
 
-                  {generatedModelImage && (
+                  {generatedModelImages.length > 0 && (
                     <div className="pt-6 border-t border-border/50">
                       <h4 className="mb-6 text-lg font-light tracking-wide" data-testid="text-model-title">{t('modelWearingSceneTitle')}</h4>
-                      <div className="group relative overflow-hidden rounded-2xl" data-testid="card-model-scene">
-                        <img
-                          src={generatedModelImage}
-                          alt={t('altModelWearing')}
-                          className="w-full rounded-2xl shadow-sm cursor-pointer hover-elevate transition-all"
-                          onClick={() => {
-                            setZoomedImage(generatedModelImage);
-                            setZoomedImageAlt(t('altModelWearing'));
-                          }}
-                          data-testid="img-model-scene"
-                        />
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="absolute bottom-4 right-4 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
-                          onClick={() => downloadImage(generatedModelImage, "model-wearing-scene.png")}
-                          data-testid="button-download-model"
-                        >
-                          <Download className="mr-2 h-4 w-4" />
-                          {t('downloadPNG')}
-                        </Button>
+                      <div className="space-y-6">
+                        {generatedModelImages.map((modelImage, index) => (
+                          <div key={index} className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="secondary" className="text-xs" data-testid={`badge-view-angle-${index}`}>
+                                {modelImage.viewAngle}
+                              </Badge>
+                            </div>
+                            <div className="group relative overflow-hidden rounded-2xl" data-testid={`card-model-scene-${index}`}>
+                              <img
+                                src={modelImage.imageUrl}
+                                alt={`${t('altModelWearing')} - ${modelImage.viewAngle}`}
+                                className="w-full rounded-2xl shadow-sm cursor-pointer hover-elevate transition-all"
+                                onClick={() => {
+                                  setZoomedImage(modelImage.imageUrl);
+                                  setZoomedImageAlt(`${t('altModelWearing')} - ${modelImage.viewAngle}`);
+                                }}
+                                data-testid={`img-model-scene-${index}`}
+                              />
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                className="absolute bottom-4 right-4 rounded-xl opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm"
+                                onClick={() => downloadImage(modelImage.imageUrl, `model-scene-${modelImage.viewAngle.toLowerCase().replace(/\s+/g, '-')}.png`)}
+                                data-testid={`button-download-model-${index}`}
+                              >
+                                <Download className="mr-2 h-4 w-4" />
+                                {t('downloadPNG')}
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
