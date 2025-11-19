@@ -138,13 +138,12 @@ export default function ModelTryOn() {
 
   const getCombinationLabel = (value: string): string => {
     const combinationMap: Record<string, string> = {
-      "Mother + Child": t('modelTryonCombinationMotherChild'),
-      "Father + Child": t('modelTryonCombinationFatherChild'),
-      "Parents + Child": t('modelTryonCombinationParentsChild'),
-      "Single Adult": t('modelTryonCombinationSingleAdult'),
-      "Couple": t('modelTryonCombinationCouple'),
-      "Multi-generation": t('modelTryonCombinationMultiGen'),
-      "Siblings": t('modelTryonCombinationSiblings'),
+      "Single Male Model": t('modelTryonCombinationSingleMale'),
+      "Single Female Model": t('modelTryonCombinationSingleFemale'),
+      "Male & Female Duo": t('modelTryonCombinationMaleFemale'),
+      "Three Models": t('modelTryonCombinationThree'),
+      "Model Group": t('modelTryonCombinationGroup'),
+      "Child Model": t('modelTryonCombinationChild'),
       "Custom": t('modelTryonCombinationCustom'),
     };
     return combinationMap[value] || value;
@@ -676,13 +675,12 @@ export default function ModelTryOn() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Mother + Child">{t('modelTryonCombinationMotherChild')}</SelectItem>
-                            <SelectItem value="Father + Child">{t('modelTryonCombinationFatherChild')}</SelectItem>
-                            <SelectItem value="Parents + Child">{t('modelTryonCombinationParentsChild')}</SelectItem>
-                            <SelectItem value="Single Adult">{t('modelTryonCombinationSingleAdult')}</SelectItem>
-                            <SelectItem value="Couple">{t('modelTryonCombinationCouple')}</SelectItem>
-                            <SelectItem value="Multi-generation">{t('modelTryonCombinationMultiGen')}</SelectItem>
-                            <SelectItem value="Siblings">{t('modelTryonCombinationSiblings')}</SelectItem>
+                            <SelectItem value="Single Male Model">{t('modelTryonCombinationSingleMale')}</SelectItem>
+                            <SelectItem value="Single Female Model">{t('modelTryonCombinationSingleFemale')}</SelectItem>
+                            <SelectItem value="Male & Female Duo">{t('modelTryonCombinationMaleFemale')}</SelectItem>
+                            <SelectItem value="Three Models">{t('modelTryonCombinationThree')}</SelectItem>
+                            <SelectItem value="Model Group">{t('modelTryonCombinationGroup')}</SelectItem>
+                            <SelectItem value="Child Model">{t('modelTryonCombinationChild')}</SelectItem>
                             <SelectItem value="Custom">{t('modelTryonCombinationCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
