@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -119,7 +120,7 @@ const createModelFormSchema = (t: (key: any) => string) =>
     scenario: z.string().min(1, "Scenario is required"),
     location: z.string().min(1, "Location is required"),
     presentationStyle: z.string().min(1, "Presentation style is required"),
-    viewAngle: z.string().min(1, "View angle is required"),
+    viewAngles: z.array(z.string()).min(1, "At least one view angle is required"),
     customStyleText: z.string().optional(),
     customCombination: z.string().optional(),
     customNationality: z.string().optional(),
@@ -184,7 +185,7 @@ const createModelFormSchema = (t: (key: any) => string) =>
     }
   ).refine(
     (data) => {
-      if (data.viewAngle === "Custom") {
+      if (data.viewAngles.includes("Custom")) {
         return data.customViewAngle && data.customViewAngle.trim().length > 0;
       }
       return true;
@@ -297,7 +298,7 @@ export default function Home() {
       scenario: "",
       location: "",
       presentationStyle: "",
-      viewAngle: "",
+      viewAngles: [],
       customStyleText: "",
       customCombination: "",
       customNationality: "",
@@ -499,7 +500,7 @@ export default function Home() {
         scenario: formData.scenario === "Custom" ? formData.customScenario : formData.scenario,
         location: formData.location === "Custom" ? formData.customLocation : formData.location,
         presentationStyle: formData.presentationStyle === "Custom" ? formData.customStyleText : formData.presentationStyle,
-        viewAngle: formData.viewAngle === "Custom" ? formData.customViewAngle : formData.viewAngle,
+        viewAngles: formData.viewAngles.map(angle => angle === "Custom" ? formData.customViewAngle || "" : angle),
         description: formData.description,
       });
       
@@ -710,7 +711,11 @@ export default function Home() {
       formData.append("scenario", data.scenario === "Custom" ? data.customScenario || "" : data.scenario);
       formData.append("location", data.location === "Custom" ? data.customLocation || "" : data.location);
       formData.append("presentationStyle", data.presentationStyle === "Custom" ? data.customStyleText || "" : data.presentationStyle);
-      formData.append("viewAngle", data.viewAngle === "Custom" ? data.customViewAngle || "" : data.viewAngle);
+      
+      // Handle view angles as array
+      const viewAngles = data.viewAngles.map(angle => angle === "Custom" ? data.customViewAngle || "" : angle);
+      formData.append("viewAngles", JSON.stringify(viewAngles));
+      
       formData.append("customStyleText", data.customStyleText || "");
       
       // Add description if provided
@@ -1588,33 +1593,61 @@ export default function Home() {
                     )}
                   />
 
-                  {/* View Angle Selection */}
+                  {/* View Angle Selection (Multi-select) */}
                   <FormField
                     control={modelForm.control}
-                    name="viewAngle"
-                    render={({ field }) => (
+                    name="viewAngles"
+                    render={() => (
                       <FormItem>
-                        <FormLabel data-testid="label-view-angle">{t('viewAngle')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} data-testid="select-view-angle">
-                          <FormControl>
-                            <SelectTrigger data-testid="trigger-view-angle">
-                              <SelectValue placeholder={t('viewAnglePlaceholder')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Front View" data-testid="option-view-front">{t('viewAngleFront')}</SelectItem>
-                            <SelectItem value="Side View" data-testid="option-view-side">{t('viewAngleSide')}</SelectItem>
-                            <SelectItem value="Back View" data-testid="option-view-back">{t('viewAngleBack')}</SelectItem>
-                            <SelectItem value="Custom" data-testid="option-view-custom">{t('viewAngleCustom')}</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <FormLabel data-testid="label-view-angles">{t('viewAngle')}</FormLabel>
+                        <div className="space-y-3">
+                          {[
+                            { value: "Front View", label: t('viewAngleFront'), testId: "checkbox-view-front" },
+                            { value: "Side View", label: t('viewAngleSide'), testId: "checkbox-view-side" },
+                            { value: "Back View", label: t('viewAngleBack'), testId: "checkbox-view-back" },
+                            { value: "Custom", label: t('viewAngleCustom'), testId: "checkbox-view-custom" },
+                          ].map((item) => (
+                            <FormField
+                              key={item.value}
+                              control={modelForm.control}
+                              name="viewAngles"
+                              render={({ field }) => {
+                                return (
+                                  <FormItem
+                                    key={item.value}
+                                    className="flex flex-row items-center space-x-3 space-y-0"
+                                  >
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(item.value)}
+                                        onCheckedChange={(checked) => {
+                                          return checked
+                                            ? field.onChange([...field.value, item.value])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                  (value) => value !== item.value
+                                                )
+                                              )
+                                        }}
+                                        data-testid={item.testId}
+                                      />
+                                    </FormControl>
+                                    <FormLabel className="font-normal cursor-pointer">
+                                      {item.label}
+                                    </FormLabel>
+                                  </FormItem>
+                                )
+                              }}
+                            />
+                          ))}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
                   {/* Custom View Angle Input */}
-                  {modelForm.watch("viewAngle") === "Custom" && (
+                  {modelForm.watch("viewAngles")?.includes("Custom") && (
                     <FormField
                       control={modelForm.control}
                       name="customViewAngle"
@@ -1640,7 +1673,7 @@ export default function Home() {
                       type="button"
                       variant="outline"
                       onClick={async () => {
-                        const isValid = await modelForm.trigger(['nationality', 'modelCombination', 'scenario', 'location', 'presentationStyle', 'viewAngle']);
+                        const isValid = await modelForm.trigger(['nationality', 'modelCombination', 'scenario', 'location', 'presentationStyle', 'viewAngles']);
                         if (!isValid) {
                           toast({
                             variant: "destructive",
