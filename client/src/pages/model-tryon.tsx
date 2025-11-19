@@ -272,12 +272,15 @@ export default function ModelTryOn() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = errorData.error || errorData.message || "Failed to generate model try-on";
-        const error: any = new Error(errorMessage);
-        error.error = errorData.error;
-        error.message = errorMessage;
-        throw error;
+        let errorMessage = "Failed to generate model try-on";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use status text
+          errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
       return response.json();
