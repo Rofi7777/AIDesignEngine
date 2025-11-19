@@ -119,11 +119,13 @@ const createModelFormSchema = (t: (key: any) => string) =>
     scenario: z.string().min(1, "Scenario is required"),
     location: z.string().min(1, "Location is required"),
     presentationStyle: z.string().min(1, "Presentation style is required"),
+    viewAngle: z.string().min(1, "View angle is required"),
     customStyleText: z.string().optional(),
     customCombination: z.string().optional(),
     customNationality: z.string().optional(),
     customScenario: z.string().optional(),
     customLocation: z.string().optional(),
+    customViewAngle: z.string().optional(),
     description: z.string().optional(),
   }).refine(
     (data) => {
@@ -179,6 +181,17 @@ const createModelFormSchema = (t: (key: any) => string) =>
     {
       message: t('errorCustomLocationRequired'),
       path: ["customLocation"],
+    }
+  ).refine(
+    (data) => {
+      if (data.viewAngle === "Custom") {
+        return data.customViewAngle && data.customViewAngle.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomViewAngleRequired'),
+      path: ["customViewAngle"],
     }
   );
 
@@ -284,11 +297,13 @@ export default function Home() {
       scenario: "",
       location: "",
       presentationStyle: "",
+      viewAngle: "",
       customStyleText: "",
       customCombination: "",
       customNationality: "",
       customScenario: "",
       customLocation: "",
+      customViewAngle: "",
       description: "",
     },
   });
@@ -484,6 +499,7 @@ export default function Home() {
         scenario: formData.scenario === "Custom" ? formData.customScenario : formData.scenario,
         location: formData.location === "Custom" ? formData.customLocation : formData.location,
         presentationStyle: formData.presentationStyle === "Custom" ? formData.customStyleText : formData.presentationStyle,
+        viewAngle: formData.viewAngle === "Custom" ? formData.customViewAngle : formData.viewAngle,
         description: formData.description,
       });
       
@@ -694,6 +710,7 @@ export default function Home() {
       formData.append("scenario", data.scenario === "Custom" ? data.customScenario || "" : data.scenario);
       formData.append("location", data.location === "Custom" ? data.customLocation || "" : data.location);
       formData.append("presentationStyle", data.presentationStyle === "Custom" ? data.customStyleText || "" : data.presentationStyle);
+      formData.append("viewAngle", data.viewAngle === "Custom" ? data.customViewAngle || "" : data.viewAngle);
       formData.append("customStyleText", data.customStyleText || "");
       
       // Add description if provided
@@ -1571,13 +1588,59 @@ export default function Home() {
                     )}
                   />
 
+                  {/* View Angle Selection */}
+                  <FormField
+                    control={modelForm.control}
+                    name="viewAngle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel data-testid="label-view-angle">{t('viewAngle')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value} data-testid="select-view-angle">
+                          <FormControl>
+                            <SelectTrigger data-testid="trigger-view-angle">
+                              <SelectValue placeholder={t('viewAnglePlaceholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Front View" data-testid="option-view-front">{t('viewAngleFront')}</SelectItem>
+                            <SelectItem value="Side View" data-testid="option-view-side">{t('viewAngleSide')}</SelectItem>
+                            <SelectItem value="Back View" data-testid="option-view-back">{t('viewAngleBack')}</SelectItem>
+                            <SelectItem value="Custom" data-testid="option-view-custom">{t('viewAngleCustom')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Custom View Angle Input */}
+                  {modelForm.watch("viewAngle") === "Custom" && (
+                    <FormField
+                      control={modelForm.control}
+                      name="customViewAngle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel data-testid="label-custom-view-angle">{t('customViewAngle')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('customViewAnglePlaceholder')}
+                              {...field}
+                              data-testid="input-custom-view-angle"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
                   {/* Model Try-on Optimize Prompt Feature */}
                   <div className="space-y-3">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={async () => {
-                        const isValid = await modelForm.trigger(['nationality', 'modelCombination', 'scenario', 'location', 'presentationStyle']);
+                        const isValid = await modelForm.trigger(['nationality', 'modelCombination', 'scenario', 'location', 'presentationStyle', 'viewAngle']);
                         if (!isValid) {
                           toast({
                             variant: "destructive",
