@@ -229,6 +229,11 @@ export const translations = {
     locationModernApartment: 'Modern Apartment',
     locationCafe: 'Cafe',
     locationResort: 'Resort',
+    locationCoffeeShop: 'Coffee Shop',
+    locationVacationResort: 'Vacation Resort',
+    locationCustom: 'Custom',
+    scenarioCustom: 'Custom',
+    nationalityCustom: 'Custom',
     
     // Presentation Styles
     presentationCasual: 'Casual Lifestyle',
@@ -807,6 +812,14 @@ export const translations = {
     locationModernApartment: '現代公寓',
     locationCafe: '咖啡廳',
     locationResort: '度假村',
+    locationCoffeeShop: '咖啡廳',
+    locationVacationResort: '度假村',
+    locationCustom: '自訂',
+    scenarioCustom: '自訂',
+    nationalityCustom: '自訂',
+    enterCustomNationality: '輸入自訂國籍',
+    enterCustomScenario: '輸入自訂場景',
+    enterCustomLocation: '輸入自訂地點',
     
     // Presentation Styles
     presentationCasual: '休閒生活',
@@ -1385,6 +1398,14 @@ export const translations = {
     locationModernApartment: 'Căn Hộ Hiện Đại',
     locationCafe: 'Quán Cà Phê',
     locationResort: 'Khu Nghỉ Dưỡng',
+    locationCoffeeShop: 'Quán Cà Phê',
+    locationVacationResort: 'Khu Nghỉ Dưỡng',
+    locationCustom: 'Tùy Chỉnh',
+    scenarioCustom: 'Tùy Chỉnh',
+    nationalityCustom: 'Tùy Chỉnh',
+    enterCustomNationality: 'Nhập quốc tịch tùy chỉnh',
+    enterCustomScenario: 'Nhập kịch bản tùy chỉnh',
+    enterCustomLocation: 'Nhập địa điểm tùy chỉnh',
     
     // Presentation Styles
     presentationCasual: 'Phong Cách Thường Ngày',

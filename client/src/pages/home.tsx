@@ -121,6 +121,9 @@ const createModelFormSchema = (t: (key: any) => string) =>
     presentationStyle: z.string().min(1, "Presentation style is required"),
     customStyleText: z.string().optional(),
     customCombination: z.string().optional(),
+    customNationality: z.string().optional(),
+    customScenario: z.string().optional(),
+    customLocation: z.string().optional(),
     description: z.string().optional(),
   }).refine(
     (data) => {
@@ -143,6 +146,39 @@ const createModelFormSchema = (t: (key: any) => string) =>
     {
       message: t('errorCustomCombinationRequired'),
       path: ["customCombination"],
+    }
+  ).refine(
+    (data) => {
+      if (data.nationality === "Custom") {
+        return data.customNationality && data.customNationality.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomNationalityRequired'),
+      path: ["customNationality"],
+    }
+  ).refine(
+    (data) => {
+      if (data.scenario === "Custom") {
+        return data.customScenario && data.customScenario.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomScenarioRequired'),
+      path: ["customScenario"],
+    }
+  ).refine(
+    (data) => {
+      if (data.location === "Custom") {
+        return data.customLocation && data.customLocation.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomLocationRequired'),
+      path: ["customLocation"],
     }
   );
 
@@ -250,6 +286,9 @@ export default function Home() {
       presentationStyle: "",
       customStyleText: "",
       customCombination: "",
+      customNationality: "",
+      customScenario: "",
+      customLocation: "",
       description: "",
     },
   });
@@ -440,10 +479,10 @@ export default function Home() {
       const res = await apiRequest("POST", "/api/optimize-model-prompt", {
         productType: selectedProductType,
         customProductType: selectedProductType === 'custom' ? customProductType : undefined,
-        nationality: formData.nationality,
+        nationality: formData.nationality === "Custom" ? formData.customNationality : formData.nationality,
         modelCombination: formData.modelCombination === "Custom" ? formData.customCombination : formData.modelCombination,
-        scenario: formData.scenario,
-        location: formData.location,
+        scenario: formData.scenario === "Custom" ? formData.customScenario : formData.scenario,
+        location: formData.location === "Custom" ? formData.customLocation : formData.location,
         presentationStyle: formData.presentationStyle === "Custom" ? formData.customStyleText : formData.presentationStyle,
         description: formData.description,
       });
@@ -650,10 +689,10 @@ export default function Home() {
       if (selectedProductType === "custom" && customProductType.trim()) {
         formData.append("customProductType", customProductType);
       }
-      formData.append("nationality", data.nationality);
+      formData.append("nationality", data.nationality === "Custom" ? data.customNationality || "" : data.nationality);
       formData.append("modelCombination", data.modelCombination === "Custom" ? data.customCombination || "" : data.modelCombination);
-      formData.append("scenario", data.scenario);
-      formData.append("location", data.location);
+      formData.append("scenario", data.scenario === "Custom" ? data.customScenario || "" : data.scenario);
+      formData.append("location", data.location === "Custom" ? data.customLocation || "" : data.location);
       formData.append("presentationStyle", data.presentationStyle === "Custom" ? data.customStyleText || "" : data.presentationStyle);
       formData.append("customStyleText", data.customStyleText || "");
       
@@ -1319,12 +1358,28 @@ export default function Home() {
                                 {getNationalityLabel(nationality)}
                               </SelectItem>
                             ))}
+                            <SelectItem value="Custom">{t('nationalityCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {modelForm.watch("nationality") === "Custom" && (
+                    <FormField
+                      control={modelForm.control}
+                      name="customNationality"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder={t('enterCustomNationality')} {...field} data-testid="input-custom-nationality" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={modelForm.control}
@@ -1386,12 +1441,28 @@ export default function Home() {
                                 {getScenarioLabel(scenario)}
                               </SelectItem>
                             ))}
+                            <SelectItem value="Custom">{t('scenarioCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {modelForm.watch("scenario") === "Custom" && (
+                    <FormField
+                      control={modelForm.control}
+                      name="customScenario"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder={t('enterCustomScenario')} {...field} data-testid="input-custom-scenario" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={modelForm.control}
@@ -1411,12 +1482,28 @@ export default function Home() {
                                 {getLocationLabel(location)}
                               </SelectItem>
                             ))}
+                            <SelectItem value="Custom">{t('locationCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {modelForm.watch("location") === "Custom" && (
+                    <FormField
+                      control={modelForm.control}
+                      name="customLocation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder={t('enterCustomLocation')} {...field} data-testid="input-custom-location" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={modelForm.control}
