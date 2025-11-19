@@ -67,13 +67,62 @@ export default function ModelTryOn() {
 
   const getNationalityLabel = (value: string): string => {
     const nationalityMap: Record<string, string> = {
-      "East Asian": t('modelTryonNationalityEastAsian'),
-      "Southeast Asian": t('modelTryonNationalitySoutheastAsian'),
-      "Western / European": t('modelTryonNationalityWestern'),
-      "Middle Eastern / Latin": t('modelTryonNationalityMiddleEastern'),
+      "American": t('nationalityAmerican'),
+      "European": t('nationalityEuropean'),
+      "Asian": t('nationalityAsian'),
+      "Latin American": t('nationalityLatinAmerican'),
+      "African": t('nationalityAfrican'),
+      "Middle Eastern": t('nationalityMiddleEastern'),
+      "Australian": t('nationalityAustralian'),
+      "Nordic": t('nationalityNordic'),
       "Custom": t('modelTryonNationalityCustom'),
     };
     return nationalityMap[value] || value;
+  };
+
+  const getScenarioLabel = (value: string): string => {
+    const scenarioMap: Record<string, string> = {
+      "Parent-Child Play": t('scenarioParentChildPlay'),
+      "Solo Relaxation": t('scenarioSoloRelaxation'),
+      "Travel Adventure": t('scenarioTravelAdventure'),
+      "Home Comfort": t('scenarioHomeComfort'),
+      "Beach Day": t('scenarioBeachDay'),
+      "Garden Party": t('scenarioGardenParty'),
+      "Morning Routine": t('scenarioMorningRoutine'),
+      "Evening Walk": t('scenarioEveningWalk'),
+      "Custom": t('modelTryonScenarioCustom'),
+    };
+    return scenarioMap[value] || value;
+  };
+
+  const getLocationLabel = (value: string): string => {
+    const locationMap: Record<string, string> = {
+      "City Street": t('locationCityStreet'),
+      "Home Interior": t('locationHomeInterior'),
+      "Outdoor Park": t('locationOutdoorPark'),
+      "Beach": t('locationBeach'),
+      "Garden": t('locationGarden'),
+      "Modern Apartment": t('locationModernApartment'),
+      "Cafe": t('locationCafe'),
+      "Resort": t('locationResort'),
+      "Custom": t('modelTryonLocationCustom'),
+    };
+    return locationMap[value] || value;
+  };
+
+  const getPresentationStyleLabel = (value: string): string => {
+    const styleMap: Record<string, string> = {
+      "Casual Lifestyle": t('presentationCasual'),
+      "Professional Editorial": t('presentationProfessional'),
+      "Candid Natural": t('presentationCandid'),
+      "Fashion Forward": t('presentationFashion'),
+      "Family Warmth": t('presentationFamily'),
+      "Active Dynamic": t('presentationActive'),
+      "Minimalist Clean": t('presentationMinimalist'),
+      "Luxury Premium": t('presentationLuxury'),
+      "Custom": t('modelTryonPresentationCustom'),
+    };
+    return styleMap[value] || value;
   };
 
   const getHairstyleLabel = (value: string): string => {
@@ -145,6 +194,12 @@ export default function ModelTryOn() {
   const formSchema = z.object({
     nationality: z.string().min(1, t('modelTryonValidationNationality')),
     nationalityCustom: z.string().optional(),
+    scenario: z.string().optional(),
+    scenarioCustom: z.string().optional(),
+    location: z.string().optional(),
+    locationCustom: z.string().optional(),
+    presentationStyle: z.string().optional(),
+    presentationStyleCustom: z.string().optional(),
     hairstyle: z.string().min(1, t('modelTryonValidationHairstyle')),
     hairstyleCustom: z.string().optional(),
     combination: z.string().min(1, t('modelTryonValidationCombination')),
@@ -178,6 +233,12 @@ export default function ModelTryOn() {
     defaultValues: {
       nationality: "",
       nationalityCustom: "",
+      scenario: "",
+      scenarioCustom: "",
+      location: "",
+      locationCustom: "",
+      presentationStyle: "",
+      presentationStyleCustom: "",
       hairstyle: "",
       hairstyleCustom: "",
       combination: "",
@@ -394,10 +455,14 @@ export default function ModelTryOn() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="East Asian">{t('modelTryonNationalityEastAsian')}</SelectItem>
-                            <SelectItem value="Southeast Asian">{t('modelTryonNationalitySoutheastAsian')}</SelectItem>
-                            <SelectItem value="Western / European">{t('modelTryonNationalityWestern')}</SelectItem>
-                            <SelectItem value="Middle Eastern / Latin">{t('modelTryonNationalityMiddleEastern')}</SelectItem>
+                            <SelectItem value="American">{t('nationalityAmerican')}</SelectItem>
+                            <SelectItem value="European">{t('nationalityEuropean')}</SelectItem>
+                            <SelectItem value="Asian">{t('nationalityAsian')}</SelectItem>
+                            <SelectItem value="Latin American">{t('nationalityLatinAmerican')}</SelectItem>
+                            <SelectItem value="African">{t('nationalityAfrican')}</SelectItem>
+                            <SelectItem value="Middle Eastern">{t('nationalityMiddleEastern')}</SelectItem>
+                            <SelectItem value="Australian">{t('nationalityAustralian')}</SelectItem>
+                            <SelectItem value="Nordic">{t('nationalityNordic')}</SelectItem>
                             <SelectItem value="Custom">{t('modelTryonNationalityCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
@@ -414,6 +479,141 @@ export default function ModelTryOn() {
                         <FormItem>
                           <FormControl>
                             <Input placeholder={t('modelTryonEnterCustomNationality')} {...field} data-testid="input-nationality-custom" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {/* Scenario */}
+                  <FormField
+                    control={form.control}
+                    name="scenario"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('modelTryonScenario')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-scenario">
+                              {field.value ? getScenarioLabel(field.value) : t('modelTryonSelectScenario')}
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Parent-Child Play">{t('scenarioParentChildPlay')}</SelectItem>
+                            <SelectItem value="Solo Relaxation">{t('scenarioSoloRelaxation')}</SelectItem>
+                            <SelectItem value="Travel Adventure">{t('scenarioTravelAdventure')}</SelectItem>
+                            <SelectItem value="Home Comfort">{t('scenarioHomeComfort')}</SelectItem>
+                            <SelectItem value="Beach Day">{t('scenarioBeachDay')}</SelectItem>
+                            <SelectItem value="Garden Party">{t('scenarioGardenParty')}</SelectItem>
+                            <SelectItem value="Morning Routine">{t('scenarioMorningRoutine')}</SelectItem>
+                            <SelectItem value="Evening Walk">{t('scenarioEveningWalk')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonScenarioCustom')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("scenario") === "Custom" && (
+                    <FormField
+                      control={form.control}
+                      name="scenarioCustom"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder={t('modelTryonEnterCustomScenario')} {...field} data-testid="input-scenario-custom" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {/* Location */}
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('modelTryonLocation')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-location">
+                              {field.value ? getLocationLabel(field.value) : t('modelTryonSelectLocation')}
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="City Street">{t('locationCityStreet')}</SelectItem>
+                            <SelectItem value="Home Interior">{t('locationHomeInterior')}</SelectItem>
+                            <SelectItem value="Outdoor Park">{t('locationOutdoorPark')}</SelectItem>
+                            <SelectItem value="Beach">{t('locationBeach')}</SelectItem>
+                            <SelectItem value="Garden">{t('locationGarden')}</SelectItem>
+                            <SelectItem value="Modern Apartment">{t('locationModernApartment')}</SelectItem>
+                            <SelectItem value="Cafe">{t('locationCafe')}</SelectItem>
+                            <SelectItem value="Resort">{t('locationResort')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonLocationCustom')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("location") === "Custom" && (
+                    <FormField
+                      control={form.control}
+                      name="locationCustom"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder={t('modelTryonEnterCustomLocation')} {...field} data-testid="input-location-custom" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {/* Presentation Style */}
+                  <FormField
+                    control={form.control}
+                    name="presentationStyle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('modelTryonPresentationStyle')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-presentation-style">
+                              {field.value ? getPresentationStyleLabel(field.value) : t('modelTryonSelectPresentationStyle')}
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Casual Lifestyle">{t('presentationCasual')}</SelectItem>
+                            <SelectItem value="Professional Editorial">{t('presentationProfessional')}</SelectItem>
+                            <SelectItem value="Candid Natural">{t('presentationCandid')}</SelectItem>
+                            <SelectItem value="Fashion Forward">{t('presentationFashion')}</SelectItem>
+                            <SelectItem value="Family Warmth">{t('presentationFamily')}</SelectItem>
+                            <SelectItem value="Active Dynamic">{t('presentationActive')}</SelectItem>
+                            <SelectItem value="Minimalist Clean">{t('presentationMinimalist')}</SelectItem>
+                            <SelectItem value="Luxury Premium">{t('presentationLuxury')}</SelectItem>
+                            <SelectItem value="Custom">{t('modelTryonPresentationCustom')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("presentationStyle") === "Custom" && (
+                    <FormField
+                      control={form.control}
+                      name="presentationStyleCustom"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder={t('modelTryonEnterCustomPresentationStyle')} {...field} data-testid="input-presentation-style-custom" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
