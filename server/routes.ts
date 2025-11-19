@@ -892,12 +892,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   ]), async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const { tryonMode, tryonType, customTryonType, preservePose, style, aspectRatio, productTypes, productNames } = req.body;
+      const { tryonMode, tryonType, customTryonType, preservePose, style, customStyle, aspectRatio, productTypes, productNames } = req.body;
 
       console.log('[Virtual Try-On API] Request received');
       console.log('[Virtual Try-On API] Mode:', tryonMode);
       if (customTryonType) {
         console.log('[Virtual Try-On API] Custom Type:', customTryonType);
+      }
+      if (customStyle) {
+        console.log('[Virtual Try-On API] Custom Style:', customStyle);
       }
 
       const modelImageFile = files?.modelImage?.[0];
@@ -989,6 +992,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? customTryonType 
         : tryonType;
       
+      // Use customStyle if style is 'custom', otherwise use style
+      const effectiveStyle = style === 'custom' && customStyle 
+        ? customStyle 
+        : (style || 'natural');
+      
       const imageUrl = await generateVirtualTryOn(
         modelImageFile.buffer,
         modelImageFile.mimetype,
@@ -1002,10 +1010,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           tryonMode,
           tryonType: tryonMode === 'single' ? effectiveTryonType : undefined,
           preservePose: preservePose || 'yes',
-          style: style || 'natural',
+          style: effectiveStyle,
           aspectRatio,
-          customWidth,
-          customHeight,
+          customWidth: customWidth ?? undefined,
+          customHeight: customHeight ?? undefined,
         }
       );
 
@@ -1042,12 +1050,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   ]), async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const { sceneType, customSceneType, lighting, composition, aspectRatio, outputQuantity, assetTypes, assetNames } = req.body;
+      const { sceneType, customSceneType, lighting, customLighting, composition, customComposition, aspectRatio, outputQuantity, assetTypes, assetNames } = req.body;
 
       console.log('[E-commerce Scene API] Request received');
       console.log('[E-commerce Scene API] Scene Type:', sceneType);
       if (customSceneType) {
         console.log('[E-commerce Scene API] Custom Scene Type:', customSceneType);
+      }
+      if (customLighting) {
+        console.log('[E-commerce Scene API] Custom Lighting:', customLighting);
+      }
+      if (customComposition) {
+        console.log('[E-commerce Scene API] Custom Composition:', customComposition);
       }
       
       const quantity = parseInt(outputQuantity || '1', 10);
@@ -1137,6 +1151,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Use custom values if selected, otherwise use defaults
+      const effectiveLighting = lighting === 'custom' && customLighting 
+        ? customLighting 
+        : lighting;
+      
+      const effectiveComposition = composition === 'custom' && customComposition 
+        ? customComposition 
+        : composition;
+      
       // Generate e-commerce scenes (multiple if outputQuantity > 1)
       console.log('[E-commerce Scene API] Generating e-commerce scene(s)...');
       console.log('[E-commerce Scene API] Has model image:', !!modelImageFile);
@@ -1158,11 +1181,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           {
             sceneType,
             customSceneType,
-            lighting,
-            composition,
+            lighting: effectiveLighting,
+            composition: effectiveComposition,
             aspectRatio,
-            customWidth,
-            customHeight,
+            customWidth: customWidth ?? undefined,
+            customHeight: customHeight ?? undefined,
           }
         );
         
