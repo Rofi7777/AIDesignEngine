@@ -51,7 +51,9 @@ export default function EcommerceScene() {
     sceneType: z.string().min(1, t('ecommerceSceneValidationCustomRequired')),
     customSceneType: z.string().optional(),
     lighting: z.string().min(1, "Lighting is required"),
+    customLighting: z.string().optional(),
     composition: z.string().min(1, "Composition is required"),
+    customComposition: z.string().optional(),
     aspectRatio: z.string().min(1, "Aspect ratio is required"),
     customWidth: z.string().optional(),
     customHeight: z.string().optional(),
@@ -66,6 +68,28 @@ export default function EcommerceScene() {
     message: t('ecommerceSceneValidationCustomRequired'),
     path: ['customSceneType'],
   }).refine(
+    (data) => {
+      if (data.lighting === 'custom' && !data.customLighting?.trim()) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomLightingRequired') || "Custom lighting description is required",
+      path: ['customLighting'],
+    }
+  ).refine(
+    (data) => {
+      if (data.composition === 'custom' && !data.customComposition?.trim()) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomCompositionRequired') || "Custom composition description is required",
+      path: ['customComposition'],
+    }
+  ).refine(
     (data) => {
       if (data.aspectRatio === 'custom') {
         const width = parseInt(data.customWidth || '');
@@ -86,7 +110,9 @@ export default function EcommerceScene() {
       sceneType: '',
       customSceneType: '',
       lighting: 'natural',
+      customLighting: '',
       composition: 'rule-of-thirds',
+      customComposition: '',
       aspectRatio: '16:9',
       customWidth: '',
       customHeight: '',
@@ -157,7 +183,9 @@ export default function EcommerceScene() {
         formData.append('customSceneType', data.customSceneType);
       }
       formData.append('lighting', data.lighting);
+      formData.append('customLighting', data.customLighting || '');
       formData.append('composition', data.composition);
+      formData.append('customComposition', data.customComposition || '');
       formData.append('aspectRatio', data.aspectRatio);
       formData.append('outputQuantity', data.outputQuantity);
       formData.append('assetTypes', JSON.stringify(assetImages.map(img => img.assetType)));
@@ -541,7 +569,16 @@ export default function EcommerceScene() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('ecommerceSceneLighting')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} data-testid="select-lighting">
+                        <Select 
+                          onValueChange={(value) => {
+                            if (value !== 'custom') {
+                              form.setValue('customLighting', '');
+                            }
+                            field.onChange(value);
+                          }} 
+                          value={field.value} 
+                          data-testid="select-lighting"
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue />
@@ -552,12 +589,34 @@ export default function EcommerceScene() {
                             <SelectItem value="warm">{t('ecommerceSceneLightingWarm')}</SelectItem>
                             <SelectItem value="bright">{t('ecommerceSceneLightingBright')}</SelectItem>
                             <SelectItem value="soft">{t('ecommerceSceneLightingSoft')}</SelectItem>
+                            <SelectItem value="custom">{t('ecommerceSceneLightingCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* Custom Lighting */}
+                  {form.watch('lighting') === 'custom' && (
+                    <FormField
+                      control={form.control}
+                      name="customLighting"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('ecommerceSceneCustomLightingLabel')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('ecommerceSceneCustomLightingPlaceholder')}
+                              {...field}
+                              data-testid="input-custom-lighting"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   {/* Composition */}
                   <FormField
@@ -566,7 +625,16 @@ export default function EcommerceScene() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('ecommerceSceneComposition')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} data-testid="select-composition">
+                        <Select 
+                          onValueChange={(value) => {
+                            if (value !== 'custom') {
+                              form.setValue('customComposition', '');
+                            }
+                            field.onChange(value);
+                          }} 
+                          value={field.value} 
+                          data-testid="select-composition"
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue />
@@ -576,12 +644,34 @@ export default function EcommerceScene() {
                             <SelectItem value="center">{t('ecommerceSceneCompositionCenter')}</SelectItem>
                             <SelectItem value="rule-of-thirds">{t('ecommerceSceneCompositionThirds')}</SelectItem>
                             <SelectItem value="diagonal">{t('ecommerceSceneCompositionDiagonal')}</SelectItem>
+                            <SelectItem value="custom">{t('ecommerceSceneCompositionCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* Custom Composition */}
+                  {form.watch('composition') === 'custom' && (
+                    <FormField
+                      control={form.control}
+                      name="customComposition"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('ecommerceSceneCustomCompositionLabel')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('ecommerceSceneCustomCompositionPlaceholder')}
+                              {...field}
+                              data-testid="input-custom-composition"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   {/* Aspect Ratio */}
                   <FormField

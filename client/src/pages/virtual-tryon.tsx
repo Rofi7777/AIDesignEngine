@@ -52,11 +52,23 @@ export default function VirtualTryOn() {
     customTryonType: z.string().optional(),
     preservePose: z.string(),
     style: z.string(),
+    customStyle: z.string().optional(),
     aspectRatio: z.string().min(1, "Aspect ratio is required"),
     customWidth: z.string().optional(),
     customHeight: z.string().optional(),
     description: z.string().optional(),
   }).refine(
+    (data) => {
+      if (data.style === 'custom' && !data.customStyle?.trim()) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomStyleRequired') || "Custom style description is required",
+      path: ['customStyle'],
+    }
+  ).refine(
     (data) => {
       if (data.aspectRatio === 'custom') {
         const width = parseInt(data.customWidth || '');
@@ -79,6 +91,7 @@ export default function VirtualTryOn() {
       customTryonType: '',
       preservePose: 'yes',
       style: 'natural',
+      customStyle: '',
       aspectRatio: '9:16',
       customWidth: '',
       customHeight: '',
@@ -146,6 +159,7 @@ export default function VirtualTryOn() {
       }
       formData.append('preservePose', data.preservePose);
       formData.append('style', data.style);
+      formData.append('customStyle', data.customStyle || '');
       formData.append('aspectRatio', data.aspectRatio);
       formData.append('productTypes', JSON.stringify(productImages.map(img => img.type)));
       formData.append('productNames', JSON.stringify(productImages.map(img => img.name || '')));
@@ -546,7 +560,16 @@ export default function VirtualTryOn() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('virtualTryonStyleLabel')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} data-testid="select-style">
+                        <Select 
+                          onValueChange={(value) => {
+                            if (value !== 'custom') {
+                              form.setValue('customStyle', '');
+                            }
+                            field.onChange(value);
+                          }} 
+                          value={field.value} 
+                          data-testid="select-style"
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue />
@@ -555,12 +578,34 @@ export default function VirtualTryOn() {
                           <SelectContent>
                             <SelectItem value="natural">{t('virtualTryonStyleNatural')}</SelectItem>
                             <SelectItem value="fashion">{t('virtualTryonStyleFashion')}</SelectItem>
+                            <SelectItem value="custom">{t('virtualTryonStyleCustom')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* Custom Style - Show only when custom style is selected */}
+                  {form.watch('style') === 'custom' && (
+                    <FormField
+                      control={form.control}
+                      name="customStyle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('virtualTryonCustomStyleLabel')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('virtualTryonCustomStylePlaceholder')}
+                              {...field}
+                              data-testid="input-custom-style"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   {/* Aspect Ratio */}
                   <FormField
