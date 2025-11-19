@@ -93,6 +93,7 @@ export const THEMES = [
   "Minimalist",
   "Bohemian",
   "AthleticSporty",
+  "Custom",
 ] as const;
 
 export const STYLES = [
@@ -104,6 +105,7 @@ export const STYLES = [
   "Luxury",
   "EcoFriendly",
   "Futuristic",
+  "Custom",
 ] as const;
 
 export const COLOR_PALETTES = [

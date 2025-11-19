@@ -379,13 +379,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const referenceImageFile = files?.referenceImage?.[0];
       const brandLogoFile = files?.brandLogo?.[0];
 
-      const { theme, style, color, material, angles, designDescription, customOptimizedPrompt } = req.body;
+      const { 
+        theme, 
+        style, 
+        color, 
+        material, 
+        angles, 
+        designDescription, 
+        customOptimizedPrompt,
+        customTheme,
+        customStyle,
+        customColor,
+        customMaterial
+      } = req.body;
 
       if (!theme || !style || !color || !material) {
         return res.status(400).json({
           error: "Missing required fields: theme, style, color, material",
         });
       }
+
+      // Use custom values if "Custom" is selected
+      const actualTheme = theme === "Custom" && customTheme ? customTheme : theme;
+      const actualStyle = style === "Custom" && customStyle ? customStyle : style;
+      const actualColor = color === "Custom" && customColor ? customColor : color;
+      const actualMaterial = material === "Custom" && customMaterial ? customMaterial : material;
 
       const anglesArray = JSON.parse(angles || '["top", "45degree"]');
       const productType = req.body.productType || 'slippers';
@@ -441,10 +459,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customProductType,
           firstTemplate.buffer,
           firstTemplate.mimetype,
-          theme,
-          style,
-          color,
-          material,
+          actualTheme,
+          actualStyle,
+          actualColor,
+          actualMaterial,
           firstAngle,
           referenceImageFile?.buffer,
           referenceImageFile?.mimetype,
@@ -516,10 +534,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             customProductType,
             angleTemplate.buffer,
             angleTemplate.mimetype,
-            theme,
-            style,
-            color,
-            material,
+            actualTheme,
+            actualStyle,
+            actualColor,
+            actualMaterial,
             angle,
             referenceImageFile?.buffer,
             referenceImageFile?.mimetype,
@@ -580,10 +598,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         view4Url: results[anglesArray[3]] || null,
         productType,
         customProductType,
-        theme,
-        style,
-        color,
-        material,
+        theme: actualTheme,
+        style: actualStyle,
+        color: actualColor,
+        material: actualMaterial,
         designDescription: designDescription || null,
         referenceImageUrl,
         brandLogoUrl,

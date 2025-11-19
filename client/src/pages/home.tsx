@@ -62,10 +62,34 @@ import { z } from "zod";
 
 const createDesignFormSchema = (t: (key: any) => string) => 
   slipperDesignRequestBaseSchema.omit({ templateImage: true, angles: true }).extend({
+    customTheme: z.string().optional(),
+    customStyle: z.string().optional(),
     customColor: z.string().optional(),
     customMaterial: z.string().optional(),
     designDescription: z.string().optional(),
   }).refine(
+    (data) => {
+      if (data.theme === "Custom") {
+        return data.customTheme && data.customTheme.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomThemeRequired') || "Custom theme is required",
+      path: ["customTheme"],
+    }
+  ).refine(
+    (data) => {
+      if (data.style === "Custom") {
+        return data.customStyle && data.customStyle.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: t('errorCustomStyleRequired') || "Custom style is required",
+      path: ["customStyle"],
+    }
+  ).refine(
     (data) => {
       if (data.color === "Custom") {
         return data.customColor && data.customColor.trim().length > 0;
@@ -197,6 +221,8 @@ export default function Home() {
       style: "",
       color: "",
       material: "",
+      customTheme: "",
+      customStyle: "",
       customColor: "",
       customMaterial: "",
       designDescription: "",
@@ -376,6 +402,10 @@ export default function Home() {
           style: formData.style,
           color: formData.color,
           material: formData.material,
+          customTheme: formData.customTheme || "",
+          customStyle: formData.customStyle || "",
+          customColor: formData.customColor || "",
+          customMaterial: formData.customMaterial || "",
           designDescription: formData.designDescription,
         }),
       });
@@ -570,8 +600,12 @@ export default function Home() {
     }
     formData.append("theme", data.theme);
     formData.append("style", data.style);
+    formData.append("customTheme", data.customTheme || "");
+    formData.append("customStyle", data.customStyle || "");
     formData.append("color", data.color === "Custom" ? data.customColor! : data.color);
     formData.append("material", data.material === "Custom" ? data.customMaterial! : data.material);
+    formData.append("customColor", data.customColor || "");
+    formData.append("customMaterial", data.customMaterial || "");
     
     // Send angles array
     formData.append("angles", JSON.stringify(angles));
@@ -821,7 +855,15 @@ export default function Home() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel data-testid="label-theme">{t('theme')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select 
+                          onValueChange={(value) => {
+                            if (value !== "Custom") {
+                              designForm.setValue("customTheme", "");
+                            }
+                            field.onChange(value);
+                          }} 
+                          value={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger data-testid="select-theme">
                               <SelectValue placeholder={t('themePlaceholder')} />
@@ -840,13 +882,41 @@ export default function Home() {
                     )}
                   />
 
+                  {designForm.watch("theme") === "Custom" && (
+                    <FormField
+                      control={designForm.control}
+                      name="customTheme"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel data-testid="label-custom-theme">{t('customTheme')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('customThemePlaceholder')}
+                              {...field}
+                              data-testid="input-custom-theme"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
                   <FormField
                     control={designForm.control}
                     name="style"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel data-testid="label-style">{t('style')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select 
+                          onValueChange={(value) => {
+                            if (value !== "Custom") {
+                              designForm.setValue("customStyle", "");
+                            }
+                            field.onChange(value);
+                          }} 
+                          value={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger data-testid="select-style">
                               <SelectValue placeholder={t('stylePlaceholder')} />
@@ -864,6 +934,26 @@ export default function Home() {
                       </FormItem>
                     )}
                   />
+
+                  {designForm.watch("style") === "Custom" && (
+                    <FormField
+                      control={designForm.control}
+                      name="customStyle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel data-testid="label-custom-style">{t('customStyle')}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={t('customStylePlaceholder')}
+                              {...field}
+                              data-testid="input-custom-style"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={designForm.control}
