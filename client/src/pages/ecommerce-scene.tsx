@@ -47,6 +47,68 @@ export default function EcommerceScene() {
   const [optimizedPrompt, setOptimizedPrompt] = useState<string>("");
   const [showOptimizedPrompt, setShowOptimizedPrompt] = useState<boolean>(false);
 
+  // Label functions for dropdown values
+  const getSceneTypeLabel = (value: string): string => {
+    const sceneMap: Record<string, string> = {
+      "home": t('ecommerceSceneTypeHome'),
+      "office": t('ecommerceSceneTypeOffice'),
+      "outdoor": t('ecommerceSceneTypeOutdoor'),
+      "cafe": t('ecommerceSceneTypeCafe'),
+      "studio": t('ecommerceSceneTypeStudio'),
+      "white-bg": t('ecommerceSceneTypeWhiteBg'),
+      "custom": t('ecommerceSceneTypeCustom'),
+    };
+    return sceneMap[value] || value;
+  };
+
+  const getLightingLabel = (value: string): string => {
+    const lightingMap: Record<string, string> = {
+      "natural": t('ecommerceSceneLightingNatural'),
+      "warm": t('ecommerceSceneLightingWarm'),
+      "bright": t('ecommerceSceneLightingBright'),
+      "soft": t('ecommerceSceneLightingSoft'),
+      "custom": t('ecommerceSceneLightingCustom'),
+    };
+    return lightingMap[value] || value;
+  };
+
+  const getCompositionLabel = (value: string): string => {
+    const compositionMap: Record<string, string> = {
+      "center": t('ecommerceSceneCompositionCenter'),
+      "rule-of-thirds": t('ecommerceSceneCompositionThirds'),
+      "diagonal": t('ecommerceSceneCompositionDiagonal'),
+      "custom": t('ecommerceSceneCompositionCustom'),
+    };
+    return compositionMap[value] || value;
+  };
+
+  const getAspectRatioLabel = (value: string): string => {
+    const aspectRatioMap: Record<string, string> = {
+      "1:1": t('aspectRatio11'),
+      "3:4": t('aspectRatio34'),
+      "4:3": t('aspectRatio43'),
+      "9:16": t('aspectRatio916'),
+      "16:9": t('aspectRatio169'),
+      "1080x1080": t('posterDesignPixelSize1080x1080'),
+      "1080x1920": t('posterDesignPixelSize1080x1920'),
+      "1920x1080": t('posterDesignPixelSize1920x1080'),
+      "800x600": t('posterDesignPixelSize800x600'),
+      "1200x1600": t('posterDesignPixelSize1200x1600'),
+      "custom": t('posterDesignPixelSizeCustom'),
+    };
+    return aspectRatioMap[value] || value;
+  };
+
+  const getOutputQuantityLabel = (value: string): string => {
+    const quantityMap: Record<string, string> = {
+      "1": "1",
+      "2": "2",
+      "4": "4",
+      "8": "8",
+    };
+    return quantityMap[value] || value;
+  };
+
   const formSchema = z.object({
     sceneType: z.string().min(1, t('ecommerceSceneValidationCustomRequired')),
     customSceneType: z.string().optional(),
@@ -525,7 +587,7 @@ export default function EcommerceScene() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder={t('ecommerceSceneType')} />
+                              {field.value ? getSceneTypeLabel(field.value) : t('ecommerceSceneType')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -583,7 +645,7 @@ export default function EcommerceScene() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue />
+                              {field.value ? getLightingLabel(field.value) : t('ecommerceSceneLighting')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -639,7 +701,7 @@ export default function EcommerceScene() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue />
+                              {field.value ? getCompositionLabel(field.value) : t('ecommerceSceneComposition')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -685,7 +747,7 @@ export default function EcommerceScene() {
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-aspect-ratio">
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue />
+                              {field.value ? getAspectRatioLabel(field.value) : t('aspectRatioLabel')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -759,7 +821,7 @@ export default function EcommerceScene() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-output-quantity">
-                              <SelectValue />
+                              {field.value ? getOutputQuantityLabel(field.value) : t('ecommerceSceneOutputQuantityLabel')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

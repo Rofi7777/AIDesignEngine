@@ -46,6 +46,65 @@ export default function VirtualTryOn() {
   const [optimizedPrompt, setOptimizedPrompt] = useState<string>("");
   const [showOptimizedPrompt, setShowOptimizedPrompt] = useState<boolean>(false);
 
+  // Label functions for dropdown values
+  const getProductTypeLabel = (value: string): string => {
+    const typeMap: Record<string, string> = {
+      "accessory": t('virtualTryonProductTypeAccessory'),
+      "top": t('virtualTryonProductTypeTop'),
+      "bottom": t('virtualTryonProductTypeBottom'),
+      "dress": t('virtualTryonProductTypeDress'),
+      "outerwear": t('virtualTryonProductTypeOuterwear'),
+      "shoes": t('virtualTryonProductTypeShoes'),
+      "clothing": t('virtualTryonProductTypeAccessory'), // default value
+    };
+    return typeMap[value] || value;
+  };
+
+  const getTryonTypeLabel = (value: string): string => {
+    const typeMap: Record<string, string> = {
+      "accessory": t('virtualTryonTypeAccessory'),
+      "top": t('virtualTryonTypeTop'),
+      "bottom": t('virtualTryonTypeBottom'),
+      "full": t('virtualTryonTypeFull'),
+      "custom": t('virtualTryonTypeCustom'),
+    };
+    return typeMap[value] || value;
+  };
+
+  const getPreservePoseLabel = (value: string): string => {
+    const poseMap: Record<string, string> = {
+      "yes": t('virtualTryonPreservePoseYes'),
+      "no": t('virtualTryonPreservePoseNo'),
+    };
+    return poseMap[value] || value;
+  };
+
+  const getStyleLabel = (value: string): string => {
+    const styleMap: Record<string, string> = {
+      "natural": t('virtualTryonStyleNatural'),
+      "fashion": t('virtualTryonStyleFashion'),
+      "custom": t('virtualTryonStyleCustom'),
+    };
+    return styleMap[value] || value;
+  };
+
+  const getAspectRatioLabel = (value: string): string => {
+    const aspectRatioMap: Record<string, string> = {
+      "1:1": t('aspectRatio11'),
+      "3:4": t('aspectRatio34'),
+      "4:3": t('aspectRatio43'),
+      "9:16": t('aspectRatio916'),
+      "16:9": t('aspectRatio169'),
+      "1080x1080": t('posterDesignPixelSize1080x1080'),
+      "1080x1920": t('posterDesignPixelSize1080x1920'),
+      "1920x1080": t('posterDesignPixelSize1920x1080'),
+      "800x600": t('posterDesignPixelSize800x600'),
+      "1200x1600": t('posterDesignPixelSize1200x1600'),
+      "custom": t('posterDesignPixelSizeCustom'),
+    };
+    return aspectRatioMap[value] || value;
+  };
+
   const formSchema = z.object({
     tryonMode: z.enum(['single', 'multi']),
     tryonType: z.string().optional(),
@@ -416,7 +475,7 @@ export default function VirtualTryOn() {
                           data-testid={`select-product-type-${index}`}
                         >
                           <SelectTrigger>
-                            <SelectValue />
+                            {img.type ? getProductTypeLabel(img.type) : t('virtualTryonProductTypeAccessory')}
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="accessory">{t('virtualTryonProductTypeAccessory')}</SelectItem>
@@ -492,7 +551,7 @@ export default function VirtualTryOn() {
                           <Select onValueChange={field.onChange} value={field.value} data-testid="select-tryon-type">
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder={t('virtualTryonSelectTypePlaceholder')} />
+                                {field.value ? getTryonTypeLabel(field.value) : t('virtualTryonSelectTypePlaceholder')}
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -540,7 +599,7 @@ export default function VirtualTryOn() {
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-preserve-pose">
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue />
+                              {field.value ? getPreservePoseLabel(field.value) : t('virtualTryonPreservePose')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -572,7 +631,7 @@ export default function VirtualTryOn() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue />
+                              {field.value ? getStyleLabel(field.value) : t('virtualTryonStyleLabel')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -617,7 +676,7 @@ export default function VirtualTryOn() {
                         <Select onValueChange={field.onChange} value={field.value} data-testid="select-aspect-ratio">
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue />
+                              {field.value ? getAspectRatioLabel(field.value) : t('aspectRatioLabel')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

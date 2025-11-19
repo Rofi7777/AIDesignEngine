@@ -866,7 +866,7 @@ export default function Home() {
                         >
                           <FormControl>
                             <SelectTrigger data-testid="select-theme">
-                              <SelectValue placeholder={t('themePlaceholder')} />
+                              {field.value ? getThemeLabel(field.value) : t('themePlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -919,7 +919,7 @@ export default function Home() {
                         >
                           <FormControl>
                             <SelectTrigger data-testid="select-style">
-                              <SelectValue placeholder={t('stylePlaceholder')} />
+                              {field.value ? getStyleLabel(field.value) : t('stylePlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -972,7 +972,7 @@ export default function Home() {
                         >
                           <FormControl>
                             <SelectTrigger data-testid="select-color">
-                              <SelectValue placeholder={t('colorPlaceholder')} />
+                              {field.value ? getColorLabel(field.value) : t('colorPlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -1025,7 +1025,7 @@ export default function Home() {
                         >
                           <FormControl>
                             <SelectTrigger data-testid="select-material">
-                              <SelectValue placeholder={t('materialPlaceholder')} />
+                              {field.value ? getMaterialLabel(field.value) : t('materialPlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -1302,7 +1302,7 @@ export default function Home() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-nationality">
-                              <SelectValue placeholder={t('nationalityPlaceholder')} />
+                              {field.value ? getNationalityLabel(field.value) : t('nationalityPlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -1327,7 +1327,7 @@ export default function Home() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-family">
-                              <SelectValue placeholder={t('familyCombinationPlaceholder')} />
+                              {field.value ? getFamilyLabel(field.value) : t('familyCombinationPlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -1352,7 +1352,7 @@ export default function Home() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-scenario">
-                              <SelectValue placeholder={t('scenarioPlaceholder')} />
+                              {field.value ? getScenarioLabel(field.value) : t('scenarioPlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -1377,7 +1377,7 @@ export default function Home() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-location">
-                              <SelectValue placeholder={t('locationPlaceholder')} />
+                              {field.value ? getLocationLabel(field.value) : t('locationPlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -1402,7 +1402,7 @@ export default function Home() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-presentation">
-                              <SelectValue placeholder={t('presentationStylePlaceholder')} />
+                              {field.value ? getPresentationLabel(field.value) : t('presentationStylePlaceholder')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

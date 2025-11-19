@@ -52,6 +52,94 @@ export default function ModelTryOn() {
     return angleMap[angle] || angle;
   };
 
+  // Label functions for dropdown values
+  const getProductTypeLabel = (value: string): string => {
+    const typeMap: Record<string, string> = {
+      "Hat": t('modelTryonProductTypeHat'),
+      "Top / Shirt / Jacket": t('modelTryonProductTypeTop'),
+      "Bottom / Pants / Skirt": t('modelTryonProductTypeBottom'),
+      "Shoes / Slippers": t('modelTryonProductTypeShoes'),
+      "Accessories": t('modelTryonProductTypeAccessories'),
+      "Custom": t('modelTryonProductTypeCustom'),
+    };
+    return typeMap[value] || value;
+  };
+
+  const getNationalityLabel = (value: string): string => {
+    const nationalityMap: Record<string, string> = {
+      "East Asian": t('modelTryonNationalityEastAsian'),
+      "Southeast Asian": t('modelTryonNationalitySoutheastAsian'),
+      "Western / European": t('modelTryonNationalityWestern'),
+      "Middle Eastern / Latin": t('modelTryonNationalityMiddleEastern'),
+      "Custom": t('modelTryonNationalityCustom'),
+    };
+    return nationalityMap[value] || value;
+  };
+
+  const getHairstyleLabel = (value: string): string => {
+    const hairstyleMap: Record<string, string> = {
+      "Short straight hair": t('modelTryonHairstyleShortStraight'),
+      "Medium wavy hair": t('modelTryonHairstyleMediumWavy'),
+      "Long straight hair": t('modelTryonHairstyleLongStraight'),
+      "Curly / Afro-textured hair": t('modelTryonHairstyleCurly'),
+      "Custom": t('modelTryonHairstyleCustom'),
+    };
+    return hairstyleMap[value] || value;
+  };
+
+  const getCombinationLabel = (value: string): string => {
+    const combinationMap: Record<string, string> = {
+      "Single male model": t('modelTryonCombinationSingleMale'),
+      "Single female model": t('modelTryonCombinationSingleFemale'),
+      "One male + one female": t('modelTryonCombinationMaleFemale'),
+      "Two male models": t('modelTryonCombinationTwoMale'),
+      "Two female models": t('modelTryonCombinationTwoFemale'),
+      "Custom": t('modelTryonCombinationCustom'),
+    };
+    return combinationMap[value] || value;
+  };
+
+  const getSceneLabel = (value: string): string => {
+    const sceneMap: Record<string, string> = {
+      "Studio background (clean, plain)": t('modelTryonSceneStudio'),
+      "City street / urban environment": t('modelTryonSceneCityStreet'),
+      "Home interior (living room / bedroom)": t('modelTryonSceneHomeInterior'),
+      "Park / nature / outdoor": t('modelTryonSceneParkNature'),
+      "Retail store / shopping mall": t('modelTryonSceneRetail'),
+      "Custom": t('modelTryonSceneCustom'),
+    };
+    return sceneMap[value] || value;
+  };
+
+  const getPoseLabel = (value: string): string => {
+    const poseMap: Record<string, string> = {
+      "Standing front-facing, relaxed": t('modelTryonPoseStanding'),
+      "Walking mid-step (dynamic pose)": t('modelTryonPoseWalking'),
+      "Sitting, relaxed pose": t('modelTryonPoseSitting'),
+      "Close-up pose focusing on product": t('modelTryonPoseCloseup'),
+      "Fashion pose (editorial style)": t('modelTryonPoseFashion'),
+      "Custom": t('modelTryonPoseCustom'),
+    };
+    return poseMap[value] || value;
+  };
+
+  const getAspectRatioLabel = (value: string): string => {
+    const aspectRatioMap: Record<string, string> = {
+      "1:1": t('aspectRatio11'),
+      "9:16": t('aspectRatio916'),
+      "16:9": t('aspectRatio169'),
+      "4:3": t('aspectRatio43'),
+      "3:4": t('aspectRatio34'),
+      "1080x1080": t('posterDesignPixelSize1080x1080'),
+      "1080x1920": t('posterDesignPixelSize1080x1920'),
+      "1920x1080": t('posterDesignPixelSize1920x1080'),
+      "800x600": t('posterDesignPixelSize800x600'),
+      "1200x1600": t('posterDesignPixelSize1200x1600'),
+      "custom": t('posterDesignPixelSizeCustom'),
+    };
+    return aspectRatioMap[value] || value;
+  };
+
   const formSchema = z.object({
     nationality: z.string().min(1, t('modelTryonValidationNationality')),
     nationalityCustom: z.string().optional(),
@@ -249,7 +337,7 @@ export default function ModelTryOn() {
                               onValueChange={(value) => updateProductType(index, value)}
                             >
                               <SelectTrigger data-testid={`select-product-type-${index}`}>
-                                <SelectValue placeholder={t('modelTryonSelectProductType')} />
+                                {img.type ? getProductTypeLabel(img.type) : t('modelTryonSelectProductType')}
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="Hat">{t('modelTryonProductTypeHat')}</SelectItem>
@@ -300,7 +388,7 @@ export default function ModelTryOn() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-nationality">
-                              <SelectValue placeholder={t('modelTryonSelectNationality')} />
+                              {field.value ? getNationalityLabel(field.value) : t('modelTryonSelectNationality')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -341,7 +429,7 @@ export default function ModelTryOn() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-hairstyle">
-                              <SelectValue placeholder={t('modelTryonSelectHairstyle')} />
+                              {field.value ? getHairstyleLabel(field.value) : t('modelTryonSelectHairstyle')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -382,7 +470,7 @@ export default function ModelTryOn() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-combination">
-                              <SelectValue placeholder={t('modelTryonSelectCombination')} />
+                              {field.value ? getCombinationLabel(field.value) : t('modelTryonSelectCombination')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -424,7 +512,7 @@ export default function ModelTryOn() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-scene">
-                              <SelectValue placeholder={t('modelTryonSelectScene')} />
+                              {field.value ? getSceneLabel(field.value) : t('modelTryonSelectScene')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -466,7 +554,7 @@ export default function ModelTryOn() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-pose">
-                              <SelectValue placeholder={t('modelTryonSelectPose')} />
+                              {field.value ? getPoseLabel(field.value) : t('modelTryonSelectPose')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -508,7 +596,7 @@ export default function ModelTryOn() {
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-aspect-ratio">
-                              <SelectValue placeholder={t('aspectRatioLabel')} />
+                              {field.value ? getAspectRatioLabel(field.value) : t('aspectRatioLabel')}
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
