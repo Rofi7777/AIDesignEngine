@@ -232,7 +232,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sceneType,
         customSceneType,
         lighting,
+        customLighting,
         compositionStyle,
+        customComposition,
         description
       } = req.body;
 
@@ -250,11 +252,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? customSceneType 
         : sceneType;
       
+      const effectiveLighting = lighting === 'custom' && customLighting 
+        ? customLighting 
+        : lighting;
+      
+      const effectiveComposition = compositionStyle === 'custom' && customComposition 
+        ? customComposition 
+        : compositionStyle;
+      
       const designInputs = {
         productType: 'product',
         customProductType: '',
         theme: `E-commerce scene in ${sceneName}`,
-        style: compositionStyle,
+        style: effectiveComposition,
         color: "Natural scene colors",
         material: "Natural materials",
         designDescription: description || '',
@@ -263,7 +273,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const modelSceneInputs = {
-        productDesignSummary: `E-commerce photography scene in ${sceneName} with ${lighting} lighting`,
+        productDesignSummary: `E-commerce photography scene in ${sceneName} with ${effectiveLighting} lighting`,
         productType: 'product',
         nationality: "International",
         familyCombination: "Adult",

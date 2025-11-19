@@ -131,7 +131,9 @@ export default function EcommerceScene() {
           sceneType: formValues.sceneType,
           customSceneType: formValues.customSceneType,
           lighting: formValues.lighting,
+          customLighting: formValues.customLighting,
           compositionStyle: formValues.composition,
+          customComposition: formValues.customComposition,
           description: formValues.description,
         }),
       });
