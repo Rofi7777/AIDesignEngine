@@ -543,6 +543,9 @@ export default function Home() {
       setOptimizedPrompt("");
       setShowOptimizedPrompt(false);
       
+      // Clear any previous model images when generating new product designs
+      setGeneratedModelImages([]);
+      
       // Convert response to dynamic angle mapping using modern keys
       const newImages: Record<string, string> = {};
       const productConfig = getProductConfig(selectedProductType);
@@ -600,10 +603,14 @@ export default function Home() {
       
       // Handle both old single image response and new multi-image response
       if (data.modelImages && Array.isArray(data.modelImages)) {
+        console.log('[Frontend] Setting generated model images:', data.modelImages);
         setGeneratedModelImages(data.modelImages);
       } else if (data.modelImage) {
         // Backward compatibility with old API response
+        console.log('[Frontend] Using backward compatibility, converting single image to array');
         setGeneratedModelImages([{ viewAngle: "Front View", imageUrl: data.modelImage }]);
+      } else {
+        console.error('[Frontend] No model images in response:', data);
       }
       
       queryClient.invalidateQueries({ queryKey: ["/api/generated-images"] });
@@ -1853,9 +1860,11 @@ export default function Home() {
                   {generatedModelImages.length > 0 && (
                     <div className="pt-6 border-t border-border/50">
                       <h4 className="mb-6 text-lg font-light tracking-wide" data-testid="text-model-title">{t('modelWearingSceneTitle')}</h4>
-                      <div className="space-y-6">
-                        {generatedModelImages.map((modelImage, index) => (
-                          <div key={index} className="space-y-2">
+                      <div className="space-y-6" data-testid="model-images-container">
+                        {generatedModelImages.map((modelImage, index) => {
+                          console.log(`[Frontend] Rendering model image ${index}:`, modelImage);
+                          return (
+                            <div key={index} className="space-y-2">
                             <div className="flex items-center gap-2">
                               <Badge variant="secondary" className="text-xs" data-testid={`badge-view-angle-${index}`}>
                                 {modelImage.viewAngle}
@@ -1884,7 +1893,8 @@ export default function Home() {
                               </Button>
                             </div>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
