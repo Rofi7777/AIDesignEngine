@@ -11,6 +11,12 @@ const ai = new GoogleGenAI({
 interface ModelTryOnOptions {
   nationality: string;
   nationalityCustom?: string;
+  scenario?: string;
+  scenarioCustom?: string;
+  location?: string;
+  locationCustom?: string;
+  presentationStyle?: string;
+  presentationStyleCustom?: string;
   hairstyle: string;
   hairstyleCustom?: string;
   combination: string;
@@ -100,6 +106,18 @@ function buildModelTryOnPrompt(
     ? options.nationalityCustom || 'Asian' 
     : options.nationality;
     
+  const scenario = options.scenario === 'Custom'
+    ? options.scenarioCustom || ''
+    : (options.scenario || '');
+    
+  const location = options.location === 'Custom'
+    ? options.locationCustom || ''
+    : (options.location || '');
+    
+  const presentationStyle = options.presentationStyle === 'Custom'
+    ? options.presentationStyleCustom || ''
+    : (options.presentationStyle || '');
+    
   const hairstyle = options.hairstyle === 'Custom'
     ? options.hairstyleCustom || 'medium length hair'
     : options.hairstyle;
@@ -150,6 +168,21 @@ function buildModelTryOnPrompt(
     return `Product ${index + 1}: ${productType} (${placement})`;
   }).join('\n  - ');
 
+  // Build scene description with all available context
+  let sceneDescription = `  - Location / scene: ${scene}`;
+  if (location) {
+    sceneDescription += `\n  - Specific location: ${location}`;
+  }
+  if (scenario) {
+    sceneDescription += `\n  - Scenario / activity: ${scenario}`;
+  }
+  sceneDescription += `\n  - Pose: ${pose}`;
+  sceneDescription += `\n  - Camera angle: ${cameraAngle}`;
+  if (presentationStyle) {
+    sceneDescription += `\n  - Presentation style: ${presentationStyle}`;
+  }
+  sceneDescription += `\n  - Make sure the product(s) is clearly visible and visually emphasized in the frame`;
+
   const prompt = `Create a high-quality image of real people wearing or using the uploaded product(s).
 
 Product(s):
@@ -165,10 +198,7 @@ Models:
   - Clothing style: choose outfits that match and highlight the product design
 
 Scene & composition:
-  - Location / scene: ${scene}
-  - Pose: ${pose}
-  - Camera angle: ${cameraAngle}
-  - Make sure the product(s) is clearly visible and visually emphasized in the frame
+${sceneDescription}
 
 Aspect ratio:
   - ${options.aspectRatio === 'custom' && options.customWidth && options.customHeight 

@@ -805,6 +805,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tryOnId = await storage.createModelTryOn({
         nationality: options.nationality,
         nationalityCustom: options.nationalityCustom || null,
+        scenario: options.scenario || null,
+        scenarioCustom: options.scenarioCustom || null,
+        location: options.location || null,
+        locationCustom: options.locationCustom || null,
+        presentationStyle: options.presentationStyle || null,
+        presentationStyleCustom: options.presentationStyleCustom || null,
         hairstyle: options.hairstyle,
         hairstyleCustom: options.hairstyleCustom || null,
         combination: options.combination,
