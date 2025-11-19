@@ -588,13 +588,24 @@ export default function Home() {
 
   const generateModelMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return await fetch("/api/generate-model", {
+      const res = await fetch("/api/generate-model", {
         method: "POST",
         body: formData,
-      }).then(res => {
-        if (!res.ok) throw new Error();
-        return res.json();
       });
+      
+      if (!res.ok) {
+        let errorMessage = t('toastError');
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use status text
+          errorMessage = res.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
+      }
+      
+      return res.json();
     },
     onSuccess: (data: any) => {
       // Clear model optimized prompt after successful generation
@@ -623,9 +634,10 @@ export default function Home() {
       setModelOptimizedPrompt("");
       setShowModelOptimizedPrompt(false);
       
+      const errorMessage = error.message || t('toastError');
       toast({
         title: t('toastErrorTitle'),
-        description: t('toastError'),
+        description: errorMessage,
         variant: "destructive",
       });
     },
