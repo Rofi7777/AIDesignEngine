@@ -889,9 +889,11 @@ export default function ModelTryOn() {
                                     <Checkbox
                                       checked={field.value?.includes(value)}
                                       onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([...field.value, value])
-                                          : field.onChange(field.value?.filter((val) => val !== value));
+                                        const currentValue = field.value || [];
+                                        const newValue = checked
+                                          ? [...currentValue, value]
+                                          : currentValue.filter((val) => val !== value);
+                                        field.onChange(newValue);
                                       }}
                                       data-testid={`checkbox-angle-${value.toLowerCase().replace(/ /g, '-')}`}
                                     />
