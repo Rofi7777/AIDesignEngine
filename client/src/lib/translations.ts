@@ -247,6 +247,9 @@ export const translations = {
     locationCustom: 'Custom',
     scenarioCustom: 'Custom',
     nationalityCustom: 'Custom',
+    enterCustomNationality: 'Enter custom nationality',
+    enterCustomScenario: 'Enter custom scenario',
+    enterCustomLocation: 'Enter custom location',
     
     // Presentation Styles
     presentationRealisticPhotography: 'Realistic Photography',
@@ -272,7 +275,7 @@ export const translations = {
     
     // Tab Names
     tabProductDesign: 'Product Design',
-    tabModelTryon: 'Model Try-on',
+    tabModelTryon: 'Product Try-on',
     tabVirtualTryon: 'Virtual Try-on',
     tabEcommerceScene: 'E-commerce Scene',
     tabPosterDesign: 'Poster Design',
@@ -874,7 +877,7 @@ export const translations = {
     
     // Tab Names
     tabProductDesign: '產品設計',
-    tabModelTryon: '模特兒試穿',
+    tabModelTryon: '商品試穿',
     tabVirtualTryon: '虛擬換裝',
     tabEcommerceScene: '電商場景',
     tabPosterDesign: '海報設計',
@@ -1476,7 +1479,7 @@ export const translations = {
     
     // Tab Names
     tabProductDesign: 'Thiết Kế Sản Phẩm',
-    tabModelTryon: 'Thử Mẫu',
+    tabModelTryon: 'Thử Sản Phẩm',
     tabVirtualTryon: 'Thử Đồ Ảo',
     tabEcommerceScene: 'Cảnh E-commerce',
     tabPosterDesign: 'Thiết kế Poster',
