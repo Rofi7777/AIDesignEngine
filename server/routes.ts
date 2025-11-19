@@ -261,8 +261,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         : compositionStyle;
       
       const designInputs = {
-        productType: 'product',
-        customProductType: '',
+        productType: 'custom' as const,
+        customProductType: 'product',
         theme: `E-commerce scene in ${sceneName}`,
         style: effectiveComposition,
         color: "Natural scene colors",
@@ -274,7 +274,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const modelSceneInputs = {
         productDesignSummary: `E-commerce photography scene in ${sceneName} with ${effectiveLighting} lighting`,
-        productType: 'product',
+        productType: 'custom' as const,
         nationality: "International",
         familyCombination: "Adult",
         scenario: sceneName,
@@ -325,8 +325,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         : campaignType;
       
       const designInputs = {
-        productType: 'poster',
-        customProductType: '',
+        productType: 'custom' as const,
+        customProductType: 'poster',
         theme: `${campaignName} campaign`,
         style: visualStyle,
         color: "Brand colors",
@@ -338,7 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const modelSceneInputs = {
         productDesignSummary: `Marketing poster for ${campaignName} campaign in ${visualStyle} style`,
-        productType: 'poster',
+        productType: 'custom' as const,
         nationality: "International",
         familyCombination: "All",
         scenario: campaignName,

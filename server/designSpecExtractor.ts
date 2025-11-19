@@ -149,87 +149,137 @@ BE EXTREMELY THOROUGH AND PRECISE. This specification will be used to ensure ide
 }
 
 export function createConsistencyPrompt(spec: DesignSpecification, angle: string): string {
+  const colorList = [...spec.primaryColors, ...spec.secondaryColors];
+  const hasColors = colorList.length > 0;
+  
   return `
 ╔════════════════════════════════════════════════════════════════╗
-║         ABSOLUTE DESIGN CONSISTENCY REQUIREMENTS               ║
-║              ZERO DEVIATION PERMITTED                          ║
+║    🚨 CRITICAL: ABSOLUTE DESIGN CONSISTENCY REQUIRED 🚨        ║
+║         ZERO DEVIATION PERMITTED - EXACT COPY ONLY             ║
 ╚════════════════════════════════════════════════════════════════╝
 
-YOU ARE GENERATING: ${angle}
+YOU ARE GENERATING: ${angle} VIEW OF THE SAME PRODUCT
 
-⚠️ CRITICAL: This is a DIFFERENT CAMERA ANGLE of the SAME EXACT PRODUCT
-⚠️ ONLY the viewing angle changes - ALL design elements MUST remain IDENTICAL
+⚠️⚠️⚠️ CRITICAL RULES - READ CAREFULLY ⚠️⚠️⚠️
+
+1. This is NOT a new product - it is the SAME EXACT PRODUCT from a different angle
+2. You are looking at a PHYSICAL OBJECT that has already been manufactured
+3. The design is FIXED and CANNOT CHANGE
+4. ONLY the camera position/viewing angle changes
+5. Think of this as taking multiple photos of ONE physical item
 
 ═══════════════════════════════════════════════════════════════
-                    MANDATORY DESIGN SPECIFICATION
+                 🎨 COLOR CONSISTENCY (CRITICAL!)
 ═══════════════════════════════════════════════════════════════
 
-🎨 PRIMARY COLORS (MUST USE EXACTLY):
-${spec.primaryColors.map(c => `   ✓ ${c}`).join('\n') || '   (none specified)'}
+${hasColors ? `
+🔴 MANDATORY COLORS - USE EXACTLY THESE COLORS:
+${colorList.map((c, i) => `   ${i + 1}. ${c.toUpperCase()}`).join('\n')}
 
-🎨 SECONDARY COLORS (MUST USE EXACTLY):
-${spec.secondaryColors.map(c => `   ✓ ${c}`).join('\n') || '   (none specified)'}
+⛔ FORBIDDEN COLORS:
+   ❌ DO NOT use white if the canonical uses pink/rose/blush
+   ❌ DO NOT use pink if the canonical uses white
+   ❌ DO NOT use any color not listed above
+   ❌ DO NOT create color variations or alternatives
+   ❌ DO NOT change color saturation, brightness, or tone
+   ❌ DO NOT mix colors that were not mixed in the canonical
 
-📐 PATTERNS (MUST REPLICATE EXACTLY):
-${spec.patterns.map(p => `   ✓ ${p}`).join('\n') || '   (none specified)'}
+🎯 COLOR VERIFICATION:
+   ✓ Main body color: ${spec.primaryColors[0] || 'match canonical exactly'}
+   ✓ Accent colors: ${spec.secondaryColors.join(', ') || 'match canonical exactly'}
+   ✓ Every pixel's color must come from the canonical design
+` : `
+⚠️ NO COLOR SPECIFICATION PROVIDED
+🔍 Solution: Study the canonical design image carefully
+✅ Copy EVERY color you see EXACTLY as it appears
+❌ DO NOT invent new colors or change existing ones
+`}
 
-✋ TEXTURES (MUST MATCH EXACTLY):
-${spec.textures.map(t => `   ✓ ${t}`).join('\n') || '   (none specified)'}
+═══════════════════════════════════════════════════════════════
+              📐 DESIGN ELEMENTS (MUST MATCH 100%)
+═══════════════════════════════════════════════════════════════
 
-🧵 MATERIALS (MUST USE EXACTLY):
-${spec.materials.map(m => `   ✓ ${m}`).join('\n') || '   (none specified)'}
+${spec.patterns.length > 0 ? `
+🔷 PATTERNS (MUST REPLICATE):
+${spec.patterns.map(p => `   ✓ ${p}`).join('\n')}
+` : ''}
 
-🏷️ BRANDING ELEMENTS (MUST INCLUDE EXACTLY):
-${spec.brandingElements.map(b => `   ✓ ${b}`).join('\n') || '   (none specified)'}
+${spec.textures.length > 0 ? `
+✋ TEXTURES (MUST MATCH):
+${spec.textures.map(t => `   ✓ ${t}`).join('\n')}
+` : ''}
 
-✨ DECORATIVE ELEMENTS (MUST INCLUDE EXACTLY):
-${spec.decorativeElements.map(d => `   ✓ ${d}`).join('\n') || '   (none specified)'}
+${spec.materials.length > 0 ? `
+🧵 MATERIALS (MUST USE):
+${spec.materials.map(m => `   ✓ ${m}`).join('\n')}
+` : ''}
 
+${spec.brandingElements.length > 0 ? `
+🏷️ BRANDING (MUST INCLUDE):
+${spec.brandingElements.map(b => `   ✓ ${b}`).join('\n')}
+` : ''}
+
+${spec.decorativeElements.length > 0 ? `
+✨ DECORATIVE ELEMENTS (MUST PRESERVE):
+${spec.decorativeElements.map(d => `   ✓ ${d}`).join('\n')}
+` : ''}
+
+${spec.structuralFeatures.length > 0 ? `
 🔧 STRUCTURAL FEATURES (MUST PRESERVE):
-${spec.structuralFeatures.map(s => `   ✓ ${s}`).join('\n') || '   (none specified)'}
+${spec.structuralFeatures.map(s => `   ✓ ${s}`).join('\n')}
+` : ''}
 
 🎯 OVERALL STYLE:
    ${spec.overallStyle}
 
 ═══════════════════════════════════════════════════════════════
-                    POSITIVE REQUIREMENTS
+                 🎬 YOUR TASK (STEP-BY-STEP)
 ═══════════════════════════════════════════════════════════════
 
-✅ USE the exact colors listed above
-✅ REPLICATE all patterns with same placement logic
-✅ MAINTAIN all branding/text elements
-✅ PRESERVE all decorative features
-✅ KEEP the same material appearance
-✅ MATCH the overall aesthetic and style
-✅ ONLY change the camera viewing angle
+STEP 1: ANALYZE the canonical design image
+   - Identify every color used
+   - Note all patterns and their placement
+   - Observe all decorative elements
+   - Study the overall design aesthetic
+
+STEP 2: UNDERSTAND your angle: ${angle}
+   - This angle shows the product from a different viewpoint
+   - The product itself is UNCHANGED
+   - You are NOT redesigning - you are PHOTOGRAPHING
+
+STEP 3: GENERATE the image
+   - Use the canonical image as your ABSOLUTE reference
+   - Copy EVERY design detail exactly
+   - Change ONLY the viewing angle
+   - Maintain 100% visual consistency
 
 ═══════════════════════════════════════════════════════════════
-                    NEGATIVE CONSTRAINTS (FORBIDDEN)
+                     ❌ STRICTLY FORBIDDEN ❌
 ═══════════════════════════════════════════════════════════════
 
-❌ DO NOT change any colors from the specification
-❌ DO NOT add new patterns or modify existing ones
-❌ DO NOT alter branding elements or text
-❌ DO NOT change materials or textures
-❌ DO NOT add or remove decorative elements
-❌ DO NOT change the product style or aesthetic
-❌ DO NOT invent new design features
+🚫 NEVER change colors (e.g., pink → white, white → pink)
+🚫 NEVER add patterns that weren't in the canonical
+🚫 NEVER remove patterns that were in the canonical
+🚫 NEVER modify textures or materials
+🚫 NEVER change decorative elements
+🚫 NEVER alter the style or aesthetic
+🚫 NEVER create variations or alternatives
+🚫 NEVER interpret or improvise - ONLY COPY
 
 ═══════════════════════════════════════════════════════════════
 
-THINK OF THIS AS: Rotating a physical product in your hand
-- The product design is LOCKED and UNCHANGEABLE
-- ONLY your viewing angle shifts to show the ${angle}
-- Every color, pattern, text, and detail remains IDENTICAL
+🔍 QUALITY CHECK (Before submitting):
+   ✓ Do all colors match the canonical EXACTLY?
+   ✓ Are all patterns preserved and placed correctly?
+   ✓ Are all decorative elements included?
+   ✓ Does it look like the same physical product from a different angle?
+   ✓ Would a customer recognize this as the SAME item?
 
-VERIFICATION CHECKLIST (before generating):
-□ All colors from specification used?
-□ All patterns replicated accurately?
-□ All branding elements included?
-□ All decorative features preserved?
-□ Materials and textures matched?
-□ Only camera angle changed?
+IF YOU ANSWERED "NO" TO ANY QUESTION ABOVE → REGENERATE
 
-GENERATE THE ${angle} NOW with PERFECT CONSISTENCY.
+REMEMBER: You are photographing ONE product from the ${angle} angle.
+The product cannot change between photos.
+
+NOW GENERATE THE ${angle} VIEW WITH PERFECT CONSISTENCY.
 `;
 }

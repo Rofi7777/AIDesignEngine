@@ -173,18 +173,40 @@ DESIGN SPECIFICATIONS:
 
     // CASE 1: Second generation with canonical design
     if (canonicalDesignBuffer && canonicalDesignMimeType) {
+      // Add canonical design as PRIMARY visual reference
       parts.push({
         inlineData: {
           mimeType: canonicalDesignMimeType,
           data: canonicalDesignBuffer.toString("base64"),
         },
       });
+      // Add template for shape preservation
       parts.push({
         inlineData: {
           mimeType,
           data: templateBuffer.toString("base64"),
         },
       });
+      
+      // CRITICAL: Also include reference image and logo for consistency
+      // These provide additional design context that canonical alone may not capture
+      if (referenceImageBuffer && referenceImageMimeType) {
+        parts.push({
+          inlineData: {
+            mimeType: referenceImageMimeType,
+            data: referenceImageBuffer.toString("base64"),
+          },
+        });
+      }
+
+      if (brandLogoBuffer && brandLogoMimeType) {
+        parts.push({
+          inlineData: {
+            mimeType: brandLogoMimeType,
+            data: brandLogoBuffer.toString("base64"),
+          },
+        });
+      }
     } else {
       // CASE 2: First generation with LLM-optimized prompt
       parts.push({
