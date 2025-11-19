@@ -307,6 +307,30 @@ export async function generateModelSceneEnhanced(
     presentationStyle,
   };
 
+  // Map view angles to specific camera instructions
+  const getViewAngleInstruction = (angle?: string): string => {
+    if (!angle) return "";
+    
+    const normalized = angle.toLowerCase().trim();
+    
+    // Support multiple languages
+    if (normalized.includes('front') || normalized.includes('正面') || normalized.includes('mặt trước')) {
+      return "\n\nCAMERA ANGLE: Front-facing view. The model should be photographed from directly in front, showing their face and front of the body clearly. This is a standard portrait orientation.";
+    }
+    if (normalized.includes('back') || normalized.includes('背面') || normalized.includes('phía sau')) {
+      return "\n\nCAMERA ANGLE: Back view. The model should be photographed from directly behind, showing the back of their head, back, and rear view. The model's face should NOT be visible - only their back side should be shown.";
+    }
+    if (normalized.includes('side') || normalized.includes('側面') || normalized.includes('bên')) {
+      return "\n\nCAMERA ANGLE: Side profile view. The model should be photographed from exactly 90 degrees to the side, showing a true profile view. Only one side of the face and body should be visible.";
+    }
+    if (normalized.includes('45') || normalized.includes('three-quarter') || normalized.includes('3/4')) {
+      return "\n\nCAMERA ANGLE: Three-quarter view (45-degree angle). The model should be photographed from a 45-degree angle, showing both the front and one side partially.";
+    }
+    
+    // Fallback for custom angles
+    return `\n\nCAMERA ANGLE: ${angle}. Position the camera to capture this specific viewing angle as requested.`;
+  };
+
   let prompt = "";
   
   try {
@@ -315,6 +339,13 @@ export async function generateModelSceneEnhanced(
     console.log("Debug notes:", optimizedPrompts.debug_notes);
     
     prompt = optimizedPrompts.model_scene_prompt;
+    
+    // Append view angle instruction to optimized prompt
+    const angleInstruction = getViewAngleInstruction(viewAngle);
+    if (angleInstruction) {
+      prompt += angleInstruction;
+      console.log(`Added camera angle instruction for: ${viewAngle}`);
+    }
     
   } catch (error) {
     console.error("Stage 1 failed, using fallback model wearing prompt:", error);
