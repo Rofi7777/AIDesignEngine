@@ -390,24 +390,18 @@ export default function Home() {
 
   const optimizePromptMutation = useMutation({
     mutationFn: async (formData: DesignFormValues) => {
-      const res = await apiRequest("/api/optimize-design-prompt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productType: selectedProductType,
-          customProductType: selectedProductType === 'custom' ? customProductType : undefined,
-          theme: formData.theme,
-          style: formData.style,
-          color: formData.color,
-          material: formData.material,
-          customTheme: formData.customTheme || "",
-          customStyle: formData.customStyle || "",
-          customColor: formData.customColor || "",
-          customMaterial: formData.customMaterial || "",
-          designDescription: formData.designDescription,
-        }),
+      const res = await apiRequest("POST", "/api/optimize-design-prompt", {
+        productType: selectedProductType,
+        customProductType: selectedProductType === 'custom' ? customProductType : undefined,
+        theme: formData.theme,
+        style: formData.style,
+        color: formData.color,
+        material: formData.material,
+        customTheme: formData.customTheme || "",
+        customStyle: formData.customStyle || "",
+        customColor: formData.customColor || "",
+        customMaterial: formData.customMaterial || "",
+        designDescription: formData.designDescription,
       });
       
       return res.json();
@@ -431,21 +425,15 @@ export default function Home() {
 
   const modelOptimizePromptMutation = useMutation({
     mutationFn: async (formData: ModelFormValues) => {
-      const res = await apiRequest("/api/optimize-model-prompt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productType: selectedProductType,
-          customProductType: selectedProductType === 'custom' ? customProductType : undefined,
-          nationality: formData.nationality,
-          familyCombination: formData.familyCombination,
-          scenario: formData.scenario,
-          location: formData.location,
-          presentationStyle: formData.presentationStyle,
-          description: formData.description,
-        }),
+      const res = await apiRequest("POST", "/api/optimize-model-prompt", {
+        productType: selectedProductType,
+        customProductType: selectedProductType === 'custom' ? customProductType : undefined,
+        nationality: formData.nationality,
+        familyCombination: formData.familyCombination,
+        scenario: formData.scenario,
+        location: formData.location,
+        presentationStyle: formData.presentationStyle,
+        description: formData.description,
       });
       
       return res.json();
