@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Upload, X, Download, Loader2 } from "lucide-react";
+import { Upload, X, Download, Loader2, Sparkles } from "lucide-react";
 
 const formSchema = z.object({
   // Module A
@@ -68,6 +68,7 @@ const formSchema = z.object({
   customPriceStyle: z.string().optional(),
   logoPosition: z.string().optional(),
   brandTagline: z.string().optional(),
+  description: z.string().optional(),
 }).refine((data) => {
   if (data.aspectRatio === 'custom') {
     if (!data.customWidth || !data.customHeight) {
@@ -95,6 +96,10 @@ export default function PosterDesign() {
   const [selectedPoster, setSelectedPoster] = useState<string | null>(null);
   const [activeModule, setActiveModule] = useState<string>("module-a");
   
+  // Optimize prompt state
+  const [optimizedPrompt, setOptimizedPrompt] = useState<string>("");
+  const [showOptimizedPrompt, setShowOptimizedPrompt] = useState<boolean>(false);
+  
   const productInputRef = useRef<HTMLInputElement>(null);
   const referenceInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -115,6 +120,44 @@ export default function PosterDesign() {
       autoGenerateSellingPoints: false,
       priceStyle: "",
       logoPosition: "top-left",
+      description: "",
+    },
+  });
+
+  // Optimize prompt mutation
+  const optimizePromptMutation = useMutation({
+    mutationFn: async (formValues: FormData) => {
+      const response = await fetch('/api/optimize-poster-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          campaignType: formValues.campaignType,
+          customCampaignType: formValues.customCampaign,
+          visualStyle: formValues.visualStyle,
+          layoutType: formValues.layout,
+          description: formValues.description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to optimize prompt');
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setOptimizedPrompt(data.optimizedPrompt);
+      setShowOptimizedPrompt(true);
+      toast({
+        description: t('optimizedPromptSuccess') || "Prompt optimized successfully!",
+      });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: t('errorTitle') || "Error",
+        description: t('optimizedPromptError') || "Failed to optimize prompt.",
+      });
     },
   });
 
@@ -164,6 +207,12 @@ export default function PosterDesign() {
       if (logoImage) {
         formData.append("logoImage", logoImage);
       }
+      
+      // Add custom optimized prompt if user has optimized and edited it
+      if (optimizedPrompt && optimizedPrompt.trim() && showOptimizedPrompt) {
+        formData.append('customOptimizedPrompt', optimizedPrompt);
+        console.log('[Frontend] Using user-edited optimized prompt for poster generation');
+      }
 
       const response = await fetch("/api/generate-poster", {
         method: "POST",
@@ -182,6 +231,10 @@ export default function PosterDesign() {
       return await response.json();
     },
     onSuccess: (data) => {
+      // Clear optimized prompt after successful generation
+      setOptimizedPrompt("");
+      setShowOptimizedPrompt(false);
+      
       console.log('[Poster Design] API Response:', data);
       console.log('[Poster Design] imageUrls:', data.imageUrls);
       console.log('[Poster Design] imageUrl:', data.imageUrl);
@@ -196,6 +249,10 @@ export default function PosterDesign() {
       });
     },
     onError: (error: any) => {
+      // Clear optimized prompt on generation error to avoid stale prompts
+      setOptimizedPrompt("");
+      setShowOptimizedPrompt(false);
+      
       const errorMessage = error?.message || error?.error || "Failed to generate poster. Please check your inputs and try again.";
       toast({
         title: t("posterDesignErrorTitle"),
@@ -939,6 +996,94 @@ export default function PosterDesign() {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
+
+              {/* Poster Design Description */}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel data-testid="label-poster-description">{t('designDescriptionLabel')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t('designDescriptionPlaceholder')}
+                        rows={4}
+                        {...field}
+                        data-testid="textarea-poster-description"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Poster Design Optimize Prompt Feature */}
+              <div className="space-y-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={async () => {
+                    const isValid = await form.trigger(['campaignType', 'visualStyle', 'layout']);
+                    if (!isValid) {
+                      toast({
+                        variant: "destructive",
+                        title: t('errorTitle') || "Error",
+                        description: t('errorFillRequiredFields') || "Please fill in all required fields first",
+                      });
+                      return;
+                    }
+                    const formValues = form.getValues();
+                    optimizePromptMutation.mutate(formValues);
+                  }}
+                  disabled={optimizePromptMutation.isPending}
+                  className="w-full"
+                  data-testid="button-optimize-poster-prompt"
+                >
+                  {optimizePromptMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('optimizingPrompt') || "Optimizing..."}
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      {t('optimizePromptButton') || "Optimize Design Prompt with AI"}
+                    </>
+                  )}
+                </Button>
+
+                {showOptimizedPrompt && optimizedPrompt && (
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">
+                          {t('optimizedPromptTitle') || "AI-Optimized Prompt"}
+                        </span>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowOptimizedPrompt(false)}
+                        data-testid="button-close-poster-optimized"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={optimizedPrompt}
+                      onChange={(e) => setOptimizedPrompt(e.target.value)}
+                      rows={6}
+                      className="text-sm"
+                      data-testid="textarea-poster-optimized-prompt"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t('optimizedPromptHint') || "You can edit this prompt before generating"}
+                    </p>
+                  </div>
+                )}
+              </div>
 
               <Button
                 type="submit"

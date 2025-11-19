@@ -191,6 +191,10 @@ export default function EcommerceScene() {
       return response.json();
     },
     onSuccess: (data) => {
+      // Clear optimized prompt after successful generation
+      setOptimizedPrompt("");
+      setShowOptimizedPrompt(false);
+      
       // Support both single and multiple images
       const images = data.imageUrls || [data.imageUrl];
       setGeneratedImages(images);
@@ -200,6 +204,10 @@ export default function EcommerceScene() {
       });
     },
     onError: (error: any) => {
+      // Clear optimized prompt on generation error to avoid stale prompts
+      setOptimizedPrompt("");
+      setShowOptimizedPrompt(false);
+      
       const errorMessage = error?.message || error?.error || 'Generation failed';
       toast({
         variant: "destructive",
@@ -673,6 +681,94 @@ export default function EcommerceScene() {
                       </FormItem>
                     )}
                   />
+
+                  {/* E-commerce Scene Description */}
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel data-testid="label-scene-description">{t('designDescriptionLabel')}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder={t('designDescriptionPlaceholder')}
+                            rows={4}
+                            {...field}
+                            data-testid="textarea-scene-description"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* E-commerce Scene Optimize Prompt Feature */}
+                  <div className="space-y-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={async () => {
+                        const isValid = await form.trigger(['sceneType', 'lighting', 'composition']);
+                        if (!isValid) {
+                          toast({
+                            variant: "destructive",
+                            title: t('errorTitle') || "Error",
+                            description: t('errorFillRequiredFields') || "Please fill in all required fields first",
+                          });
+                          return;
+                        }
+                        const formValues = form.getValues();
+                        optimizePromptMutation.mutate(formValues);
+                      }}
+                      disabled={optimizePromptMutation.isPending}
+                      className="w-full"
+                      data-testid="button-optimize-scene-prompt"
+                    >
+                      {optimizePromptMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {t('optimizingPrompt') || "Optimizing..."}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          {t('optimizePromptButton') || "Optimize Design Prompt with AI"}
+                        </>
+                      )}
+                    </Button>
+
+                    {showOptimizedPrompt && optimizedPrompt && (
+                      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-medium text-primary">
+                              {t('optimizedPromptTitle') || "AI-Optimized Prompt"}
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowOptimizedPrompt(false)}
+                            data-testid="button-close-scene-optimized"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <Textarea
+                          value={optimizedPrompt}
+                          onChange={(e) => setOptimizedPrompt(e.target.value)}
+                          rows={6}
+                          className="text-sm"
+                          data-testid="textarea-scene-optimized-prompt"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {t('optimizedPromptHint') || "You can edit this prompt before generating"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
                   <Button 
                     type="submit" 
