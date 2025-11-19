@@ -96,6 +96,10 @@ export const translations = {
     errorCustomMaterialRequired: 'Custom material description is required when using custom material',
     errorCustomLightingRequired: 'Custom lighting description is required when using custom lighting',
     errorCustomCompositionRequired: 'Custom composition description is required when using custom composition',
+    errorCustomNationalityRequired: 'Custom nationality is required when selecting Custom',
+    errorCustomScenarioRequired: 'Custom scenario is required when selecting Custom',
+    errorCustomLocationRequired: 'Custom location is required when selecting Custom',
+    errorCustomCombinationRequired: 'Custom model combination is required when selecting Custom',
     errorInvalidFileType: 'Invalid file type',
     errorFileTypeMessage: 'Please upload a PNG or JPG image',
     errorFileTooLarge: 'File too large',
@@ -236,6 +240,9 @@ export const translations = {
     nationalityCustom: 'Custom',
     
     // Presentation Styles
+    presentationRealisticPhotography: 'Realistic Photography',
+    presentationProductMockup: 'Product Mockup',
+    presentationCustom: 'Custom',
     presentationCasual: 'Casual Lifestyle',
     presentationProfessional: 'Professional Editorial',
     presentationCandid: 'Candid Natural',
@@ -679,6 +686,10 @@ export const translations = {
     errorCustomMaterialRequired: '使用自訂材質時需要自訂材質描述',
     errorCustomLightingRequired: '使用自訂光線時需要自訂光線描述',
     errorCustomCompositionRequired: '使用自訂構圖時需要自訂構圖描述',
+    errorCustomNationalityRequired: '選擇自訂時需要輸入自訂國籍',
+    errorCustomScenarioRequired: '選擇自訂時需要輸入自訂場景',
+    errorCustomLocationRequired: '選擇自訂時需要輸入自訂地點',
+    errorCustomCombinationRequired: '選擇自訂時需要輸入自訂模特組合',
     errorInvalidFileType: '檔案類型無效',
     errorFileTypeMessage: '請上傳 PNG 或 JPG 圖片',
     errorFileTooLarge: '檔案太大',
@@ -822,6 +833,9 @@ export const translations = {
     enterCustomLocation: '輸入自訂地點',
     
     // Presentation Styles
+    presentationRealisticPhotography: '寫實攝影',
+    presentationProductMockup: '產品樣機',
+    presentationCustom: '自訂',
     presentationCasual: '休閒生活',
     presentationProfessional: '專業編輯',
     presentationCandid: '自然抓拍',
@@ -1265,6 +1279,10 @@ export const translations = {
     errorCustomMaterialRequired: 'Cần mô tả chất liệu tùy chỉnh khi sử dụng chất liệu tùy chỉnh',
     errorCustomLightingRequired: 'Cần mô tả ánh sáng tùy chỉnh khi sử dụng ánh sáng tùy chỉnh',
     errorCustomCompositionRequired: 'Cần mô tả bố cục tùy chỉnh khi sử dụng bố cục tùy chỉnh',
+    errorCustomNationalityRequired: 'Cần nhập quốc tịch tùy chỉnh khi chọn Tùy Chỉnh',
+    errorCustomScenarioRequired: 'Cần nhập kịch bản tùy chỉnh khi chọn Tùy Chỉnh',
+    errorCustomLocationRequired: 'Cần nhập địa điểm tùy chỉnh khi chọn Tùy Chỉnh',
+    errorCustomCombinationRequired: 'Cần nhập tổ hợp mô hình tùy chỉnh khi chọn Tùy Chỉnh',
     errorInvalidFileType: 'Loại tệp không hợp lệ',
     errorFileTypeMessage: 'Vui lòng tải lên ảnh PNG hoặc JPG',
     errorFileTooLarge: 'Tệp quá lớn',
@@ -1408,6 +1426,9 @@ export const translations = {
     enterCustomLocation: 'Nhập địa điểm tùy chỉnh',
     
     // Presentation Styles
+    presentationRealisticPhotography: 'Nhiếp Ảnh Chân Thực',
+    presentationProductMockup: 'Mô Hình Sản Phẩm',
+    presentationCustom: 'Tùy Chỉnh',
     presentationCasual: 'Phong Cách Thường Ngày',
     presentationProfessional: 'Phong Cách Chuyên Nghiệp',
     presentationCandid: 'Tự Nhiên Chân Thực',

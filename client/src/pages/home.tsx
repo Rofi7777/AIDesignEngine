@@ -480,7 +480,7 @@ export default function Home() {
         productType: selectedProductType,
         customProductType: selectedProductType === 'custom' ? customProductType : undefined,
         nationality: formData.nationality === "Custom" ? formData.customNationality : formData.nationality,
-        modelCombination: formData.modelCombination === "Custom" ? formData.customCombination : formData.modelCombination,
+        familyCombination: formData.modelCombination === "Custom" ? formData.customCombination : formData.modelCombination,
         scenario: formData.scenario === "Custom" ? formData.customScenario : formData.scenario,
         location: formData.location === "Custom" ? formData.customLocation : formData.location,
         presentationStyle: formData.presentationStyle === "Custom" ? formData.customStyleText : formData.presentationStyle,
@@ -690,7 +690,7 @@ export default function Home() {
         formData.append("customProductType", customProductType);
       }
       formData.append("nationality", data.nationality === "Custom" ? data.customNationality || "" : data.nationality);
-      formData.append("modelCombination", data.modelCombination === "Custom" ? data.customCombination || "" : data.modelCombination);
+      formData.append("familyCombination", data.modelCombination === "Custom" ? data.customCombination || "" : data.modelCombination);
       formData.append("scenario", data.scenario === "Custom" ? data.customScenario || "" : data.scenario);
       formData.append("location", data.location === "Custom" ? data.customLocation || "" : data.location);
       formData.append("presentationStyle", data.presentationStyle === "Custom" ? data.customStyleText || "" : data.presentationStyle);
