@@ -306,7 +306,7 @@ export default function VirtualTryOn() {
     const newImages = filesToAdd.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
-      type: "clothing",
+      type: "top",
       name: undefined,
     }));
 
