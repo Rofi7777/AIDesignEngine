@@ -23,10 +23,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Download, Upload, Loader2, X, Image as ImageIcon, Package, Boxes } from "lucide-react";
+import { Download, Upload, Loader2, X, Image as ImageIcon, Package, Boxes, Sparkles } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function EcommerceScene() {
@@ -41,6 +42,10 @@ export default function EcommerceScene() {
   }>>([]);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
+  // Optimize prompt state
+  const [optimizedPrompt, setOptimizedPrompt] = useState<string>("");
+  const [showOptimizedPrompt, setShowOptimizedPrompt] = useState<boolean>(false);
 
   const formSchema = z.object({
     sceneType: z.string().min(1, t('ecommerceSceneValidationCustomRequired')),
@@ -51,6 +56,7 @@ export default function EcommerceScene() {
     customWidth: z.string().optional(),
     customHeight: z.string().optional(),
     outputQuantity: z.string().min(1, "Output quantity is required"),
+    description: z.string().optional(),
   }).refine((data) => {
     if (data.sceneType === 'custom' && !data.customSceneType) {
       return false;
@@ -85,6 +91,44 @@ export default function EcommerceScene() {
       customWidth: '',
       customHeight: '',
       outputQuantity: '1',
+      description: '',
+    },
+  });
+
+  // Optimize prompt mutation
+  const optimizePromptMutation = useMutation({
+    mutationFn: async (formValues: z.infer<typeof formSchema>) => {
+      const response = await fetch('/api/optimize-scene-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sceneType: formValues.sceneType,
+          customSceneType: formValues.customSceneType,
+          lighting: formValues.lighting,
+          compositionStyle: formValues.composition,
+          description: formValues.description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to optimize prompt');
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setOptimizedPrompt(data.optimizedPrompt);
+      setShowOptimizedPrompt(true);
+      toast({
+        description: t('optimizedPromptSuccess') || "Prompt optimized successfully!",
+      });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: t('errorTitle') || "Error",
+        description: t('optimizedPromptError') || "Failed to optimize prompt.",
+      });
     },
   });
 
@@ -118,6 +162,17 @@ export default function EcommerceScene() {
       formData.append('outputQuantity', data.outputQuantity);
       formData.append('assetTypes', JSON.stringify(assetImages.map(img => img.assetType)));
       formData.append('assetNames', JSON.stringify(assetImages.map(img => img.name || '')));
+      
+      // Add description if provided
+      if (data.description && data.description.trim()) {
+        formData.append('description', data.description);
+      }
+      
+      // Add custom optimized prompt if user has optimized and edited it
+      if (optimizedPrompt && optimizedPrompt.trim() && showOptimizedPrompt) {
+        formData.append('customOptimizedPrompt', optimizedPrompt);
+        console.log('[Frontend] Using user-edited optimized prompt for scene generation');
+      }
 
       const response = await fetch('/api/generate-ecommerce-scene', {
         method: 'POST',

@@ -97,6 +97,7 @@ const createModelFormSchema = (t: (key: any) => string) =>
     location: z.string().min(1, "Location is required"),
     presentationStyle: z.string().min(1, "Presentation style is required"),
     customStyleText: z.string().optional(),
+    description: z.string().optional(),
   }).refine(
     (data) => {
       if (data.presentationStyle === "Custom") {
@@ -164,9 +165,25 @@ export default function Home() {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [zoomedImageAlt, setZoomedImageAlt] = useState<string>("");
   
-  // Prompt optimization state
+  // Prompt optimization state for Product Design
   const [optimizedPrompt, setOptimizedPrompt] = useState<string>("");
   const [showOptimizedPrompt, setShowOptimizedPrompt] = useState<boolean>(false);
+  
+  // Prompt optimization state for Model Try-on
+  const [modelOptimizedPrompt, setModelOptimizedPrompt] = useState<string>("");
+  const [showModelOptimizedPrompt, setShowModelOptimizedPrompt] = useState<boolean>(false);
+  
+  // Prompt optimization state for Virtual Try-on
+  const [virtualTryonOptimizedPrompt, setVirtualTryonOptimizedPrompt] = useState<string>("");
+  const [showVirtualTryonOptimizedPrompt, setShowVirtualTryonOptimizedPrompt] = useState<boolean>(false);
+  
+  // Prompt optimization state for E-commerce Scene
+  const [sceneOptimizedPrompt, setSceneOptimizedPrompt] = useState<string>("");
+  const [showSceneOptimizedPrompt, setShowSceneOptimizedPrompt] = useState<boolean>(false);
+  
+  // Prompt optimization state for E-commerce Poster
+  const [posterOptimizedPrompt, setPosterOptimizedPrompt] = useState<string>("");
+  const [showPosterOptimizedPrompt, setShowPosterOptimizedPrompt] = useState<boolean>(false);
 
   const designFormSchema = useMemo(() => createDesignFormSchema(t), [t]);
   const modelFormSchema = useMemo(() => createModelFormSchema(t), [t]);
@@ -195,6 +212,7 @@ export default function Home() {
       location: "",
       presentationStyle: "",
       customStyleText: "",
+      description: "",
     },
   });
 
@@ -381,6 +399,44 @@ export default function Home() {
     },
   });
 
+  const modelOptimizePromptMutation = useMutation({
+    mutationFn: async (formData: ModelFormValues) => {
+      const res = await apiRequest("/api/optimize-model-prompt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productType: selectedProductType,
+          customProductType: selectedProductType === 'custom' ? customProductType : undefined,
+          nationality: formData.nationality,
+          familyCombination: formData.familyCombination,
+          scenario: formData.scenario,
+          location: formData.location,
+          presentationStyle: formData.presentationStyle,
+          description: formData.description,
+        }),
+      });
+      
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      setModelOptimizedPrompt(data.optimizedPrompt);
+      setShowModelOptimizedPrompt(true);
+      toast({
+        title: t('promptOptimizedTitle') || "Prompt Optimized",
+        description: t('promptOptimizedDesc') || "Review and confirm the optimized prompt below",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: "destructive",
+        title: t('errorTitle') || "Error",
+        description: error.message || t('errorOptimizePrompt') || "Failed to optimize prompt",
+      });
+    },
+  });
+
   const generateDesignMutation = useMutation({
     mutationFn: async (formData: FormData) => {
       const res = await fetch("/api/generate-design", {
@@ -452,6 +508,10 @@ export default function Home() {
       });
     },
     onSuccess: (data: any) => {
+      // Clear model optimized prompt after successful generation
+      setModelOptimizedPrompt("");
+      setShowModelOptimizedPrompt(false);
+      
       setGeneratedModelImage(data.modelImage || null);
       queryClient.invalidateQueries({ queryKey: ["/api/generated-images"] });
       toast({
@@ -459,6 +519,10 @@ export default function Home() {
       });
     },
     onError: (error: any) => {
+      // Clear model optimized prompt on generation error to avoid stale prompts
+      setModelOptimizedPrompt("");
+      setShowModelOptimizedPrompt(false);
+      
       toast({
         title: t('toastErrorTitle'),
         description: t('toastError'),
@@ -558,6 +622,17 @@ export default function Home() {
       formData.append("location", data.location);
       formData.append("presentationStyle", data.presentationStyle === "Custom" ? data.customStyleText || "" : data.presentationStyle);
       formData.append("customStyleText", data.customStyleText || "");
+      
+      // Add description if provided
+      if (data.description && data.description.trim()) {
+        formData.append("description", data.description);
+      }
+      
+      // Add custom optimized prompt if user has optimized and edited it
+      if (modelOptimizedPrompt && modelOptimizedPrompt.trim() && showModelOptimizedPrompt) {
+        formData.append("customOptimizedPrompt", modelOptimizedPrompt);
+        console.log('[Frontend] Using user-edited optimized prompt for model generation');
+      }
 
       generateModelMutation.mutate(formData);
     } catch (error) {
@@ -1273,6 +1348,94 @@ export default function Home() {
                       )}
                     />
                   )}
+
+                  {/* Model Try-on Description */}
+                  <FormField
+                    control={modelForm.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel data-testid="label-model-description">{t('designDescriptionLabel')}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder={t('designDescriptionPlaceholder')}
+                            rows={4}
+                            {...field}
+                            data-testid="textarea-model-description"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Model Try-on Optimize Prompt Feature */}
+                  <div className="space-y-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={async () => {
+                        const isValid = await modelForm.trigger(['nationality', 'familyCombination', 'scenario', 'location', 'presentationStyle']);
+                        if (!isValid) {
+                          toast({
+                            variant: "destructive",
+                            title: t('errorTitle') || "Error",
+                            description: t('errorFillRequiredFields') || "Please fill in all required fields first",
+                          });
+                          return;
+                        }
+                        const formValues = modelForm.getValues();
+                        modelOptimizePromptMutation.mutate(formValues);
+                      }}
+                      disabled={modelOptimizePromptMutation.isPending}
+                      className="w-full"
+                      data-testid="button-optimize-model-prompt"
+                    >
+                      {modelOptimizePromptMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {t('optimizingPrompt') || "Optimizing..."}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          {t('optimizePromptButton') || "Optimize Design Prompt with AI"}
+                        </>
+                      )}
+                    </Button>
+
+                    {showModelOptimizedPrompt && modelOptimizedPrompt && (
+                      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-medium text-primary">
+                              {t('optimizedPromptTitle') || "AI-Optimized Prompt"}
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowModelOptimizedPrompt(false)}
+                            data-testid="button-close-model-optimized"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <Textarea
+                          value={modelOptimizedPrompt}
+                          onChange={(e) => setModelOptimizedPrompt(e.target.value)}
+                          rows={6}
+                          className="text-sm"
+                          data-testid="textarea-model-optimized-prompt"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {t('optimizedPromptHint') || "You can edit this prompt before generating"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
                   <Button
                     type="submit"

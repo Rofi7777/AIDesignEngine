@@ -94,6 +94,266 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/optimize-model-prompt", async (req, res) => {
+    try {
+      const { 
+        productType, 
+        customProductType, 
+        nationality,
+        familyCombination,
+        scenario,
+        location,
+        presentationStyle,
+        description
+      } = req.body;
+
+      if (!nationality || !familyCombination || !scenario || !location || !presentationStyle) {
+        return res.status(400).json({
+          error: "Missing required fields for model prompt optimization",
+        });
+      }
+
+      console.log('[Model Prompt Optimizer API] Optimizing model try-on prompt...');
+      
+      const { generateOptimizedPrompts } = await import("./promptOptimizer");
+      const { getProductConfig } = await import("../shared/productConfig");
+      
+      const config = getProductConfig(productType || 'slippers');
+      const productName = productType === 'custom' && customProductType 
+        ? customProductType 
+        : config.displayName.en;
+      
+      const designInputs = {
+        productType: productType || 'slippers',
+        customProductType,
+        theme: "Product showcase",
+        style: presentationStyle,
+        color: "Product colors",
+        material: "Product materials",
+        designDescription: description || '',
+        hasReferenceImage: false,
+        hasBrandLogo: false,
+      };
+      
+      const modelSceneInputs = {
+        productDesignSummary: `${productName} product photography`,
+        productType: productType || 'slippers',
+        nationality,
+        familyCombination,
+        scenario,
+        location,
+        presentationStyle,
+      };
+      
+      const optimizedPrompts = await generateOptimizedPrompts(designInputs, modelSceneInputs);
+      
+      console.log('[Model Prompt Optimizer API] ✅ Optimization successful');
+      
+      res.json({
+        optimizedPrompt: optimizedPrompts.model_scene_prompt,
+        debugNotes: optimizedPrompts.debug_notes,
+      });
+      
+    } catch (error: any) {
+      console.error('[Model Prompt Optimizer API] ❌ Error:', error);
+      res.status(500).json({
+        error: "Failed to optimize model prompt",
+        message: error.message,
+      });
+    }
+  });
+
+  app.post("/api/optimize-virtual-tryon-prompt", async (req, res) => {
+    try {
+      const { 
+        tryonType,
+        customTryonType,
+        tryonMode,
+        description
+      } = req.body;
+
+      if (!tryonType || !tryonMode) {
+        return res.status(400).json({
+          error: "Missing required fields for virtual try-on prompt optimization",
+        });
+      }
+
+      console.log('[Virtual Try-on Prompt Optimizer API] Optimizing virtual try-on prompt...');
+      
+      const { generateOptimizedPrompts } = await import("./promptOptimizer");
+      
+      const productName = tryonType === 'custom' && customTryonType 
+        ? customTryonType 
+        : tryonType;
+      
+      const designInputs = {
+        productType: tryonType,
+        customProductType: customTryonType,
+        theme: `Virtual try-on for ${productName}`,
+        style: `${tryonMode} mode`,
+        color: "Natural product colors",
+        material: "Natural materials",
+        designDescription: description || '',
+        hasReferenceImage: false,
+        hasBrandLogo: false,
+      };
+      
+      const modelSceneInputs = {
+        productDesignSummary: `Virtual try-on visualization for ${productName} in ${tryonMode} mode`,
+        productType: tryonType,
+        nationality: "International",
+        familyCombination: "Adult",
+        scenario: "Virtual try-on",
+        location: "Studio",
+        presentationStyle: "Professional fashion photography",
+      };
+      
+      const optimizedPrompts = await generateOptimizedPrompts(designInputs, modelSceneInputs);
+      
+      console.log('[Virtual Try-on Prompt Optimizer API] ✅ Optimization successful');
+      
+      res.json({
+        optimizedPrompt: optimizedPrompts.model_scene_prompt,
+        debugNotes: optimizedPrompts.debug_notes,
+      });
+      
+    } catch (error: any) {
+      console.error('[Virtual Try-on Prompt Optimizer API] ❌ Error:', error);
+      res.status(500).json({
+        error: "Failed to optimize virtual try-on prompt",
+        message: error.message,
+      });
+    }
+  });
+
+  app.post("/api/optimize-scene-prompt", async (req, res) => {
+    try {
+      const { 
+        sceneType,
+        customSceneType,
+        lighting,
+        compositionStyle,
+        description
+      } = req.body;
+
+      if (!sceneType || !lighting || !compositionStyle) {
+        return res.status(400).json({
+          error: "Missing required fields for scene prompt optimization",
+        });
+      }
+
+      console.log('[Scene Prompt Optimizer API] Optimizing e-commerce scene prompt...');
+      
+      const { generateOptimizedPrompts } = await import("./promptOptimizer");
+      
+      const sceneName = sceneType === 'custom' && customSceneType 
+        ? customSceneType 
+        : sceneType;
+      
+      const designInputs = {
+        productType: 'product',
+        customProductType: '',
+        theme: `E-commerce scene in ${sceneName}`,
+        style: compositionStyle,
+        color: "Natural scene colors",
+        material: "Natural materials",
+        designDescription: description || '',
+        hasReferenceImage: false,
+        hasBrandLogo: false,
+      };
+      
+      const modelSceneInputs = {
+        productDesignSummary: `E-commerce photography scene in ${sceneName} with ${lighting} lighting`,
+        productType: 'product',
+        nationality: "International",
+        familyCombination: "Adult",
+        scenario: sceneName,
+        location: sceneName,
+        presentationStyle: `${compositionStyle} composition`,
+      };
+      
+      const optimizedPrompts = await generateOptimizedPrompts(designInputs, modelSceneInputs);
+      
+      console.log('[Scene Prompt Optimizer API] ✅ Optimization successful');
+      
+      res.json({
+        optimizedPrompt: optimizedPrompts.model_scene_prompt,
+        debugNotes: optimizedPrompts.debug_notes,
+      });
+      
+    } catch (error: any) {
+      console.error('[Scene Prompt Optimizer API] ❌ Error:', error);
+      res.status(500).json({
+        error: "Failed to optimize scene prompt",
+        message: error.message,
+      });
+    }
+  });
+
+  app.post("/api/optimize-poster-prompt", async (req, res) => {
+    try {
+      const { 
+        campaignType,
+        customCampaignType,
+        visualStyle,
+        layoutType,
+        description
+      } = req.body;
+
+      if (!campaignType || !visualStyle || !layoutType) {
+        return res.status(400).json({
+          error: "Missing required fields for poster prompt optimization",
+        });
+      }
+
+      console.log('[Poster Prompt Optimizer API] Optimizing e-commerce poster prompt...');
+      
+      const { generateOptimizedPrompts } = await import("./promptOptimizer");
+      
+      const campaignName = campaignType === 'custom' && customCampaignType 
+        ? customCampaignType 
+        : campaignType;
+      
+      const designInputs = {
+        productType: 'poster',
+        customProductType: '',
+        theme: `${campaignName} campaign`,
+        style: visualStyle,
+        color: "Brand colors",
+        material: "Digital marketing",
+        designDescription: description || '',
+        hasReferenceImage: false,
+        hasBrandLogo: false,
+      };
+      
+      const modelSceneInputs = {
+        productDesignSummary: `Marketing poster for ${campaignName} campaign in ${visualStyle} style`,
+        productType: 'poster',
+        nationality: "International",
+        familyCombination: "All",
+        scenario: campaignName,
+        location: "Marketing scene",
+        presentationStyle: `${layoutType} layout`,
+      };
+      
+      const optimizedPrompts = await generateOptimizedPrompts(designInputs, modelSceneInputs);
+      
+      console.log('[Poster Prompt Optimizer API] ✅ Optimization successful');
+      
+      res.json({
+        optimizedPrompt: optimizedPrompts.model_scene_prompt,
+        debugNotes: optimizedPrompts.debug_notes,
+      });
+      
+    } catch (error: any) {
+      console.error('[Poster Prompt Optimizer API] ❌ Error:', error);
+      res.status(500).json({
+        error: "Failed to optimize poster prompt",
+        message: error.message,
+      });
+    }
+  });
+
   app.post("/api/generate-design", upload.fields([
     // Legacy single template support
     { name: "template", maxCount: 1 },

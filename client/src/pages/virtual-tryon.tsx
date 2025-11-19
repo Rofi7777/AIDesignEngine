@@ -23,9 +23,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Download, Upload, Loader2, X, Image as ImageIcon } from "lucide-react";
+import { Download, Upload, Loader2, X, Image as ImageIcon, Sparkles } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function VirtualTryOn() {
@@ -40,6 +41,10 @@ export default function VirtualTryOn() {
   }>>([]);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
+  // Optimize prompt state
+  const [optimizedPrompt, setOptimizedPrompt] = useState<string>("");
+  const [showOptimizedPrompt, setShowOptimizedPrompt] = useState<boolean>(false);
 
   const formSchema = z.object({
     tryonMode: z.enum(['single', 'multi']),
@@ -50,6 +55,7 @@ export default function VirtualTryOn() {
     aspectRatio: z.string().min(1, "Aspect ratio is required"),
     customWidth: z.string().optional(),
     customHeight: z.string().optional(),
+    description: z.string().optional(),
   }).refine(
     (data) => {
       if (data.aspectRatio === 'custom') {
@@ -76,10 +82,47 @@ export default function VirtualTryOn() {
       aspectRatio: '9:16',
       customWidth: '',
       customHeight: '',
+      description: '',
     },
   });
 
   const tryonMode = form.watch('tryonMode');
+
+  // Optimize prompt mutation
+  const optimizePromptMutation = useMutation({
+    mutationFn: async (formValues: z.infer<typeof formSchema>) => {
+      const response = await fetch('/api/optimize-virtual-tryon-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tryonType: formValues.tryonType || 'top',
+          customTryonType: formValues.customTryonType,
+          tryonMode: formValues.tryonMode,
+          description: formValues.description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to optimize prompt');
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setOptimizedPrompt(data.optimizedPrompt);
+      setShowOptimizedPrompt(true);
+      toast({
+        description: t('optimizedPromptSuccess') || "Prompt optimized successfully! You can review and edit it below.",
+      });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: t('errorTitle') || "Error",
+        description: t('optimizedPromptError') || "Failed to optimize prompt. Please try again.",
+      });
+    },
+  });
 
   const mutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
@@ -106,6 +149,17 @@ export default function VirtualTryOn() {
       formData.append('aspectRatio', data.aspectRatio);
       formData.append('productTypes', JSON.stringify(productImages.map(img => img.type)));
       formData.append('productNames', JSON.stringify(productImages.map(img => img.name || '')));
+      
+      // Add description if provided
+      if (data.description && data.description.trim()) {
+        formData.append('description', data.description);
+      }
+      
+      // Add custom optimized prompt if user has optimized and edited it
+      if (optimizedPrompt && optimizedPrompt.trim() && showOptimizedPrompt) {
+        formData.append('customOptimizedPrompt', optimizedPrompt);
+        console.log('[Frontend] Using user-edited optimized prompt for virtual try-on generation');
+      }
 
       const response = await fetch('/api/generate-virtual-tryon', {
         method: 'POST',
@@ -124,6 +178,10 @@ export default function VirtualTryOn() {
       return response.json();
     },
     onSuccess: (data) => {
+      // Clear optimized prompt after successful generation
+      setOptimizedPrompt("");
+      setShowOptimizedPrompt(false);
+      
       setGeneratedImage(data.imageUrl);
       toast({
         title: t('toastSuccessTitle'),
@@ -131,6 +189,10 @@ export default function VirtualTryOn() {
       });
     },
     onError: (error: any) => {
+      // Clear optimized prompt on generation error to avoid stale prompts
+      setOptimizedPrompt("");
+      setShowOptimizedPrompt(false);
+      
       const errorMessage = error?.message || error?.error || 'Generation failed';
       toast({
         variant: "destructive",
@@ -573,6 +635,94 @@ export default function VirtualTryOn() {
                       />
                     </div>
                   )}
+
+                  {/* Virtual Try-on Description */}
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel data-testid="label-virtual-tryon-description">{t('designDescriptionLabel')}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder={t('designDescriptionPlaceholder')}
+                            rows={4}
+                            {...field}
+                            data-testid="textarea-virtual-tryon-description"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Virtual Try-on Optimize Prompt Feature */}
+                  <div className="space-y-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={async () => {
+                        const isValid = await form.trigger(['tryonMode']);
+                        if (!isValid) {
+                          toast({
+                            variant: "destructive",
+                            title: t('errorTitle') || "Error",
+                            description: t('errorFillRequiredFields') || "Please fill in all required fields first",
+                          });
+                          return;
+                        }
+                        const formValues = form.getValues();
+                        optimizePromptMutation.mutate(formValues);
+                      }}
+                      disabled={optimizePromptMutation.isPending}
+                      className="w-full"
+                      data-testid="button-optimize-virtual-tryon-prompt"
+                    >
+                      {optimizePromptMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {t('optimizingPrompt') || "Optimizing..."}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          {t('optimizePromptButton') || "Optimize Design Prompt with AI"}
+                        </>
+                      )}
+                    </Button>
+
+                    {showOptimizedPrompt && optimizedPrompt && (
+                      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-medium text-primary">
+                              {t('optimizedPromptTitle') || "AI-Optimized Prompt"}
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowOptimizedPrompt(false)}
+                            data-testid="button-close-virtual-tryon-optimized"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <Textarea
+                          value={optimizedPrompt}
+                          onChange={(e) => setOptimizedPrompt(e.target.value)}
+                          rows={6}
+                          className="text-sm"
+                          data-testid="textarea-virtual-tryon-optimized-prompt"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {t('optimizedPromptHint') || "You can edit this prompt before generating"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
                   <Button 
                     type="submit" 
