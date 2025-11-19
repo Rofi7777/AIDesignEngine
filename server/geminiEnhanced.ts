@@ -33,7 +33,8 @@ export async function generateProductDesignEnhanced(
   designDescription?: string,
   canonicalDesignBuffer?: Buffer,
   canonicalDesignMimeType?: string,
-  designSpecification?: DesignSpecification
+  designSpecification?: DesignSpecification,
+  customOptimizedPrompt?: string
 ): Promise<string> {
   if (templateBuffer.length < 100) {
     throw new Error("Image file is too small or invalid. Please upload a valid product template image.");
@@ -67,6 +68,24 @@ export async function generateProductDesignEnhanced(
 Generate a ${angleLabel} view of this ${productName} that PERFECTLY matches the design specification above.
 Use the provided canonical design image as your visual reference.
 Use the template image to maintain the correct product shape and structure.`;
+
+  } else if (customOptimizedPrompt && customOptimizedPrompt.trim()) {
+    // User provided a custom optimized prompt - use it directly
+    console.log(`Using user-provided optimized prompt for ${productName}...`);
+    prompt = customOptimizedPrompt;
+      
+    // Add critical shape preservation rules
+    prompt += `\n\nCRITICAL SHAPE PRESERVATION RULES:
+⚠️ PRESERVE THE EXACT PHYSICAL FORM - DO NOT MODIFY:
+1. ✓ Keep the EXACT shoe shape, silhouette, and outline from the template
+2. ✓ Maintain the SAME dimensions, proportions, and size
+3. ✓ Preserve the EXACT contours, curves, and structural lines
+4. ✓ Keep the SAME sole thickness, heel height, and overall structure
+5. ✓ DO NOT change the physical form, body shape, or 3D geometry
+
+View angle: Create a ${angle === "top" ? "top-down view showing the upper surface" : "45-degree angled view showing both top and side profile"} of the slipper.
+
+REMEMBER: Think of this as applying a "skin" or "wrap" to the exact template shape. The underlying 3D form must remain 100% identical to the template. Only the surface appearance changes.`;
 
   } else {
     // FIRST generation - Use LLM to generate optimized professional prompt

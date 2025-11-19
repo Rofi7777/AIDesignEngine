@@ -58,6 +58,7 @@ The application features a single-page layout with a two-column structure (40% c
 #### Feature 1: Product Design Engine
 - **4-Angle Template Upload:** Upload up to 4 optional product templates (PNG/JPG up to 10MB each) for 5 product categories: shoes, slippers, clothes, bags, custom. Each template corresponds to a specific viewing angle.
 - **AI-Generated 4-Angle Product Designs:** All products are generated with 4 viewing angles (top view, 45° view, side view, bottom view) with ULTRA-STRICT design consistency across all angles.
+- **Interactive Prompt Optimization (NEW):** Users can click "Optimize Design Prompt with AI" to preview the AI-generated professional prompt before generation. The optimized prompt can be reviewed, edited, and confirmed, giving users full control over the generation process. If a custom optimized prompt is provided, it bypasses the automated prompt generation stage and uses the user-edited version directly.
 
 #### Feature 2: Model Try-on System
 - **AI-Generated Model-Wearing Scenes:** Configurable elements (nationality, family, scenario, location, presentation) for realistic product visualization.

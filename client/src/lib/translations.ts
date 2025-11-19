@@ -104,6 +104,17 @@ export const translations = {
     errorMissingCustomProductType: 'Please enter a custom product type name',
     errorGenerationFailed: 'Failed to generate',
     errorPreparationFailed: 'Failed to prepare generation request',
+    errorTitle: 'Error',
+    errorFillRequiredFields: 'Please fill in all required fields first',
+    errorOptimizePrompt: 'Failed to optimize prompt',
+    
+    // Prompt Optimization
+    optimizePromptButton: 'Optimize Design Prompt with AI',
+    optimizingPrompt: 'Optimizing...',
+    optimizedPromptTitle: 'AI-Optimized Prompt',
+    optimizedPromptHint: 'Review and edit the optimized prompt above. This will be used for AI generation.',
+    promptOptimizedTitle: 'Prompt Optimized',
+    promptOptimizedDesc: 'Review and confirm the optimized prompt below',
     
     // Alt Text (Accessibility)
     altUploadedTemplate: 'Uploaded template',
@@ -623,6 +634,17 @@ export const translations = {
     errorMissingCustomProductType: '請輸入自定義產品類別名稱',
     errorGenerationFailed: '生成失敗',
     errorPreparationFailed: '準備生成請求失敗',
+    errorTitle: '錯誤',
+    errorFillRequiredFields: '請先填寫所有必填欄位',
+    errorOptimizePrompt: '提示詞優化失敗',
+    
+    // Prompt Optimization
+    optimizePromptButton: '使用 AI 優化設計提示詞',
+    optimizingPrompt: '優化中...',
+    optimizedPromptTitle: 'AI 優化提示詞',
+    optimizedPromptHint: '請檢視並編輯上方的優化提示詞。這將用於 AI 生成。',
+    promptOptimizedTitle: '提示詞已優化',
+    promptOptimizedDesc: '請檢視並確認下方的優化提示詞',
     
     // Alt Text (Accessibility)
     altUploadedTemplate: '已上傳的模板',
@@ -1142,6 +1164,17 @@ export const translations = {
     errorMissingCustomProductType: 'Vui lòng nhập tên loại sản phẩm tùy chỉnh',
     errorGenerationFailed: 'Tạo thất bại',
     errorPreparationFailed: 'Không thể chuẩn bị yêu cầu tạo',
+    errorTitle: 'Lỗi',
+    errorFillRequiredFields: 'Vui lòng điền vào tất cả các trường bắt buộc trước',
+    errorOptimizePrompt: 'Không thể tối ưu hóa prompt',
+    
+    // Prompt Optimization
+    optimizePromptButton: 'Tối ưu hóa Prompt thiết kế với AI',
+    optimizingPrompt: 'Đang tối ưu hóa...',
+    optimizedPromptTitle: 'Prompt đã được AI tối ưu hóa',
+    optimizedPromptHint: 'Xem lại và chỉnh sửa prompt đã được tối ưu hóa ở trên. Nó sẽ được sử dụng để tạo AI.',
+    promptOptimizedTitle: 'Prompt đã được tối ưu hóa',
+    promptOptimizedDesc: 'Xem lại và xác nhận prompt đã được tối ưu hóa bên dưới',
     
     // Alt Text (Accessibility)
     altUploadedTemplate: 'Mẫu đã tải lên',

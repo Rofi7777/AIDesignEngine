@@ -25,6 +25,75 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Prompt optimization endpoint for Product Design
+  app.post("/api/optimize-design-prompt", async (req, res) => {
+    try {
+      const { 
+        productType, 
+        customProductType, 
+        theme, 
+        style, 
+        color, 
+        material, 
+        designDescription 
+      } = req.body;
+
+      if (!productType || !theme || !style || !color || !material) {
+        return res.status(400).json({
+          error: "Missing required fields for prompt optimization",
+        });
+      }
+
+      console.log('[Prompt Optimizer API] Optimizing design prompt...');
+      
+      const { generateOptimizedPrompts } = await import("./promptOptimizer");
+      const { getProductConfig } = await import("../shared/productConfig");
+      
+      const config = getProductConfig(productType);
+      const productName = productType === 'custom' && customProductType 
+        ? customProductType 
+        : config.displayName.en;
+      
+      const designInputs = {
+        productType,
+        customProductType,
+        theme,
+        style,
+        color,
+        material,
+        designDescription,
+        hasReferenceImage: false,
+        hasBrandLogo: false,
+      };
+      
+      const modelSceneInputs = {
+        productDesignSummary: `${style} style ${theme} themed ${productName.toLowerCase()} in ${color} colors with ${material} materials`,
+        productType,
+        nationality: "International",
+        familyCombination: "Adult",
+        scenario: "Product showcase",
+        location: "Studio",
+        presentationStyle: "Professional product photography",
+      };
+      
+      const optimizedPrompts = await generateOptimizedPrompts(designInputs, modelSceneInputs);
+      
+      console.log('[Prompt Optimizer API] ✅ Optimization successful');
+      
+      res.json({
+        optimizedPrompt: optimizedPrompts.product_design_prompt,
+        debugNotes: optimizedPrompts.debug_notes,
+      });
+      
+    } catch (error: any) {
+      console.error('[Prompt Optimizer API] ❌ Error:', error);
+      res.status(500).json({
+        error: "Failed to optimize prompt",
+        message: error.message,
+      });
+    }
+  });
+
   app.post("/api/generate-design", upload.fields([
     // Legacy single template support
     { name: "template", maxCount: 1 },
@@ -50,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const referenceImageFile = files?.referenceImage?.[0];
       const brandLogoFile = files?.brandLogo?.[0];
 
-      const { theme, style, color, material, angles, designDescription } = req.body;
+      const { theme, style, color, material, angles, designDescription, customOptimizedPrompt } = req.body;
 
       if (!theme || !style || !color || !material) {
         return res.status(400).json({
@@ -121,7 +190,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           referenceImageFile?.mimetype,
           brandLogoFile?.buffer,
           brandLogoFile?.mimetype,
-          designDescription
+          designDescription,
+          undefined, // canonicalDesignBuffer
+          undefined, // canonicalDesignMimeType
+          undefined, // designSpecification
+          customOptimizedPrompt // Pass custom optimized prompt for first angle
         );
         
         if (!results[firstAngle]) {

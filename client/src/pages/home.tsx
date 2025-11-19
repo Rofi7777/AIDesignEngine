@@ -163,16 +163,13 @@ export default function Home() {
   // Image zoom modal state
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [zoomedImageAlt, setZoomedImageAlt] = useState<string>("");
+  
+  // Prompt optimization state
+  const [optimizedPrompt, setOptimizedPrompt] = useState<string>("");
+  const [showOptimizedPrompt, setShowOptimizedPrompt] = useState<boolean>(false);
 
   const designFormSchema = useMemo(() => createDesignFormSchema(t), [t]);
   const modelFormSchema = useMemo(() => createModelFormSchema(t), [t]);
-
-  // Clear generated images and reset angle uploads when product type changes
-  useEffect(() => {
-    setGeneratedImages({});
-    setActiveView("");
-    setAngleUploads(initializeAngleUploads(selectedProductType));
-  }, [selectedProductType]);
 
   const designForm = useForm<DesignFormValues>({
     resolver: zodResolver(designFormSchema),
@@ -200,6 +197,15 @@ export default function Home() {
       customStyleText: "",
     },
   });
+
+  // Clear generated images, angle uploads, and optimized prompt when product type changes
+  useEffect(() => {
+    setGeneratedImages({});
+    setActiveView("");
+    setAngleUploads(initializeAngleUploads(selectedProductType));
+    setOptimizedPrompt("");
+    setShowOptimizedPrompt(false);
+  }, [selectedProductType]);
 
   const { data: savedImages } = useQuery<GeneratedImage[]>({
     queryKey: ["/api/generated-images"],
@@ -338,6 +344,43 @@ export default function Home() {
     }));
   };
 
+  const optimizePromptMutation = useMutation({
+    mutationFn: async (formData: DesignFormValues) => {
+      const res = await apiRequest("/api/optimize-design-prompt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productType: selectedProductType,
+          customProductType: selectedProductType === 'custom' ? customProductType : undefined,
+          theme: formData.theme,
+          style: formData.style,
+          color: formData.color,
+          material: formData.material,
+          designDescription: formData.designDescription,
+        }),
+      });
+      
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      setOptimizedPrompt(data.optimizedPrompt);
+      setShowOptimizedPrompt(true);
+      toast({
+        title: t('promptOptimizedTitle') || "Prompt Optimized",
+        description: t('promptOptimizedDesc') || "Review and confirm the optimized prompt below",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: "destructive",
+        title: t('errorTitle') || "Error",
+        description: error.message || t('errorOptimizePrompt') || "Failed to optimize prompt",
+      });
+    },
+  });
+
   const generateDesignMutation = useMutation({
     mutationFn: async (formData: FormData) => {
       const res = await fetch("/api/generate-design", {
@@ -354,6 +397,10 @@ export default function Home() {
       return data;
     },
     onSuccess: (data: any) => {
+      // Clear optimized prompt after successful generation
+      setOptimizedPrompt("");
+      setShowOptimizedPrompt(false);
+      
       // Convert response to dynamic angle mapping using modern keys
       const newImages: Record<string, string> = {};
       const productConfig = getProductConfig(selectedProductType);
@@ -381,6 +428,10 @@ export default function Home() {
       });
     },
     onError: (error: any) => {
+      // Clear optimized prompt on generation error to avoid stale prompts
+      setOptimizedPrompt("");
+      setShowOptimizedPrompt(false);
+      
       const errorMessage = error.message || t('toastError');
       toast({
         title: t('toastErrorTitle'),
@@ -470,6 +521,11 @@ export default function Home() {
     }
     if (brandLogoFile) {
       formData.append("brandLogo", brandLogoFile);
+    }
+    // Add custom optimized prompt if user has optimized and edited it
+    if (optimizedPrompt && optimizedPrompt.trim() && showOptimizedPrompt) {
+      formData.append("customOptimizedPrompt", optimizedPrompt);
+      console.log('[Frontend] Using user-edited optimized prompt for generation');
     }
 
     generateDesignMutation.mutate(formData);
@@ -917,6 +973,75 @@ export default function Home() {
                       </FormItem>
                     )}
                   />
+
+                  {/* Optimize Prompt Feature */}
+                  <div className="space-y-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={async () => {
+                        // Trigger validation on all fields
+                        const isValid = await designForm.trigger(['theme', 'style', 'color', 'material']);
+                        if (!isValid) {
+                          toast({
+                            variant: "destructive",
+                            title: t('errorTitle') || "Error",
+                            description: t('errorFillRequiredFields') || "Please fill in all required fields first",
+                          });
+                          return;
+                        }
+                        const formValues = designForm.getValues();
+                        optimizePromptMutation.mutate(formValues);
+                      }}
+                      disabled={optimizePromptMutation.isPending}
+                      className="w-full"
+                      data-testid="button-optimize-prompt"
+                    >
+                      {optimizePromptMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          {t('optimizingPrompt') || "Optimizing..."}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          {t('optimizePromptButton') || "Optimize Design Prompt with AI"}
+                        </>
+                      )}
+                    </Button>
+
+                    {showOptimizedPrompt && optimizedPrompt && (
+                      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-medium text-primary">
+                              {t('optimizedPromptTitle') || "AI-Optimized Prompt"}
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowOptimizedPrompt(false)}
+                            data-testid="button-close-optimized"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <Textarea
+                          value={optimizedPrompt}
+                          onChange={(e) => setOptimizedPrompt(e.target.value)}
+                          rows={6}
+                          className="text-sm"
+                          data-testid="textarea-optimized-prompt"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {t('optimizedPromptHint') || "Review and edit the optimized prompt above. This will be used for AI generation."}
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Brand Logo Upload */}
                   <div className="space-y-2">
