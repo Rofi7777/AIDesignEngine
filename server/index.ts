@@ -4,6 +4,15 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// EARLIEST REQUEST LOGGER - Before ANY middleware
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    console.log(`[EARLIEST] ${req.method} ${req.path}`);
+    console.log(`[EARLIEST] Content-Type: ${req.get('content-type')}`);
+  }
+  next();
+});
+
 declare module 'http' {
   interface IncomingMessage {
     rawBody: unknown
