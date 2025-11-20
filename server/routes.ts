@@ -739,8 +739,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Model Try-On API Route
-  app.post("/api/generate-model-tryon", upload.array('productImages', 10), async (req, res) => {
-    console.log('[Model Try-On API] ===== REQUEST STARTED =====');
+  app.post("/api/generate-model-tryon", (req, res, next) => {
+    console.log('[Model Try-On API] ===== RAW REQUEST RECEIVED =====');
+    console.log('[Model Try-On API] Request method:', req.method);
+    console.log('[Model Try-On API] Request path:', req.path);
+    console.log('[Model Try-On API] Content-Type:', req.get('content-type'));
+    next();
+  }, upload.array('productImages', 10), async (req, res) => {
+    console.log('[Model Try-On API] ===== AFTER MULTER =====');
     try {
       const files = req.files as Express.Multer.File[] | undefined;
       const { modelOptions, productTypes, productTypesCustom } = req.body;
