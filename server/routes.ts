@@ -16,10 +16,19 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.match(/image\/(png|jpeg|jpg)/)) {
+    console.log('[Multer FileFilter] Checking file:', file.originalname);
+    console.log('[Multer FileFilter] MIME type:', file.mimetype);
+    
+    // Accept image/* MIME types and also check file extensions as fallback
+    const isValidMimeType = file.mimetype.startsWith('image/');
+    const hasValidExtension = /\.(png|jpg|jpeg|webp|gif|bmp)$/i.test(file.originalname);
+    
+    if (isValidMimeType || hasValidExtension) {
+      console.log('[Multer FileFilter] File accepted');
       cb(null, true);
     } else {
-      cb(new Error("Only PNG and JPG images are allowed"));
+      console.log('[Multer FileFilter] File rejected - invalid type');
+      cb(new Error(`Only image files are allowed. Received: ${file.mimetype}`));
     }
   },
 });
