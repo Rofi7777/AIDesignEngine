@@ -54,6 +54,21 @@ The application features a single-page, two-column layout with a "La Letter-insp
 -   **Multi-Image Generation:** E-commerce Scene and Poster Design features support generating 1-8 variations per request.
 -   **State Management:** Automatic cleanup of previous results on new generation requests.
 
+## Testing Status
+
+### Verified Features ✅
+1. **Product Design Engine (Tab 1)** - 4-angle generation working correctly
+2. **Product Try-on System (Tab 2)** - Model wearing product generation working after Multer file filter fix
+3. **Virtual Try-on (Tab 3)** - Single and multi-product garment replacement working correctly
+
+### Known Issues 🔧
+- AI prompt optimization in Product Design page needs debugging (returns 500 error)
+- Model Try-on functionality in Product Design page has fetch issues preventing backend request
+
+### Pending Testing ⏳
+- E-commerce Scene Composition (Tab 4)
+- E-commerce Poster Design (Tab 5)
+
 ## External Dependencies
 -   **Google Gemini 2.5 Flash Image Preview:** For AI image generation.
 -   **PostgreSQL:** Relational database for storing design data.
