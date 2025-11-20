@@ -740,12 +740,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Model Try-On API Route
   app.post("/api/generate-model-tryon", upload.array('productImages', 10), async (req, res) => {
+    console.log('[Model Try-On API] ===== REQUEST STARTED =====');
     try {
       const files = req.files as Express.Multer.File[] | undefined;
       const { modelOptions, productTypes, productTypesCustom } = req.body;
 
       console.log('[Model Try-On API] Request received');
       console.log('[Model Try-On API] Files:', files?.length || 0);
+      console.log('[Model Try-On API] Model Options:', modelOptions ? 'Present' : 'Missing');
 
       if (!files || files.length === 0) {
         return res.status(400).json({
