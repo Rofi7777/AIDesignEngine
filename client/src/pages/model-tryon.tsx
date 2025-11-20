@@ -256,6 +256,9 @@ export default function ModelTryOn() {
 
   const mutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
+      console.log('[Model Try-On Mutation] Starting...');
+      console.log('[Model Try-On Mutation] Data:', data);
+      
       const formData = new FormData();
       
       productImages.forEach((img) => {
@@ -266,15 +269,19 @@ export default function ModelTryOn() {
       formData.append('productTypes', JSON.stringify(productImages.map(img => img.type)));
       formData.append('productTypesCustom', JSON.stringify(productImages.map(img => img.typeCustom || '')));
 
+      console.log('[Model Try-On Mutation] Sending request...');
       const response = await fetch('/api/generate-model-tryon', {
         method: 'POST',
         body: formData,
       });
 
+      console.log('[Model Try-On Mutation] Response status:', response.status);
+      
       if (!response.ok) {
         let errorMessage = "Failed to generate model try-on";
         try {
           const errorData = await response.json();
+          console.log('[Model Try-On Mutation] Error data:', errorData);
           errorMessage = errorData.error || errorData.message || errorMessage;
         } catch (e) {
           // If response is not JSON, use status text
@@ -283,7 +290,9 @@ export default function ModelTryOn() {
         throw new Error(errorMessage);
       }
 
-      return response.json();
+      const result = await response.json();
+      console.log('[Model Try-On Mutation] Success:', result);
+      return result;
     },
     onSuccess: (data) => {
       setGeneratedResults(data.results);
@@ -293,6 +302,7 @@ export default function ModelTryOn() {
       });
     },
     onError: (error: any) => {
+      console.log('[Model Try-On Mutation] Error occurred:', error);
       const errorMessage = error?.message || error?.error || t('modelTryonErrorGeneration');
       toast({
         variant: "destructive",
@@ -329,7 +339,12 @@ export default function ModelTryOn() {
   };
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
+    console.log('[Model Try-On Form] Submit triggered');
+    console.log('[Model Try-On Form] Form data:', data);
+    console.log('[Model Try-On Form] Product images:', productImages.length);
+    
     if (productImages.length === 0) {
+      console.log('[Model Try-On Form] No products uploaded');
       toast({
         variant: "destructive",
         title: t('modelTryonNoProducts'),
@@ -338,6 +353,7 @@ export default function ModelTryOn() {
       return;
     }
 
+    console.log('[Model Try-On Form] Calling mutation...');
     mutation.mutate(data);
   };
 
