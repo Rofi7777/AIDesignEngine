@@ -1487,6 +1487,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Global error handler for multer and other errors
+  app.use((err: any, req: any, res: any, next: any) => {
+    console.error('[Global Error Handler] Error caught:', err);
+    console.error('[Global Error Handler] Request path:', req.path);
+    console.error('[Global Error Handler] Request method:', req.method);
+    
+    if (err instanceof multer.MulterError) {
+      console.error('[Global Error Handler] Multer error:', err.code);
+      return res.status(400).json({
+        error: `File upload error: ${err.message}`,
+        code: err.code,
+      });
+    }
+    
+    if (err.message?.includes('Only PNG and JPG images are allowed')) {
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
+    
+    res.status(500).json({
+      error: 'Internal server error',
+      message: err.message,
+    });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
