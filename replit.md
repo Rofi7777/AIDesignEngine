@@ -1,14 +1,16 @@
 # Craft AI Studio
 
 ## Overview
-**Craft AI Studio** is an AI-powered design platform offering five core features:
-1.  **Product Design Engine:** Generates 4-angle product designs for various fashion categories.
+**Craft AI Studio** is a **generic AI-powered design platform** for creating designs across all product categories. The platform offers five core features:
+1.  **Product Design Engine:** Generates 4-angle product designs for any product type (shoes, slippers, clothes, bags, or custom).
 2.  **Model Try-on System:** Creates realistic images of models wearing/using products.
 3.  **Virtual Try-on:** Enables precise single or multi-product garment replacement on model images.
 4.  **E-commerce Scene Composition:** Combines models, products, and props into marketing scenes.
 5.  **E-commerce Poster Design:** Configurable system for creating marketing posters with products, copy, branding, and pricing.
 
-All features leverage **Google Gemini 3 Pro Image Preview** and support English, Traditional Chinese, and Vietnamese. The platform's tagline is "Craft Design Ideas with AI."
+All features leverage **Google Gemini AI models** and support English, Traditional Chinese, and Vietnamese. The platform's tagline is "Craft Design Ideas with AI."
+
+**Platform Philosophy:** Generic and flexible - no product-specific defaults. Users select their product type (or custom) for each design session.
 
 ## User Preferences
 - Follow design_guidelines.md religiously for visual quality
@@ -72,6 +74,12 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Poster Design (Tab 5)
 
 ## Recent Updates
+- **2025-11-23:** 🔧 **Platform Made Generic:**
+  - **Removed Slipper-specific defaults** - Changed default product type from "slippers" to "custom"
+  - **Updated all translations** - Replaced Slipper-specific text with generic "product" terminology
+  - **Updated app branding** - Changed title to "Craft AI Studio - Generate Product Designs with AI"
+  - **Platform now product-agnostic** - Suitable for any product category
+  
 - **2025-11-23:** ✅ **Optimal Model Configuration:**
   - **Image Generation:** `gemini-2.5-flash-image` (native image generation model)
   - **Text Reasoning:** `gemini-3-pro-preview` (most powerful reasoning model)
