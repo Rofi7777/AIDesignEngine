@@ -38,6 +38,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   console.log('║          REGISTERING API ROUTES - SERVER STARTUP           ║');
   console.log('╚═══════════════════════════════════════════════════════════╝');
   
+  // DEBUG: Test page route
+  app.get("/test-api", (req, res) => {
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Page</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #8b5cf6; color: white; border: none; border-radius: 6px; margin: 10px 5px; }
+        #result { margin-top: 20px; padding: 15px; background: #f3f4f6; border-radius: 6px; white-space: pre-wrap; font-family: monospace; }
+        .success { background: #d1fae5; color: #065f46; }
+        .error { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <h1>🧪 API Test Page</h1>
+    <p>This page tests POST requests to verify backend connectivity.</p>
+    <button onclick="testPost()">Test POST Request</button>
+    <div id="result">Click button to test...</div>
+    <script>
+        async function testPost() {
+            const result = document.getElementById('result');
+            result.textContent = 'Sending POST request...';
+            result.className = '';
+            try {
+                const response = await fetch('/api/test-post', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ test: 'data', timestamp: new Date().toISOString() })
+                });
+                const data = await response.json();
+                result.className = 'success';
+                result.textContent = \`✅ SUCCESS!\\n\\nStatus: \${response.status}\\nResponse: \${JSON.stringify(data, null, 2)}\`;
+            } catch (error) {
+                result.className = 'error';
+                result.textContent = \`❌ ERROR!\\n\\n\${error.message}\`;
+            }
+        }
+    </script>
+</body>
+</html>`);
+  });
+  
   // DEBUG: Simple test route to verify POST requests work
   app.post("/api/test-post", (req, res) => {
     console.log('╔══════════════════════════════════════════════╗');
@@ -46,6 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "POST request received successfully!" });
   });
   
+  console.log('[Route Registration] ✅ Registered GET /test-api');
   console.log('[Route Registration] ✅ Registered POST /api/test-post');
 
   // Prompt optimization endpoint for Product Design
