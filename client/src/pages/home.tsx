@@ -727,7 +727,7 @@ export default function Home() {
       const blob = await res.blob();
       
       const formData = new FormData();
-      formData.append("slipperImage", blob, "product-design.png");
+      formData.append("productImage", blob, "product-design.png");
       formData.append("productType", selectedProductType);
       if (selectedProductType === "custom" && customProductType.trim()) {
         formData.append("customProductType", customProductType);

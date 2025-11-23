@@ -636,17 +636,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error.message?.includes("INVALID_ARGUMENT");
       
       res.status(isClientError ? 400 : 500).json({
-        error: isClientError ? error.message : "Failed to generate slipper design",
+        error: isClientError ? error.message : "Failed to generate product design",
         message: error.message,
       });
     }
   });
 
-  app.post("/api/generate-model", upload.single("slipperImage"), async (req, res) => {
+  app.post("/api/generate-model", upload.single("productImage"), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({
-          error: "No slipper design image uploaded",
+          error: "No product design image uploaded",
         });
       }
 

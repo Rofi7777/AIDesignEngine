@@ -91,7 +91,7 @@ CRITICAL SHAPE PRESERVATION RULES:
 4. ✓ Keep the SAME sole thickness, heel height, and overall structure
 5. ✓ DO NOT change the physical form, body shape, or 3D geometry
 
-View angle: Create a ${angle === "top" ? "top-down view showing the upper surface" : "45-degree angled view showing both top and side profile"} of the slipper.
+View angle: Create a ${angle === "top" ? "top-down view showing the upper surface" : "45-degree angled view showing both top and side profile"} of the ${productName}.
 
 REMEMBER: Think of this as applying a "skin" or "wrap" to the exact template shape. The underlying 3D form must remain 100% identical to the template. Only the surface appearance changes.`;
 
@@ -143,7 +143,7 @@ CRITICAL SHAPE PRESERVATION RULES:
 4. ✓ Keep the SAME sole thickness, heel height, and overall structure
 5. ✓ DO NOT change the physical form, body shape, or 3D geometry
 
-View angle: Create a ${angle === "top" ? "top-down view showing the upper surface" : "45-degree angled view showing both top and side profile"} of the slipper.
+View angle: Create a ${angle === "top" ? "top-down view showing the upper surface" : "45-degree angled view showing both top and side profile"} of the ${productName}.
 
 REMEMBER: Think of this as applying a "skin" or "wrap" to the exact template shape. The underlying 3D form must remain 100% identical to the template. Only the surface appearance changes.`;
 
@@ -151,10 +151,10 @@ REMEMBER: Think of this as applying a "skin" or "wrap" to the exact template sha
       console.error("Stage 1 failed, using fallback prompt:", error);
       // Fallback to basic prompt if LLM optimizer fails
       const angleDescription = angle === "top" 
-        ? "top-down view showing the upper surface of the slipper" 
-        : "45-degree angled view showing both the top and side profile of the slipper";
+        ? `top-down view showing the upper surface of the ${productName}` 
+        : `45-degree angled view showing both the top and side profile of the ${productName}`;
 
-      prompt = `Create a professional slipper design concept based on this template.
+      prompt = `Create a professional ${productName} design concept based on this template.
 
 🚫 WATERMARK REMOVAL (CRITICAL):
 - COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding (e.g., "小紅書", phone numbers, URLs) from reference images.
@@ -276,7 +276,7 @@ DESIGN SPECIFICATIONS:
     return `data:${resultMimeType};base64,${imagePart.inlineData.data}`;
   } catch (error: any) {
     if (error.message?.includes("INVALID_ARGUMENT") || error.message?.includes("not valid")) {
-      throw new Error("The uploaded image is not valid or supported. Please upload a clear, high-quality slipper template image (PNG or JPG).");
+      throw new Error("The uploaded image is not valid or supported. Please upload a clear, high-quality template image (PNG or JPG).");
     }
     throw error;
   }
@@ -371,7 +371,7 @@ export async function generateModelSceneEnhanced(
   } catch (error) {
     console.error("Stage 1 failed, using fallback model wearing prompt:", error);
     // Fallback prompt
-    prompt = `Create a professional model-wearing scene showing this slipper design being worn in a realistic setting.
+    prompt = `Create a professional model-wearing scene showing this ${productName} design being worn in a realistic setting.
 
 🚫 WATERMARK REMOVAL (CRITICAL):
 - COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from the product image.
@@ -386,16 +386,16 @@ SCENE SPECIFICATIONS:
 ${viewAngle ? `- Camera View/Angle: ${viewAngle}` : ''}
 
 REQUIREMENTS:
-1. Show the model(s) naturally wearing the exact slipper design from the provided image
-2. The slipper should be clearly visible and prominent in the scene
+1. Show the model(s) naturally wearing the exact ${productName} design from the provided image
+2. The ${productName} should be clearly visible and prominent in the scene
 3. Create a realistic, professional photograph that looks authentic
 4. Match the specified family combination (show the appropriate people)
 5. Capture the atmosphere of the specified scenario and location
 6. Use natural, flattering lighting appropriate for ${presentationStyle.toLowerCase()}
-7. Show proper foot positioning and natural wearing posture
+7. Show proper positioning and natural wearing posture
 8. Ensure skin tones, clothing, and setting match the ${nationality} context
 9. Make it look like a professional product photography shoot
-10. The slipper design must match exactly what was provided
+10. The ${productName} design must match exactly what was provided
 ${viewAngle ? `11. IMPORTANT: Capture the scene from the ${viewAngle} perspective` : ''}`;
   }
 
@@ -435,7 +435,7 @@ ${viewAngle ? `11. IMPORTANT: Capture the scene from the ${viewAngle} perspectiv
     return `data:${resultMimeType};base64,${imagePart.inlineData.data}`;
   } catch (error: any) {
     if (error.message?.includes("INVALID_ARGUMENT") || error.message?.includes("not valid")) {
-      throw new Error("The slipper image is not valid or supported. Please use a generated slipper design image.");
+      throw new Error("The product image is not valid or supported. Please use a generated product design image.");
     }
     throw error;
   }
