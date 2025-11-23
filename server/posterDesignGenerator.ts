@@ -73,8 +73,15 @@ export async function generatePosterDesign(
     const optimizedPrompt = await optimizePosterPrompt(assets, options);
     console.log('[Poster Design] Stage 1: Optimized prompt:', optimizedPrompt.substring(0, 200) + '...');
 
+    // Add watermark removal instruction to optimized prompt
+    const finalPrompt = `${optimizedPrompt}
+
+🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from product or reference images.
+- Generate a clean, professional poster FREE of any third-party markings.`;
+
     // Stage 2: Generate image using optimized prompt
-    const generatedImageData = await generatePosterImage(assets, optimizedPrompt, options);
+    const generatedImageData = await generatePosterImage(assets, finalPrompt, options);
     console.log('[Poster Design] ✅ Generation successful');
     
     return generatedImageData;
@@ -202,7 +209,13 @@ function buildPromptOptimizerRequest(assets: PosterAssets, options: PosterDesign
 }
 
 function buildFallbackPrompt(assets: PosterAssets, options: PosterDesignOptions): string {
-  let prompt = `Create a professional e-commerce promotional poster with the following specifications:\n\n`;
+  let prompt = `Create a professional e-commerce promotional poster with the following specifications:
+
+🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from product or reference images.
+- Generate a clean, professional poster FREE of any third-party markings.
+
+`;
   
   // Campaign context
   prompt += `CAMPAIGN TYPE: ${options.campaignType}${options.customCampaign ? ` - ${options.customCampaign}` : ''}\n\n`;

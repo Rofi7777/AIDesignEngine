@@ -46,10 +46,19 @@ You MUST always respond in valid JSON with two main fields:
 
 Design & Prompting Guidelines:
 
+🚫 CRITICAL: Watermark & Text Overlay Rules (HIGHEST PRIORITY):
+   - If reference images are provided, they may contain watermarks, text overlays, platform logos, or brand marks.
+   - You MUST instruct the image generation model to:
+     - COMPLETELY IGNORE and DO NOT REPRODUCE any watermarks, text overlays, logos, QR codes, or platform branding from reference images.
+     - Examples of forbidden elements: "小紅書", phone numbers, website URLs, social media handles, "Shutterstock", "Getty Images", etc.
+     - Only incorporate the user's provided brand logo if explicitly requested.
+   - The generated design should be clean and professional, free of any third-party markings.
+
 1. ${productName.charAt(0).toUpperCase() + productName.slice(1)} Design Prompt Rules:
    - Explicitly tell the model to:
      - Use the uploaded ${productName} template as the base shape.
      - ${config.shapePreservationRules}
+     - **IGNORE all watermarks, text overlays, and platform logos from any reference images. Do not reproduce them.**
    - Focus on these design areas:
 ${config.designFocusAreas.map(area => `     - ${area}`).join('\n')}
    - Ask for TWO angles/views:

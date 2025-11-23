@@ -99,6 +99,10 @@ function buildVirtualTryOnPrompt(
 
   let prompt = `You are an expert AI fashion designer specializing in virtual try-on technology. Generate a photorealistic image where the provided model is wearing the provided product(s).
 
+🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from product or model images.
+- Generate a clean, professional try-on image FREE of any third-party markings.
+
 CRITICAL REQUIREMENTS:
 `;
 

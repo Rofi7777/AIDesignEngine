@@ -64,7 +64,11 @@ export async function generateProductDesignEnhanced(
       prompt += `\n- Design Notes: ${designDescription}`;
     }
 
-    prompt += `\n\n🎯 FINAL INSTRUCTION:
+    prompt += `\n\n🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, or platform branding (e.g., "小紅書", phone numbers, URLs) that appear in reference images.
+- Generate a clean, professional design FREE of any third-party markings.
+
+🎯 FINAL INSTRUCTION:
 Generate a ${angleLabel} view of this ${productName} that PERFECTLY matches the design specification above.
 Use the provided canonical design image as your visual reference.
 Use the template image to maintain the correct product shape and structure.`;
@@ -74,8 +78,12 @@ Use the template image to maintain the correct product shape and structure.`;
     console.log(`Using user-provided optimized prompt for ${productName}...`);
     prompt = customOptimizedPrompt;
       
-    // Add critical shape preservation rules
-    prompt += `\n\nCRITICAL SHAPE PRESERVATION RULES:
+    // Add watermark removal instruction
+    prompt += `\n\n🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding (e.g., "小紅書", phone numbers, URLs, "Shutterstock") that appear in any reference images.
+- Generate a clean, professional design FREE of any third-party markings.
+
+CRITICAL SHAPE PRESERVATION RULES:
 ⚠️ PRESERVE THE EXACT PHYSICAL FORM - DO NOT MODIFY:
 1. ✓ Keep the EXACT shoe shape, silhouette, and outline from the template
 2. ✓ Maintain the SAME dimensions, proportions, and size
@@ -122,8 +130,12 @@ REMEMBER: Think of this as applying a "skin" or "wrap" to the exact template sha
       // Use the optimized product design prompt
       prompt = optimizedPrompts.product_design_prompt;
       
-      // Add critical shape preservation rules
-      prompt += `\n\nCRITICAL SHAPE PRESERVATION RULES:
+      // Add watermark removal instruction
+      prompt += `\n\n🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding (e.g., "小紅書", phone numbers, URLs, "Shutterstock") that appear in any reference images.
+- Generate a clean, professional design FREE of any third-party markings.
+
+CRITICAL SHAPE PRESERVATION RULES:
 ⚠️ PRESERVE THE EXACT PHYSICAL FORM - DO NOT MODIFY:
 1. ✓ Keep the EXACT shoe shape, silhouette, and outline from the template
 2. ✓ Maintain the SAME dimensions, proportions, and size
@@ -143,6 +155,10 @@ REMEMBER: Think of this as applying a "skin" or "wrap" to the exact template sha
         : "45-degree angled view showing both the top and side profile of the slipper";
 
       prompt = `Create a professional slipper design concept based on this template.
+
+🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding (e.g., "小紅書", phone numbers, URLs) from reference images.
+- Generate a clean, professional design FREE of any third-party markings.
 
 CRITICAL SHAPE PRESERVATION RULES:
 ⚠️ PRESERVE THE EXACT PHYSICAL FORM - DO NOT MODIFY:
@@ -340,6 +356,11 @@ export async function generateModelSceneEnhanced(
     
     prompt = optimizedPrompts.model_scene_prompt;
     
+    // Add watermark removal instruction for model scene
+    prompt += `\n\n🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding that may appear in product images.
+- Generate a clean, professional scene FREE of any third-party markings.`;
+    
     // Append view angle instruction to optimized prompt
     const angleInstruction = getViewAngleInstruction(viewAngle);
     if (angleInstruction) {
@@ -351,6 +372,10 @@ export async function generateModelSceneEnhanced(
     console.error("Stage 1 failed, using fallback model wearing prompt:", error);
     // Fallback prompt
     prompt = `Create a professional model-wearing scene showing this slipper design being worn in a realistic setting.
+
+🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from the product image.
+- Generate a clean, professional scene FREE of any third-party markings.
 
 SCENE SPECIFICATIONS:
 - Nationality/Ethnicity: ${nationality}

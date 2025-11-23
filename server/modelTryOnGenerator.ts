@@ -185,6 +185,10 @@ function buildModelTryOnPrompt(
 
   const prompt = `Create a high-quality image of real people wearing or using the uploaded product(s).
 
+🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from product images.
+- Generate a clean, professional scene FREE of any third-party markings.
+
 Product(s):
   - ${productDescriptions}
   - Use the uploaded product image(s) as the reference

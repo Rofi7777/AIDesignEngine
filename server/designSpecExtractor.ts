@@ -241,6 +241,7 @@ STEP 1: ANALYZE the canonical design image
    - Note all patterns and their placement
    - Observe all decorative elements
    - Study the overall design aesthetic
+   - IGNORE any watermarks, text overlays, or third-party branding
 
 STEP 2: UNDERSTAND your angle: ${angle}
    - This angle shows the product from a different viewpoint
@@ -257,6 +258,7 @@ STEP 3: GENERATE the image
                      ❌ STRICTLY FORBIDDEN ❌
 ═══════════════════════════════════════════════════════════════
 
+🚫 NEVER reproduce watermarks, text overlays, logos, or platform branding (e.g., "小紅書", phone numbers, URLs) from reference images
 🚫 NEVER change colors (e.g., pink → white, white → pink)
 🚫 NEVER add patterns that weren't in the canonical
 🚫 NEVER remove patterns that were in the canonical
@@ -264,7 +266,7 @@ STEP 3: GENERATE the image
 🚫 NEVER change decorative elements
 🚫 NEVER alter the style or aesthetic
 🚫 NEVER create variations or alternatives
-🚫 NEVER interpret or improvise - ONLY COPY
+🚫 NEVER interpret or improvise - ONLY COPY (except watermarks/third-party marks)
 
 ═══════════════════════════════════════════════════════════════
 

@@ -111,6 +111,10 @@ function buildEcommerceScenePrompt(
   let prompt = hasModel 
     ? `You are an expert e-commerce photographer and scene compositor. Create a professional marketing photograph that combines the provided model with products and props into a cohesive, compelling scene.
 
+🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from product or reference images.
+- Generate a clean, professional scene FREE of any third-party markings.
+
 SCENE SPECIFICATION:
 - Scene Type: ${options.sceneType}
 - Lighting Style: ${options.lighting}
@@ -119,6 +123,10 @@ SCENE SPECIFICATION:
 
 `
     : `You are an expert e-commerce product photographer. Create a professional marketing photograph that showcases the provided products and props in an appealing, commercial-ready display scene.
+
+🚫 WATERMARK REMOVAL (CRITICAL):
+- COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from product or reference images.
+- Generate a clean, professional scene FREE of any third-party markings.
 
 SCENE SPECIFICATION:
 - Scene Type: ${options.sceneType}
