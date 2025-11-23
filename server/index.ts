@@ -23,12 +23,25 @@ declare module 'http' {
     rawBody: unknown
   }
 }
+
+// JSON parser with error handling
 app.use(express.json({
   verify: (req, _res, buf) => {
     req.rawBody = buf;
   }
 }));
+
+// URL-encoded parser
 app.use(express.urlencoded({ extended: false }));
+
+// Catch JSON parsing errors
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof SyntaxError && 'body' in err) {
+    console.error('JSON Parse Error:', err.message);
+    return res.status(400).json({ error: 'Invalid JSON' });
+  }
+  next(err);
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
