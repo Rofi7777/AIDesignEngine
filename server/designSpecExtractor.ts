@@ -91,7 +91,7 @@ BE EXTREMELY THOROUGH AND PRECISE. This specification will be used to ensure ide
 
   try {
     const response = await genAI.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3-pro-preview",
       contents: [
         {
           role: "user",

@@ -72,16 +72,17 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Poster Design (Tab 5)
 
 ## Recent Updates
-- **2025-11-23:** ✅ **Model Configuration Verified:**
-  - Using **`gemini-2.5-flash-image`** for all image generation (supported by Replit AI Integrations)
-  - Using **`gemini-2.5-flash`** for all text reasoning and prompt optimization
-  - Confirmed Replit AI Integrations supports: Gemini Pro, Gemini 2.5 Flash (text/image), and Imagen 4
-  - Note: Gemini 3 Pro models are NOT supported by Replit AI Integrations at this time
+- **2025-11-23:** ✅ **Optimal Model Configuration:**
+  - **Image Generation:** `gemini-2.5-flash-image` (native image generation model)
+  - **Text Reasoning:** `gemini-3-pro-preview` (most powerful reasoning model)
+  - **Fixed:** Corrected model naming from Vertex AI format to Developer API format
+  - All models confirmed working with Replit AI Integrations
 
 ## External Dependencies
--   **Google Gemini 2.5 Flash Models:**
-    -   **Image** (`gemini-2.5-flash-image`): AI image generation for all 5 features
-    -   **Text** (`gemini-2.5-flash`): Prompt optimization and design specification extraction
-    -   Both models supported by Replit AI Integrations
+-   **Google Gemini Models (via Replit AI Integrations):**
+    -   **Image Generation:** `gemini-2.5-flash-image` (Nano Banana - native image model)
+    -   **Prompt Optimization:** `gemini-3-pro-preview` (most powerful reasoning for agentic workflows)
+    -   **Design Spec Extraction:** `gemini-3-pro-preview` (advanced reasoning for consistency)
+    -   No API key required - uses Replit AI Integrations
 -   **PostgreSQL:** Relational database for storing design data
 -   **Replit AI Integrations:** Secure Gemini API access with automatic key management

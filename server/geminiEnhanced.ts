@@ -1,6 +1,6 @@
 // Enhanced Gemini service with three-stage architecture:
 // Stage 1: LLM generates optimized prompts (professional designer)
-// Stage 2: Use optimized prompts with gemini-2.5-flash-image
+// Stage 2: Use optimized prompts with image generation model
 // Stage 3: Extract structured design spec from canonical design (for consistency)
 
 import { GoogleGenAI, Modality } from "@google/genai";
