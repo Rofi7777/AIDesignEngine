@@ -373,25 +373,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/generate-design", upload.fields([
-    // Legacy single template support
-    { name: "template", maxCount: 1 },
-    // Multi-angle template support (4 angles)
-    { name: "template_top", maxCount: 1 },
-    { name: "template_45degree", maxCount: 1 },
-    { name: "template_side", maxCount: 1 },
-    { name: "template_bottom", maxCount: 1 },
-    { name: "template_front", maxCount: 1 },
-    { name: "template_back", maxCount: 1 },
-    { name: "template_detail", maxCount: 1 },
-    { name: "template_view1", maxCount: 1 },
-    { name: "template_view2", maxCount: 1 },
-    { name: "template_view3", maxCount: 1 },
-    { name: "template_view4", maxCount: 1 },
-    // Enhancement images
-    { name: "referenceImage", maxCount: 1 },
-    { name: "brandLogo", maxCount: 1 },
-  ]), async (req, res) => {
+  // Pre-Multer logger to confirm request arrival
+  app.post("/api/generate-design", (req: Request, res: Response, next) => {
+    console.log('╔═══════════════════════════════════════════════════════════╗');
+    console.log('║   PRE-MULTER: POST /api/generate-design REQUEST RECEIVED  ║');
+    console.log('╚═══════════════════════════════════════════════════════════╝');
+    console.log('[Pre-Multer] Content-Type:', req.get('content-type'));
+    console.log('[Pre-Multer] Method:', req.method);
+    console.log('[Pre-Multer] Path:', req.path);
+    next();
+  });
+  
+  // Multer middleware with error handling
+  app.post("/api/generate-design", (req: Request, res: Response, next) => {
+    const uploadMiddleware = upload.fields([
+      // Legacy single template support
+      { name: "template", maxCount: 1 },
+      // Multi-angle template support (4 angles)
+      { name: "template_top", maxCount: 1 },
+      { name: "template_45degree", maxCount: 1 },
+      { name: "template_side", maxCount: 1 },
+      { name: "template_bottom", maxCount: 1 },
+      { name: "template_front", maxCount: 1 },
+      { name: "template_back", maxCount: 1 },
+      { name: "template_detail", maxCount: 1 },
+      { name: "template_view1", maxCount: 1 },
+      { name: "template_view2", maxCount: 1 },
+      { name: "template_view3", maxCount: 1 },
+      { name: "template_view4", maxCount: 1 },
+      // Enhancement images
+      { name: "referenceImage", maxCount: 1 },
+      { name: "brandLogo", maxCount: 1 },
+    ]);
+    
+    uploadMiddleware(req, res, (err: any) => {
+      if (err) {
+        console.error('╔═══════════════════════════════════════════════════════════╗');
+        console.error('║               MULTER ERROR HANDLER TRIGGERED               ║');
+        console.error('╚═══════════════════════════════════════════════════════════╝');
+        console.error('[Multer Error] Error:', err);
+        console.error('[Multer Error] Error message:', err.message);
+        console.error('[Multer Error] Error code:', err.code);
+        console.error('[Multer Error] Error stack:', err.stack);
+        
+        return res.status(400).json({
+          error: 'File upload error',
+          message: err.message,
+        });
+      }
+      next();
+    });
+  });
+  
+  // Main route handler
+  app.post("/api/generate-design", async (req, res) => {
     console.log('[API] ========================================');
     console.log('[API] POST /api/generate-design received');
     console.log('[API] ========================================');
