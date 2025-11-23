@@ -392,6 +392,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     { name: "referenceImage", maxCount: 1 },
     { name: "brandLogo", maxCount: 1 },
   ]), async (req, res) => {
+    console.log('[API] ========================================');
+    console.log('[API] POST /api/generate-design received');
+    console.log('[API] ========================================');
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
       
