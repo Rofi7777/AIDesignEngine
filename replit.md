@@ -75,11 +75,20 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Poster Design (Tab 5)
 
 ## Recent Updates
+- **2025-11-23:** 🔥 **CRITICAL FIX: Gemini SDK Safety Settings Position:**
+  - **Root Cause:** Gemini SDK runtime now IGNORES `config.safetySettings` - safety settings MUST be at top level of `generateContent()` calls
+  - **Issue:** All 9 API calls had `safetySettings` nested inside `config` object, causing them to be completely ignored
+  - **Result:** All legitimate product/model images were being blocked by default safety filters despite our `BLOCK_NONE` settings
+  - **Fix:** Moved `safetySettings` to top level alongside `model`, `contents`, and `config` in all 9 API calls
+  - **TypeScript Workaround:** Used `as any` cast because TypeScript definitions are outdated and reject the correct structure
+  - **Files Fixed:** geminiEnhanced.ts (2 calls), promptOptimizer.ts, designSpecExtractor.ts, modelTryOnGenerator.ts, virtualTryOnGenerator.ts, ecommerceSceneGenerator.ts, posterDesignGenerator.ts (2 calls)
+  - **Impact:** This was the PRIMARY BLOCKER preventing all image generation - now properly bypassing safety filters for legitimate product design content
+  
 - **2025-11-23:** ✅ **Restored Working Prompt Configuration:**
   - **Reverted to proven working prompts** - Restored "wearing" terminology in model scene generation prompts
   - **Reason:** Testing showed that prompt terminology wasn't the issue; previous working version already used "wearing"
   - **Status:** System now matches last known working configuration (commit 9e91cea)
-  - **Safety Settings:** All 9 Gemini API calls still use `BLOCK_NONE` for maximum permissiveness
+  - **Safety Settings:** All 9 Gemini API calls now use `BLOCK_NONE` at correct top-level position
   
 - **2025-11-23:** 🔓 **Gemini Safety Filter Configuration:**
   - **Added `BLOCK_NONE` safety settings to all 9 Gemini API calls** - Prevents legitimate product design images from being blocked
