@@ -34,6 +34,10 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  console.log('╔═══════════════════════════════════════════════════════════╗');
+  console.log('║          REGISTERING API ROUTES - SERVER STARTUP           ║');
+  console.log('╚═══════════════════════════════════════════════════════════╝');
+  
   // DEBUG: Simple test route to verify POST requests work
   app.post("/api/test-post", (req, res) => {
     console.log('╔══════════════════════════════════════════════╗');
@@ -41,6 +45,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('╚══════════════════════════════════════════════╝');
     res.json({ message: "POST request received successfully!" });
   });
+  
+  console.log('[Route Registration] ✅ Registered POST /api/test-post');
 
   // Prompt optimization endpoint for Product Design
   app.post("/api/optimize-design-prompt", async (req, res) => {
