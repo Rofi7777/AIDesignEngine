@@ -8,7 +8,7 @@
 4.  **E-commerce Scene Composition:** Combines models, products, and props into marketing scenes.
 5.  **E-commerce Poster Design:** Configurable system for creating marketing posters with products, copy, branding, and pricing.
 
-All features leverage Google Gemini 2.5 Flash and support English, Traditional Chinese, and Vietnamese. The platform's tagline is "Craft Design Ideas with AI."
+All features leverage **Google Gemini 3 Pro Image Preview** and support English, Traditional Chinese, and Vietnamese. The platform's tagline is "Craft Design Ideas with AI."
 
 ## User Preferences
 - Follow design_guidelines.md religiously for visual quality
@@ -28,9 +28,9 @@ The application features a single-page, two-column layout with a "La Letter-insp
 -   **Database:** PostgreSQL with Drizzle ORM.
 -   **AI Architecture:** A three-stage system ensures design consistency:
     1.  **Prompt Optimizer:** LLM transforms structured inputs into optimized prompts.
-    2.  **Image Generation:** Uses optimized prompts with `gemini-2.5-flash-image`.
+    2.  **Image Generation:** Uses optimized prompts with **Gemini 3 Pro Image Preview** (`gemini-3-pro-image-preview`).
     3.  **Design Spec Extraction:** Extracts structured JSON specifications of design elements for ultra-strict consistency across generations. An intelligent fallback system is included.
--   **AI Integration:** Google Gemini 2.5 Flash Image Preview via Replit AI Integrations.
+-   **AI Integration:** Google Gemini 3 Pro Image Preview via Replit AI Integrations.
 -   **Validation:** Zod with drizzle-zod for robust form validation.
 -   **Internationalization (i18n):** React Context-based translation system with localStorage persistence for English, Traditional Chinese, and Vietnamese.
 -   **Multi-Product Type System:** Supports 5 product categories with a 4-angle configuration (top, 45°, side, bottom views).
@@ -69,7 +69,10 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Scene Composition (Tab 4)
 - E-commerce Poster Design (Tab 5)
 
+## Recent Updates
+- **2025-11-20:** Upgraded all image generation features from Gemini 2.5 Flash to **Gemini 3 Pro Image Preview** for enhanced image quality and capabilities.
+
 ## External Dependencies
--   **Google Gemini 2.5 Flash Image Preview:** For AI image generation.
+-   **Google Gemini 3 Pro Image Preview:** For AI image generation (upgraded from 2.5 Flash).
 -   **PostgreSQL:** Relational database for storing design data.
 -   **Replit AI Integrations:** Used for Gemini API access.

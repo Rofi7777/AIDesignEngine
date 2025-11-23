@@ -1,6 +1,6 @@
 // Enhanced Gemini service with three-stage architecture:
 // Stage 1: LLM generates optimized prompts (professional designer)
-// Stage 2: Use optimized prompts with gemini-2.5-flash-image-preview
+// Stage 2: Use optimized prompts with gemini-3-pro-image-preview
 // Stage 3: Extract structured design spec from canonical design (for consistency)
 
 import { GoogleGenAI, Modality } from "@google/genai";
@@ -166,7 +166,7 @@ DESIGN SPECIFICATIONS:
   }
 
   try {
-    console.log("Stage 2: Generating image with gemini-2.5-flash-image-preview...");
+    console.log("Stage 2: Generating image with gemini-3-pro-image-preview...");
     
     // Build parts array - order matters for prompt clarity
     const parts: any[] = [{ text: prompt }];
@@ -236,7 +236,7 @@ DESIGN SPECIFICATIONS:
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-3-pro-image-preview",
       contents: [
         {
           role: "user",
@@ -375,10 +375,10 @@ ${viewAngle ? `11. IMPORTANT: Capture the scene from the ${viewAngle} perspectiv
   }
 
   try {
-    console.log("Stage 2: Generating model wearing scene with gemini-2.5-flash-image-preview...");
+    console.log("Stage 2: Generating model wearing scene with gemini-3-pro-image-preview...");
     
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-3-pro-image-preview",
       contents: [
         {
           role: "user",

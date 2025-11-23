@@ -69,7 +69,7 @@ export async function generateModelTryOn(
 
     // Generate image with Gemini API
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-3-pro-image-preview",
       contents: [
         {
           role: "user",

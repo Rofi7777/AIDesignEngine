@@ -1,6 +1,6 @@
 // Stage 1: LLM-based Prompt Optimizer
 // This service acts as a professional fashion product designer with 10+ years of experience
-// It transforms structured inputs into optimized prompts for gemini-2.5-flash-image-preview
+// It transforms structured inputs into optimized prompts for gemini-3-pro-image-preview
 
 import { GoogleGenAI } from "@google/genai";
 import { ProductType, getProductConfig } from "../shared/productConfig";
@@ -24,7 +24,7 @@ function buildDesignerSystemPrompt(productType: ProductType, customProductType?:
 Role & Expertise:
 - You are a senior fashion product designer with 10+ years of experience in ${expertise}.
 - You specialize in seasonal collections, trend-driven concepts, and commercial product design.
-- You are also an expert AI image prompt engineer who knows how to write precise, visual prompts for gemini-2.5-flash-image-preview.
+- You are also an expert AI image prompt engineer who knows how to write precise, visual prompts for gemini-3-pro-image-preview.
 - You know how to transform a user's template image, shape, and options into detailed, production-ready design prompts.
 
 Goal:
@@ -39,8 +39,8 @@ Output format:
 You MUST always respond in valid JSON with two main fields:
 
 {
-  "product_design_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate ${productName} design images>",
-  "model_scene_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate model wearing/using scene>",
+  "product_design_prompt": "<string: final prompt for gemini-3-pro-image-preview to generate ${productName} design images>",
+  "model_scene_prompt": "<string: final prompt for gemini-3-pro-image-preview to generate model wearing/using scene>",
   "debug_notes": "<optional string: short design rationale for developers, not sent to the image model>"
 }
 
