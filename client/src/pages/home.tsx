@@ -644,9 +644,18 @@ export default function Home() {
   });
 
   const onDesignSubmit = (data: DesignFormValues) => {
+    console.log('[Frontend] onDesignSubmit called');
+    console.log('[Frontend] Form data:', data);
+    console.log('[Frontend] Selected product type:', selectedProductType);
+    console.log('[Frontend] Custom product type:', customProductType);
+    console.log('[Frontend] Angle uploads:', angleUploads);
+    
     // Check if at least one template is uploaded
     const hasAnyTemplate = Object.values(angleUploads).some(upload => upload.file !== null);
+    console.log('[Frontend] Has any template:', hasAnyTemplate);
+    
     if (!hasAnyTemplate) {
+      console.error('[Frontend] No template uploaded');
       toast({
         description: t('errorMissingTemplate'),
         variant: "destructive",
@@ -655,6 +664,7 @@ export default function Home() {
     }
     
     if (selectedProductType === "custom" && !customProductType.trim()) {
+      console.error('[Frontend] Custom product type is required but missing');
       toast({
         description: t('errorMissingCustomProductType'),
         variant: "destructive",
@@ -662,19 +672,25 @@ export default function Home() {
       return;
     }
 
+    console.log('[Frontend] Preparing FormData...');
     const formData = new FormData();
     
     // Add all angle-specific templates with angle-specific keys
     const productConfig = getProductConfig(selectedProductType);
     const angles = Array.from(productConfig.angles);
+    console.log('[Frontend] Product config angles:', angles);
     
+    let templateCount = 0;
     angles.forEach(angle => {
       const upload = angleUploads[angle];
       if (upload && upload.file) {
         // Use angle-specific key like "template_top", "template_45degree", etc.
         formData.append(`template_${angle}`, upload.file);
+        templateCount++;
+        console.log(`[Frontend] Added template for angle: ${angle}, size: ${upload.file.size}`);
       }
     });
+    console.log(`[Frontend] Total templates added: ${templateCount}`);
     
     formData.append("productType", selectedProductType);
     if (selectedProductType === "custom" && customProductType.trim()) {
@@ -691,16 +707,20 @@ export default function Home() {
     
     // Send angles array
     formData.append("angles", JSON.stringify(angles));
+    console.log('[Frontend] Angles JSON:', JSON.stringify(angles));
     
     // Add new optional fields
     if (referenceImageFile) {
       formData.append("referenceImage", referenceImageFile);
+      console.log('[Frontend] Added reference image, size:', referenceImageFile.size);
     }
     if (data.designDescription && data.designDescription.trim()) {
       formData.append("designDescription", data.designDescription);
+      console.log('[Frontend] Added design description');
     }
     if (brandLogoFile) {
       formData.append("brandLogo", brandLogoFile);
+      console.log('[Frontend] Added brand logo, size:', brandLogoFile.size);
     }
     // Add custom optimized prompt if user has optimized and edited it
     if (optimizedPrompt && optimizedPrompt.trim() && showOptimizedPrompt) {
@@ -708,7 +728,10 @@ export default function Home() {
       console.log('[Frontend] Using user-edited optimized prompt for generation');
     }
 
+    console.log('[Frontend] Calling generateDesignMutation.mutate()...');
+    console.log('[Frontend] Mutation pending state:', generateDesignMutation.isPending);
     generateDesignMutation.mutate(formData);
+    console.log('[Frontend] Mutation mutate() called');
   };
 
   const onModelSubmit = async (data: ModelFormValues) => {
