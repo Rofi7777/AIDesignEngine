@@ -712,9 +712,15 @@ export default function Home() {
   };
 
   const onModelSubmit = async (data: ModelFormValues) => {
+    console.log('[Frontend] onModelSubmit called');
+    console.log('[Frontend] generatedImages:', generatedImages);
+    console.log('[Frontend] Object.keys(generatedImages):', Object.keys(generatedImages));
+    console.log('[Frontend] Object.values(generatedImages):', Object.values(generatedImages));
+    
     // Get first available generated image
     const productImage = Object.values(generatedImages)[0];
     if (!productImage) {
+      console.error('[Frontend] No product image found. Cannot generate model scene.');
       toast({
         description: t('errorMissingDesign'),
         variant: "destructive",
@@ -722,9 +728,16 @@ export default function Home() {
       return;
     }
 
+    console.log('[Frontend] Using product image:', productImage);
+
     try {
+      console.log('[Frontend] Fetching product image blob...');
       const res = await fetch(productImage);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch product image: ${res.status} ${res.statusText}`);
+      }
       const blob = await res.blob();
+      console.log('[Frontend] Product image blob size:', blob.size);
       
       const formData = new FormData();
       formData.append("productImage", blob, "product-design.png");
@@ -755,11 +768,13 @@ export default function Home() {
         console.log('[Frontend] Using user-edited optimized prompt for model generation');
       }
 
+      console.log('[Frontend] Calling generateModelMutation.mutate()...');
       generateModelMutation.mutate(formData);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('[Frontend] Error preparing model generation:', error);
       toast({
         title: t('toastErrorTitle'),
-        description: t('errorPreparationFailed'),
+        description: error.message || t('errorPreparationFailed'),
         variant: "destructive",
       });
     }
