@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { generateProductDesignEnhanced, generateModelSceneEnhanced } from "./geminiEnhanced";
@@ -34,6 +34,14 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // DEBUG: Simple test route to verify POST requests work
+  app.post("/api/test-post", (req, res) => {
+    console.log('╔══════════════════════════════════════════════╗');
+    console.log('║      TEST POST ROUTE - REQUEST RECEIVED       ║');
+    console.log('╚══════════════════════════════════════════════╝');
+    res.json({ message: "POST request received successfully!" });
+  });
+
   // Prompt optimization endpoint for Product Design
   app.post("/api/optimize-design-prompt", async (req, res) => {
     try {
