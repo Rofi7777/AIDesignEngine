@@ -61,7 +61,7 @@ export async function generateVirtualTryOn(
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-image-preview",
+      model: "gemini-2.5-flash-image",
       contents: [
         {
           role: "user",

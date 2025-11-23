@@ -104,7 +104,7 @@ Key expertise areas:
   
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-2.5-flash",
       contents: [
         {
           role: "user",
@@ -314,7 +314,7 @@ async function generatePosterImage(
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-pro-image-preview",
+    model: "gemini-2.5-flash-image",
     contents: [
       {
         role: "user",
