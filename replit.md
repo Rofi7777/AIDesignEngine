@@ -43,6 +43,7 @@ The application features a single-page, two-column layout with a "La Letter-insp
 -   **Shape Preservation System:** AI strictly enforces the preservation of product silhouette and dimensions from templates, modifying only surface design elements.
 -   **Enhanced Design Input:** Supports optional reference image uploads, detailed text descriptions, and brand logo uploads.
 -   **Multi-Image Gemini API Integration:** Gemini API calls accept multiple images (template, canonical, reference, logo) for improved consistency.
+-   **Automatic Watermark Removal System:** Comprehensive prompt-level system that prevents AI from copying watermarks, text overlays, logos, QR codes, or platform branding (e.g., "小紅書號", "Shutterstock") from reference images across all generation modules.
 -   **Custom Options:** Users can specify custom colors, materials, presentation styles, and custom product types.
 -   **Database Schema:** Includes `SlipperDesign` (with four view URLs), `ModelScene`, and `PosterRequest` schemas, defined in `shared/schema.ts`.
 -   **Feature-Specific Implementations:**
@@ -74,6 +75,13 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Poster Design (Tab 5)
 
 ## Recent Updates
+- **2025-11-23:** 🎯 **Comprehensive Watermark Removal System:**
+  - **Implemented across all 8 generation modules** - Prevents AI from copying watermarks from reference images
+  - **Coverage:** promptOptimizer.ts, geminiEnhanced.ts (product + model scene), designSpecExtractor.ts, posterDesignGenerator.ts, ecommerceSceneGenerator.ts, modelTryOnGenerator.ts, virtualTryOnGenerator.ts
+  - **Methodology:** Explicit "🚫 WATERMARK REMOVAL (CRITICAL)" directives in all Stage 2 image generation prompts
+  - **Protects against:** Third-party watermarks, text overlays, logos, QR codes, platform branding (e.g., "小紅書號", "Shutterstock")
+  - **Verified:** All main execution paths and fallback paths include anti-watermark instructions
+  
 - **2025-11-23:** 🔧 **Platform Made Generic:**
   - **Removed Slipper-specific defaults** - Changed default product type from "slippers" to "custom"
   - **Updated all translations** - Replaced Slipper-specific text with generic "product" terminology
