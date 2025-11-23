@@ -264,10 +264,27 @@ DESIGN SPECIFICATIONS:
       },
     });
 
+    // Check if the response was blocked due to safety filters
+    if (response.promptFeedback?.blockReason === "SAFETY") {
+      console.log("[SAFETY] Image generation blocked by safety filters");
+      throw new Error("Image generation was blocked by safety filters. Please try using a different template image or adjust your design parameters.");
+    }
+
+    console.log("[DEBUG] Gemini response structure:", JSON.stringify({
+      hasCandidates: !!response.candidates,
+      candidatesLength: response.candidates?.length,
+      firstCandidate: response.candidates?.[0] ? {
+        hasContent: !!response.candidates[0].content,
+        partsCount: response.candidates[0].content?.parts?.length,
+        partsTypes: response.candidates[0].content?.parts?.map((p: any) => Object.keys(p))
+      } : null
+    }, null, 2));
+
     const candidate = response.candidates?.[0];
     const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
 
     if (!imagePart?.inlineData?.data) {
+      console.log("[DEBUG] No image data found. Full response:", JSON.stringify(response, null, 2));
       throw new Error("No image data in response from Gemini");
     }
 
@@ -422,6 +439,12 @@ ${viewAngle ? `11. IMPORTANT: Capture the scene from the ${viewAngle} perspectiv
         responseModalities: [Modality.TEXT, Modality.IMAGE],
       },
     });
+
+    // Check if the response was blocked due to safety filters
+    if (response.promptFeedback?.blockReason === "SAFETY") {
+      console.log("[SAFETY] Model scene generation blocked by safety filters");
+      throw new Error("Image generation was blocked by safety filters. Please try using a different product image or adjust your parameters.");
+    }
 
     const candidate = response.candidates?.[0];
     const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
