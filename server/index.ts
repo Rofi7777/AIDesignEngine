@@ -4,6 +4,9 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// CRITICAL: Force proper host binding for Replit
+app.set('trust proxy', true);
+
 // EARLIEST REQUEST LOGGER - Before ANY middleware
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
@@ -14,6 +17,8 @@ app.use((req, res, next) => {
     console.log(`[EARLIEST] Method: ${req.method}`);
     console.log(`[EARLIEST] Path: ${req.path}`);
     console.log(`[EARLIEST] URL: ${req.url}`);
+    console.log(`[EARLIEST] Host: ${req.get('host')}`);
+    console.log(`[EARLIEST] X-Forwarded-For: ${req.get('x-forwarded-for')}`);
   }
   next();
 });
