@@ -7,9 +7,13 @@ const app = express();
 // EARLIEST REQUEST LOGGER - Before ANY middleware
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
-    console.log(`[EARLIEST] ${req.method} ${req.path}`);
+    console.log('╔════════════════════════════════════════════════════════════╗');
+    console.log(`║  [EARLIEST] ${req.method} ${req.path}`);
+    console.log('╚════════════════════════════════════════════════════════════╝');
     console.log(`[EARLIEST] Content-Type: ${req.get('content-type')}`);
-    console.log(`[EARLIEST] Headers:`, JSON.stringify(req.headers, null, 2));
+    console.log(`[EARLIEST] Method: ${req.method}`);
+    console.log(`[EARLIEST] Path: ${req.path}`);
+    console.log(`[EARLIEST] URL: ${req.url}`);
   }
   next();
 });
