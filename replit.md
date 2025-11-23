@@ -75,6 +75,14 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Poster Design (Tab 5)
 
 ## Recent Updates
+- **2025-11-23:** 🔓 **Gemini Safety Filter Configuration:**
+  - **Added `BLOCK_NONE` safety settings to all 9 Gemini API calls** - Prevents legitimate product design images from being blocked
+  - **Coverage:** All image generation and text reasoning endpoints across 8 files
+  - **Implementation:** Imported `HarmCategory` and `HarmBlockThreshold` enums, configured all 4 safety categories to most permissive level
+  - **Benefits:** Eliminates false-positive safety blocks for legitimate product design content
+  - **Note:** Certain content (CSAM, extreme violations) still blocked by non-configurable Google safeguards
+  - **Files Updated:** geminiEnhanced.ts (2 calls), promptOptimizer.ts, designSpecExtractor.ts, modelTryOnGenerator.ts, virtualTryOnGenerator.ts, ecommerceSceneGenerator.ts, posterDesignGenerator.ts (2 calls)
+  
 - **2025-11-23:** 🎯 **Comprehensive Watermark Removal System:**
   - **Implemented across all 8 generation modules** - Prevents AI from copying watermarks from reference images
   - **Coverage:** promptOptimizer.ts, geminiEnhanced.ts (product + model scene), designSpecExtractor.ts, posterDesignGenerator.ts, ecommerceSceneGenerator.ts, modelTryOnGenerator.ts, virtualTryOnGenerator.ts

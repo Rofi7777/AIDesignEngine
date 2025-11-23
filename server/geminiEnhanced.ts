@@ -3,7 +3,7 @@
 // Stage 2: Use optimized prompts with image generation model
 // Stage 3: Extract structured design spec from canonical design (for consistency)
 
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI, Modality, HarmCategory, HarmBlockThreshold } from "@google/genai";
 import { generateOptimizedPrompts, type DesignInputs, type ModelSceneInputs } from "./promptOptimizer";
 import { ProductType, getProductConfig } from "../shared/productConfig";
 import { extractDesignSpecification, createConsistencyPrompt, type DesignSpecification } from "./designSpecExtractor";
@@ -261,6 +261,24 @@ DESIGN SPECIFICATIONS:
       ],
       config: {
         responseModalities: [Modality.TEXT, Modality.IMAGE],
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          }
+        ],
       },
     });
 
@@ -437,6 +455,24 @@ ${viewAngle ? `11. IMPORTANT: Capture the scene from the ${viewAngle} perspectiv
       ],
       config: {
         responseModalities: [Modality.TEXT, Modality.IMAGE],
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          }
+        ],
       },
     });
 

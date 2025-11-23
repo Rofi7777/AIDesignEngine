@@ -2,7 +2,7 @@
 // This service acts as a professional fashion product designer with 10+ years of experience
 // It transforms structured inputs into optimized prompts for gemini-3-pro-image-preview
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, HarmCategory, HarmBlockThreshold } from "@google/genai";
 import { ProductType, getProductConfig } from "../shared/productConfig";
 
 const ai = new GoogleGenAI({
@@ -182,6 +182,26 @@ Please provide your response as valid JSON with the following structure:
           ],
         },
       ],
+      config: {
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          },
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_NONE
+          }
+        ],
+      },
     });
 
     console.log("[Prompt Optimizer] LLM response received, extracting text...");
