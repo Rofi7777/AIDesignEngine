@@ -265,9 +265,9 @@ export const translations = {
     presentationLuxury: 'Luxury Premium',
     
     // Toasts
-    toastMissingTemplate: 'Please upload a slipper template first',
-    toastMissingDesign: 'Please generate a slipper design first',
-    toastDesignSuccess: 'Slipper design generated successfully!',
+    toastMissingTemplate: 'Please upload a product template first',
+    toastMissingDesign: 'Please generate a product design first',
+    toastDesignSuccess: 'Product design generated successfully!',
     toastModelSuccess: 'Model wearing scene generated successfully!',
     toastSuccessTitle: 'Success',
     toastErrorTitle: 'Error',
@@ -867,9 +867,9 @@ export const translations = {
     presentationLuxury: '奢華精品',
     
     // Toasts
-    toastMissingTemplate: '請先上傳拖鞋模板',
-    toastMissingDesign: '請先生成拖鞋設計',
-    toastDesignSuccess: '拖鞋設計生成成功！',
+    toastMissingTemplate: '請先上傳產品模板',
+    toastMissingDesign: '請先生成產品設計',
+    toastDesignSuccess: '產品設計生成成功！',
     toastModelSuccess: '模特兒穿著場景生成成功！',
     toastSuccessTitle: '成功',
     toastErrorTitle: '錯誤',
@@ -1469,9 +1469,9 @@ export const translations = {
     presentationLuxury: 'Sang Trọng Cao Cấp',
     
     // Toasts
-    toastMissingTemplate: 'Vui lòng tải lên mẫu dép trước',
-    toastMissingDesign: 'Vui lòng tạo thiết kế dép trước',
-    toastDesignSuccess: 'Thiết kế dép đã được tạo thành công!',
+    toastMissingTemplate: 'Vui lòng tải lên mẫu sản phẩm trước',
+    toastMissingDesign: 'Vui lòng tạo thiết kế sản phẩm trước',
+    toastDesignSuccess: 'Thiết kế sản phẩm đã được tạo thành công!',
     toastModelSuccess: 'Cảnh người mẫu đeo đã được tạo thành công!',
     toastSuccessTitle: 'Thành Công',
     toastErrorTitle: 'Lỗi',

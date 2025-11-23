@@ -227,12 +227,12 @@ export default function Home() {
   const { t, language } = useTranslation();
   
   // Product Type Selection
-  const [selectedProductType, setSelectedProductType] = useState<ProductType>("slippers");
+  const [selectedProductType, setSelectedProductType] = useState<ProductType>("custom");
   const [customProductType, setCustomProductType] = useState<string>("");
   
   // Multi-angle template uploads (one per angle, all optional)
   const [angleUploads, setAngleUploads] = useState<AngleUploads>(() => 
-    initializeAngleUploads("slippers")
+    initializeAngleUploads("custom")
   );
   
   // New design enhancement files
@@ -276,7 +276,7 @@ export default function Home() {
   const designForm = useForm<DesignFormValues>({
     resolver: zodResolver(designFormSchema),
     defaultValues: {
-      productType: "slippers",
+      productType: "custom",
       customProductType: "",
       theme: "",
       style: "",
