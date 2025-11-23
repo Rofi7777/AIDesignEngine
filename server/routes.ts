@@ -373,20 +373,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Pre-Multer logger to confirm request arrival
-  app.post("/api/generate-design", (req: Request, res: Response, next) => {
-    console.log('╔═══════════════════════════════════════════════════════════╗');
-    console.log('║   PRE-MULTER: POST /api/generate-design REQUEST RECEIVED  ║');
-    console.log('╚═══════════════════════════════════════════════════════════╝');
-    console.log('[Pre-Multer] Content-Type:', req.get('content-type'));
-    console.log('[Pre-Multer] Method:', req.method);
-    console.log('[Pre-Multer] Path:', req.path);
-    next();
-  });
-  
-  // Multer middleware with error handling
-  app.post("/api/generate-design", (req: Request, res: Response, next) => {
-    const uploadMiddleware = upload.fields([
+  app.post(
+    "/api/generate-design",
+    // Pre-Multer logger
+    (req: Request, res: Response, next) => {
+      console.log('╔═══════════════════════════════════════════════════════════╗');
+      console.log('║   PRE-MULTER: POST /api/generate-design REQUEST RECEIVED  ║');
+      console.log('╚═══════════════════════════════════════════════════════════╝');
+      console.log('[Pre-Multer] Content-Type:', req.get('content-type'));
+      console.log('[Pre-Multer] Method:', req.method);
+      console.log('[Pre-Multer] Path:', req.path);
+      next();
+    },
+    // Multer file upload middleware
+    upload.fields([
       // Legacy single template support
       { name: "template", maxCount: 1 },
       // Multi-angle template support (4 angles)
@@ -404,32 +404,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Enhancement images
       { name: "referenceImage", maxCount: 1 },
       { name: "brandLogo", maxCount: 1 },
-    ]);
-    
-    uploadMiddleware(req, res, (err: any) => {
-      if (err) {
-        console.error('╔═══════════════════════════════════════════════════════════╗');
-        console.error('║               MULTER ERROR HANDLER TRIGGERED               ║');
-        console.error('╚═══════════════════════════════════════════════════════════╝');
-        console.error('[Multer Error] Error:', err);
-        console.error('[Multer Error] Error message:', err.message);
-        console.error('[Multer Error] Error code:', err.code);
-        console.error('[Multer Error] Error stack:', err.stack);
-        
-        return res.status(400).json({
-          error: 'File upload error',
-          message: err.message,
-        });
-      }
-      next();
-    });
-  });
-  
-  // Main route handler
-  app.post("/api/generate-design", async (req, res) => {
-    console.log('[API] ========================================');
-    console.log('[API] POST /api/generate-design received');
-    console.log('[API] ========================================');
+    ]),
+    // Main route handler
+    async (req, res) => {
+      console.log('[API] ========================================');
+      console.log('[API] POST /api/generate-design received');
+      console.log('[API] ========================================');
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
       
