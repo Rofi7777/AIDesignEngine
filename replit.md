@@ -27,10 +27,12 @@ The application features a single-page, two-column layout with a "La Letter-insp
 -   **Backend:** Node.js, Express, Multer.
 -   **Database:** PostgreSQL with Drizzle ORM.
 -   **AI Architecture:** A three-stage system ensures design consistency:
-    1.  **Prompt Optimizer:** LLM transforms structured inputs into optimized prompts.
-    2.  **Image Generation:** Uses optimized prompts with **Gemini 3 Pro Image Preview** (`gemini-3-pro-image-preview`).
-    3.  **Design Spec Extraction:** Extracts structured JSON specifications of design elements for ultra-strict consistency across generations. An intelligent fallback system is included.
--   **AI Integration:** Google Gemini 3 Pro Image Preview via Replit AI Integrations.
+    1.  **Prompt Optimizer:** **Gemini 3 Pro** text model (`gemini-3-pro-preview`) transforms structured inputs into optimized prompts with advanced reasoning.
+    2.  **Image Generation:** **Gemini 3 Pro Image Preview** (`gemini-3-pro-image-preview`) generates high-quality images using optimized prompts.
+    3.  **Design Spec Extraction:** **Gemini 3 Pro** (`gemini-3-pro-preview`) extracts structured JSON specifications from canonical designs for ultra-strict consistency across angles.
+-   **AI Models:** 
+    -   **Text/Reasoning:** Google Gemini 3 Pro Preview (`gemini-3-pro-preview`)
+    -   **Image Generation:** Google Gemini 3 Pro Image Preview (`gemini-3-pro-image-preview`)
 -   **Validation:** Zod with drizzle-zod for robust form validation.
 -   **Internationalization (i18n):** React Context-based translation system with localStorage persistence for English, Traditional Chinese, and Vietnamese.
 -   **Multi-Product Type System:** Supports 5 product categories with a 4-angle configuration (top, 45°, side, bottom views).
@@ -70,9 +72,15 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Poster Design (Tab 5)
 
 ## Recent Updates
-- **2025-11-20:** Upgraded all image generation features from Gemini 2.5 Flash to **Gemini 3 Pro Image Preview** for enhanced image quality and capabilities.
+- **2025-11-23:** 🚀 **Complete Gemini 3 Pro Migration:**
+  - ✅ Upgraded all **image generation** from `gemini-2.5-flash-image` → **`gemini-3-pro-image-preview`**
+  - ✅ Upgraded all **text reasoning/optimization** from `gemini-2.5-flash` → **`gemini-3-pro-preview`**
+  - **Benefits:** Superior image quality, advanced reasoning, better prompt understanding, and enhanced design consistency
 
 ## External Dependencies
--   **Google Gemini 3 Pro Image Preview:** For AI image generation (upgraded from 2.5 Flash).
--   **PostgreSQL:** Relational database for storing design data.
--   **Replit AI Integrations:** Used for Gemini API access.
+-   **Google Gemini 3 Pro Models:**
+    -   **Image Preview** (`gemini-3-pro-image-preview`): High-quality AI image generation
+    -   **Text Preview** (`gemini-3-pro-preview`): Advanced reasoning and prompt optimization
+    -   All upgraded from Gemini 2.5 Flash on 2025-11-23
+-   **PostgreSQL:** Relational database for storing design data
+-   **Replit AI Integrations:** Secure Gemini API access with automatic key management

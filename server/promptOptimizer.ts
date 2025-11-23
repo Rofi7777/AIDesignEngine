@@ -157,13 +157,13 @@ Please provide your response as valid JSON with the following structure:
 }`;
 
   try {
-    console.log(`[Prompt Optimizer] Calling Gemini text model for ${productName} design prompt generation...`);
+    console.log(`[Prompt Optimizer] Calling Gemini 3 Pro text model for ${productName} design prompt generation...`);
     
     // Build product-specific system prompt
     const systemPrompt = buildDesignerSystemPrompt(designInputs.productType, designInputs.customProductType);
     
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3-pro-preview",
       contents: [
         {
           role: "user",
