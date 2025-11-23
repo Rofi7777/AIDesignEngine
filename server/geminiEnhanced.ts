@@ -404,9 +404,9 @@ export async function generateModelSceneEnhanced(
     }
     
   } catch (error) {
-    console.error("Stage 1 failed, using fallback model wearing prompt:", error);
+    console.error("Stage 1 failed, using fallback product presentation prompt:", error);
     // Fallback prompt
-    prompt = `Create a professional model-wearing scene showing this ${productName} design being worn in a realistic setting.
+    prompt = `Create a professional product presentation scene showing models showcasing this ${productName} design in a realistic setting.
 
 🚫 WATERMARK REMOVAL (CRITICAL):
 - COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from the product image.
@@ -421,13 +421,13 @@ SCENE SPECIFICATIONS:
 ${viewAngle ? `- Camera View/Angle: ${viewAngle}` : ''}
 
 REQUIREMENTS:
-1. Show the model(s) naturally wearing the exact ${productName} design from the provided image
+1. Show the model(s) naturally displaying the exact ${productName} design from the provided product image
 2. The ${productName} should be clearly visible and prominent in the scene
 3. Create a realistic, professional photograph that looks authentic
 4. Match the specified family combination (show the appropriate people)
 5. Capture the atmosphere of the specified scenario and location
 6. Use natural, flattering lighting appropriate for ${presentationStyle.toLowerCase()}
-7. Show proper positioning and natural wearing posture
+7. Show proper positioning and natural product presentation
 8. Ensure skin tones, clothing, and setting match the ${nationality} context
 9. Make it look like a professional product photography shoot
 10. The ${productName} design must match exactly what was provided

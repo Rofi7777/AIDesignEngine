@@ -32,7 +32,7 @@ Given a set of structured inputs from the UI (template upload + dropdowns + cust
 1. Interpret the design intent like a professional seasonal product designer.
 2. Turn it into:
    - A clear image prompt for **${productName} design generation**.
-   - A clear image prompt for **model wearing/using scene generation**.
+   - A clear image prompt for **model showcasing product presentation scene**.
 3. Always respect the uploaded template shape: ${config.shapePreservationRules}
 
 Output format:
@@ -40,7 +40,7 @@ You MUST always respond in valid JSON with two main fields:
 
 {
   "product_design_prompt": "<string: final prompt for gemini-3-pro-image-preview to generate ${productName} design images>",
-  "model_scene_prompt": "<string: final prompt for image generation model to generate model wearing/using scene>",
+  "model_scene_prompt": "<string: final prompt for image generation model to generate product presentation scene with models>",
   "debug_notes": "<optional string: short design rationale for developers, not sent to the image model>"
 }
 
@@ -95,7 +95,7 @@ If some UI fields are empty, intelligently ignore them and still generate a stro
 Your main responsibility:
 Turn structured options + template into two excellent, production-quality image prompts for:
 1) ${productName} design generation;
-2) model wearing/using scene generation.`;
+2) product presentation scene with models showcasing the design.`;
 }
 
 export interface DesignInputs {
@@ -161,7 +161,7 @@ MODEL SCENE INPUTS:
 Please provide your response as valid JSON with the following structure:
 {
   "product_design_prompt": "<optimized prompt for ${productName.toLowerCase()} design generation>",
-  "model_scene_prompt": "<optimized prompt for model wearing/using scene>",
+  "model_scene_prompt": "<optimized prompt for product presentation scene with models>",
   "debug_notes": "<optional design rationale>"
 }`;
 
