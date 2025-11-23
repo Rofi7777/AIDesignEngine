@@ -9,6 +9,7 @@ app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
     console.log(`[EARLIEST] ${req.method} ${req.path}`);
     console.log(`[EARLIEST] Content-Type: ${req.get('content-type')}`);
+    console.log(`[EARLIEST] Headers:`, JSON.stringify(req.headers, null, 2));
   }
   next();
 });
@@ -59,10 +60,17 @@ app.use((req, res, next) => {
   const server = await registerRoutes(app);
 
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    console.error('╔════════════════════════════════════════════════════════════╗');
+    console.error('║            GLOBAL ERROR HANDLER TRIGGERED                  ║');
+    console.error('╚════════════════════════════════════════════════════════════╝');
     console.error('[Global Error Handler] Error caught:', err);
+    console.error('[Global Error Handler] Error name:', err.name);
+    console.error('[Global Error Handler] Error message:', err.message);
     console.error('[Global Error Handler] Request path:', req.path);
     console.error('[Global Error Handler] Request method:', req.method);
+    console.error('[Global Error Handler] Request headers:', req.headers);
     console.error('[Global Error Handler] Error stack:', err.stack);
+    console.error('╚════════════════════════════════════════════════════════════╝');
     
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
