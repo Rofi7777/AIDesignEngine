@@ -75,6 +75,12 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Poster Design (Tab 5)
 
 ## Recent Updates
+- **2025-11-23:** ✅ **Restored Working Prompt Configuration:**
+  - **Reverted to proven working prompts** - Restored "wearing" terminology in model scene generation prompts
+  - **Reason:** Testing showed that prompt terminology wasn't the issue; previous working version already used "wearing"
+  - **Status:** System now matches last known working configuration (commit 9e91cea)
+  - **Safety Settings:** All 9 Gemini API calls still use `BLOCK_NONE` for maximum permissiveness
+  
 - **2025-11-23:** 🔓 **Gemini Safety Filter Configuration:**
   - **Added `BLOCK_NONE` safety settings to all 9 Gemini API calls** - Prevents legitimate product design images from being blocked
   - **Coverage:** All image generation and text reasoning endpoints across 8 files
