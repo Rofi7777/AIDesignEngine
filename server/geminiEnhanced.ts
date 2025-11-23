@@ -280,7 +280,7 @@ DESIGN SPECIFICATIONS:
           threshold: HarmBlockThreshold.BLOCK_NONE
         }
       ],
-    });
+    } as any);
 
     // Check if the response was blocked due to safety filters
     if (response.promptFeedback?.blockReason === "SAFETY") {
@@ -474,7 +474,7 @@ ${viewAngle ? `11. IMPORTANT: Capture the scene from the ${viewAngle} perspectiv
           threshold: HarmBlockThreshold.BLOCK_NONE
         }
       ],
-    });
+    } as any);
 
     // Check if the response was blocked due to safety filters
     if (response.promptFeedback?.blockReason === "SAFETY") {
