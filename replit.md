@@ -75,6 +75,17 @@ The application features a single-page, two-column layout with a "La Letter-insp
 - E-commerce Poster Design (Tab 5)
 
 ## Recent Updates
+- **2025-11-24:** ✅ **CRITICAL FIX: Vite Proxy Configuration for POST Requests:**
+  - **Root Cause:** Vite development server was intercepting browser POST requests to `/api` routes before they reached Express backend
+  - **Symptom:** curl POST requests from server worked (200 OK), but browser POST requests failed (500 error, "Failed to load resource")
+  - **Diagnosis:** Requests never reached Express [EARLIEST] logger when originating from browser
+  - **Solution:** Added `proxy: { '/api': {} }` to vite.config.ts server configuration (lines 39-41)
+  - **Mechanism:** Empty proxy object tells Vite to pass /api requests through to Express middleware instead of handling them
+  - **Verification:** Browser fetch() POST to /api/test-post now successfully reaches backend and returns 200 OK
+  - **Impact:** All frontend features (Product Design, Model Try-on, Virtual Try-on, E-commerce Scene, Poster Design) can now submit forms and make API calls
+  - **Files Modified:** vite.config.ts (added proxy configuration under server settings)
+  - **Note:** This was a critical infrastructure blocker preventing all browser-initiated API interactions
+
 - **2025-11-23:** 🔥 **CRITICAL FIX: Gemini SDK Safety Settings Position:**
   - **Root Cause:** Gemini SDK runtime now IGNORES `config.safetySettings` - safety settings MUST be at top level of `generateContent()` calls
   - **Issue:** All 9 API calls had `safetySettings` nested inside `config` object, causing them to be completely ignored
