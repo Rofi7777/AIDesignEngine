@@ -413,7 +413,7 @@ export default function VirtualTryOn() {
                   <input
                     id="model-upload"
                     type="file"
-                    accept="image/png,image/jpeg,image/jpg"
+                    accept="image/*"
                     onChange={handleModelImageChange}
                     className="hidden"
                     data-testid="input-model-image"
@@ -440,7 +440,7 @@ export default function VirtualTryOn() {
                   <input
                     id="product-upload"
                     type="file"
-                    accept="image/png,image/jpeg,image/jpg"
+                    accept="image/*"
                     multiple={tryonMode === 'multi'}
                     onChange={handleProductImageChange}
                     className="hidden"

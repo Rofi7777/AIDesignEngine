@@ -332,11 +332,11 @@ export default function Home() {
       };
     }
 
-    // Check file size (maximum 10MB)
-    if (file.size > 10 * 1024 * 1024) {
+    // Check file size (maximum 50MB)
+    if (file.size > 50 * 1024 * 1024) {
       return { 
         valid: false, 
-        error: t('errorImageTooLarge') || 'Image file is too large. Maximum size is 10MB.' 
+        error: t('errorImageTooLarge') || 'Image file is too large. Maximum size is 50MB.' 
       };
     }
 
@@ -369,7 +369,8 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
+    // Accept all image types (more permissive validation)
+    if (!file.type.startsWith('image/') && !file.type.includes('octet-stream')) {
       toast({
         title: t('errorInvalidFileType'),
         description: t('errorFileTypeMessage'),
@@ -409,7 +410,8 @@ export default function Home() {
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
-    if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
+    // Accept all image types (more permissive validation)
+    if (!file.type.startsWith('image/') && !file.type.includes('octet-stream')) {
       toast({
         title: t('errorInvalidFileType'),
         description: t('errorFileTypeMessage'),
@@ -935,7 +937,7 @@ export default function Home() {
                           id={`file-upload-${angle}`}
                           type="file"
                           className="hidden"
-                          accept="image/png,image/jpeg,image/jpg"
+                          accept="image/*"
                           onChange={handleAngleFileUpload(angle)}
                           data-testid={`input-file-${angle}`}
                         />

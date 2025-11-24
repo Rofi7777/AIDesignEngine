@@ -455,7 +455,7 @@ export default function EcommerceScene() {
                   <input
                     id="model-upload"
                     type="file"
-                    accept="image/png,image/jpeg,image/jpg"
+                    accept="image/*"
                     onChange={handleModelImageChange}
                     className="hidden"
                     data-testid="input-model-image"
@@ -497,7 +497,7 @@ export default function EcommerceScene() {
                   <input
                     id="asset-upload"
                     type="file"
-                    accept="image/png,image/jpeg,image/jpg"
+                    accept="image/*"
                     multiple
                     onChange={handleAssetImageChange}
                     className="hidden"
