@@ -13,22 +13,28 @@ import { readFileSync } from "fs";
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB limit
+    fileSize: 50 * 1024 * 1024, // 50MB limit - support larger high-quality images
   },
   fileFilter: (req, file, cb) => {
     console.log('[Multer FileFilter] Checking file:', file.originalname);
     console.log('[Multer FileFilter] MIME type:', file.mimetype);
     
-    // Accept image/* MIME types and also check file extensions as fallback
-    const isValidMimeType = file.mimetype.startsWith('image/');
-    const hasValidExtension = /\.(png|jpg|jpeg|webp|gif|bmp)$/i.test(file.originalname);
+    // Accept wide range of image formats
+    // Support: PNG, JPG/JPEG, WebP, GIF, BMP, SVG, TIFF, ICO, HEIC/HEIF, AVIF
+    const isValidMimeType = 
+      file.mimetype.startsWith('image/') || 
+      file.mimetype === 'application/octet-stream'; // Some browsers send generic MIME for images
     
+    const hasValidExtension = /\.(png|jpe?g|webp|gif|bmp|svg|tiff?|ico|heic|heif|avif)$/i.test(file.originalname);
+    
+    // Accept if either MIME type or extension is valid (more permissive)
     if (isValidMimeType || hasValidExtension) {
-      console.log('[Multer FileFilter] File accepted');
+      console.log('[Multer FileFilter] ✅ File accepted');
       cb(null, true);
     } else {
-      console.log('[Multer FileFilter] File rejected - invalid type');
-      cb(new Error(`Only image files are allowed. Received: ${file.mimetype}`));
+      console.log('[Multer FileFilter] ❌ File rejected - invalid type');
+      console.log('[Multer FileFilter] Hint: Supported formats - PNG, JPG, WebP, GIF, BMP, SVG, TIFF, HEIC, AVIF');
+      cb(null, false); // Reject silently instead of throwing error
     }
   },
 });
