@@ -38,8 +38,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   console.log('║          REGISTERING API ROUTES - SERVER STARTUP           ║');
   console.log('╚═══════════════════════════════════════════════════════════╝');
   
-  // DEBUG: Test page route
-  app.get("/test-api", (req, res) => {
+  // DEBUG: Test page route - MUST be under /api to bypass Vite middleware
+  app.get("/api/test-page", (req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "POST request received successfully!" });
   });
   
-  console.log('[Route Registration] ✅ Registered GET /test-api');
+  console.log('[Route Registration] ✅ Registered GET /api/test-page');
   console.log('[Route Registration] ✅ Registered POST /api/test-post');
 
   // Prompt optimization endpoint for Product Design
