@@ -30,11 +30,11 @@ The application features a single-page, two-column layout with a "La Letter-insp
 -   **Database:** PostgreSQL with Drizzle ORM.
 -   **AI Architecture:** A three-stage system ensures design consistency:
     1.  **Prompt Optimizer:** **Gemini 3 Pro** text model (`gemini-3-pro-preview`) transforms structured inputs into optimized prompts with advanced reasoning.
-    2.  **Image Generation:** **Gemini 3 Pro Image Preview** (`gemini-3-pro-image-preview`) generates high-quality images using optimized prompts.
+    2.  **Image Generation:** **Gemini 2.5 Flash Image Preview** (`gemini-2.5-flash-image-preview`) generates high-quality images using optimized prompts.
     3.  **Design Spec Extraction:** **Gemini 3 Pro** (`gemini-3-pro-preview`) extracts structured JSON specifications from canonical designs for ultra-strict consistency across angles.
 -   **AI Models:** 
     -   **Text/Reasoning:** Google Gemini 3 Pro Preview (`gemini-3-pro-preview`)
-    -   **Image Generation:** Google Gemini 3 Pro Image Preview (`gemini-3-pro-image-preview`)
+    -   **Image Generation:** Google Gemini 2.5 Flash Image Preview (`gemini-2.5-flash-image-preview`)
 -   **Validation:** Zod with drizzle-zod for robust form validation.
 -   **Internationalization (i18n):** React Context-based translation system with localStorage persistence for English, Traditional Chinese, and Vietnamese.
 -   **Multi-Product Type System:** Supports 5 product categories with a 4-angle configuration (top, 45°, side, bottom views).
@@ -123,14 +123,14 @@ The application features a single-page, two-column layout with a "La Letter-insp
   - **Platform now product-agnostic** - Suitable for any product category
   
 - **2025-11-23:** ✅ **Optimal Model Configuration:**
-  - **Image Generation:** `gemini-2.5-flash-image` (native image generation model)
+  - **Image Generation:** `gemini-2.5-flash-image-preview` (upgraded image generation model)
   - **Text Reasoning:** `gemini-3-pro-preview` (most powerful reasoning model)
   - **Fixed:** Corrected model naming from Vertex AI format to Developer API format
   - All models confirmed working with Replit AI Integrations
 
 ## External Dependencies
 -   **Google Gemini Models (via Replit AI Integrations):**
-    -   **Image Generation:** `gemini-2.5-flash-image` (Nano Banana - native image model)
+    -   **Image Generation:** `gemini-2.5-flash-image-preview` (latest image model)
     -   **Prompt Optimization:** `gemini-3-pro-preview` (most powerful reasoning for agentic workflows)
     -   **Design Spec Extraction:** `gemini-3-pro-preview` (advanced reasoning for consistency)
     -   No API key required - uses Replit AI Integrations

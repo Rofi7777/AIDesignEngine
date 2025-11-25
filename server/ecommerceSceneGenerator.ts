@@ -3,7 +3,7 @@ import { GoogleGenAI, Modality, HarmCategory, HarmBlockThreshold } from "@google
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
   httpOptions: {
-    apiVersion: "",
+    apiVersion: "v1beta",
     baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
   },
 });
@@ -12,10 +12,16 @@ interface EcommerceSceneOptions {
   sceneType: string;
   customSceneType?: string;
   lighting: string;
+  customLighting?: string;
   composition: string;
+  customComposition?: string;
   aspectRatio: string;
   customWidth?: number;
   customHeight?: number;
+  designDescription?: string;
+  customOptimizedPrompt?: string;
+  totalOutputs?: number;
+  currentIndex?: number;
 }
 
 interface SceneAsset {
@@ -68,7 +74,7 @@ export async function generateEcommerceScene(
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-2.5-flash-image-preview",
       contents: [
         {
           role: "user",
@@ -76,7 +82,8 @@ export async function generateEcommerceScene(
         },
       ],
       config: {
-        responseModalities: [Modality.TEXT, Modality.IMAGE],
+        // Force image output to avoid text-only responses
+        responseModalities: [Modality.IMAGE],
       },
       safetySettings: [
         {
@@ -119,12 +126,41 @@ function buildEcommerceScenePrompt(
   options: EcommerceSceneOptions,
   hasModel: boolean
 ): string {
+  const { designDescription, customOptimizedPrompt, totalOutputs, currentIndex } = options;
   const products = assets.filter(a => a.assetType === 'product');
   const props = assets.filter(a => a.assetType === 'prop');
 
   const aspectRatioText = options.aspectRatio === 'custom' && options.customWidth && options.customHeight
     ? `Image dimensions: exactly ${options.customWidth}×${options.customHeight} pixels`
     : `Aspect Ratio: ${options.aspectRatio}`;
+
+  const variationNote = totalOutputs && totalOutputs > 1
+    ? `VARIATION: This is image ${currentIndex || 1} of ${totalOutputs}. Keep products, branding, and subject identity consistent, but vary the scene framing, camera angle, lighting mood, or arrangement to deliver distinct yet coherent creative variants. Do NOT repeat the exact same composition across images.`
+    : '';
+
+  // If user provided an optimized prompt, respect it but reinforce constraints and asset usage
+  if (customOptimizedPrompt && customOptimizedPrompt.trim()) {
+    let prompt = `${customOptimizedPrompt.trim()}
+
+ADDITIONAL SCENE CONSTRAINTS (DO NOT IGNORE):
+- Scene Type: ${options.sceneType}${options.customSceneType ? ` (Custom: ${options.customSceneType})` : ''}
+- Lighting: ${options.lighting}${options.customLighting ? ` (Custom: ${options.customLighting})` : ''}
+- Composition: ${options.composition}${options.customComposition ? ` (Custom: ${options.customComposition})` : ''}
+- ${aspectRatioText}
+${designDescription && designDescription.trim() ? `- User Notes: ${designDescription.trim()}` : ''}
+${variationNote ? `- ${variationNote}` : ''}
+
+ASSET REFERENCES (MANDATORY TO USE):
+${hasModel ? `1. Model image (primary subject)\n` : ''}${products.length > 0 ? `- Products (${products.length}): ${products.map(p => p.assetName || 'product').join(', ')}\n` : ''}${props.length > 0 ? `- Props (${props.length}): ${props.map(p => p.assetName || 'prop').join(', ')}\n` : ''}
+
+CRITICAL RULES:
+- Use the uploaded assets exactly; do NOT invent new products or props.
+- Keep product logos/branding accurate; no hallucinated brands.
+- Maintain correct scale, perspective, and lighting consistency across model/products/props.
+- Remove/ignore any watermarks, text overlays, UI elements from uploads.
+- Produce a single, polished e-commerce photograph ready for marketing.`;
+    return prompt;
+  }
 
   let prompt = hasModel 
     ? `You are an expert e-commerce photographer and scene compositor. Create a professional marketing photograph that combines the provided model with products and props into a cohesive, compelling scene.
@@ -293,6 +329,13 @@ ELEMENTS TO COMPOSITE:
       prompt += `   - Should complement but not overshadow the products\n`;
       assetIndex++;
     });
+  }
+
+  if (designDescription && designDescription.trim()) {
+    prompt += `\nDESIGN DESCRIPTION (USER NOTES):\n- ${designDescription.trim()}\n`;
+  }
+  if (variationNote) {
+    prompt += `\nVARIATION DIRECTIVE:\n- ${variationNote}\n`;
   }
 
   prompt += `

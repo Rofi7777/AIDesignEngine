@@ -4,17 +4,26 @@
 // Stage 3: Extract structured design spec from canonical design (for consistency)
 
 import { GoogleGenAI, Modality, HarmCategory, HarmBlockThreshold } from "@google/genai";
-import { generateOptimizedPrompts, type DesignInputs, type ModelSceneInputs } from "./promptOptimizer";
-import { ProductType, getProductConfig } from "../shared/productConfig";
-import { extractDesignSpecification, createConsistencyPrompt, type DesignSpecification } from "./designSpecExtractor";
+import { generateOptimizedPrompts, type DesignInputs, type ModelSceneInputs } from "./promptOptimizer.ts";
+import type { ProductType } from "../shared/productConfig.ts";
+import { getProductConfig } from "../shared/productConfig.ts";
+import { extractDesignSpecification, createConsistencyPrompt, type DesignSpecification } from "./designSpecExtractor.ts";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
   httpOptions: {
-    apiVersion: "",
+    apiVersion: "v1beta",
     baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
   },
 });
+
+function buildColorLock(color: string): string {
+  return `🎨 COLOR LOCK (CRITICAL):
+- The product surface must use ONLY this color palette: ${color}
+- Absolutely NO additional hues, tints, or gradients outside this palette
+- Shadows/highlights may only be neutral (gray/white) to indicate form
+- If ${color.toLowerCase().includes("white") ? "white" : "the specified color"} is requested, do NOT introduce beige/cream/gray tints—keep it clean and pure`;
+}
 
 export async function generateProductDesignEnhanced(
   productType: ProductType,
@@ -73,6 +82,9 @@ Generate a ${angleLabel} view of this ${productName} that PERFECTLY matches the 
 Use the provided canonical design image as your visual reference.
 Use the template image to maintain the correct product shape and structure.`;
 
+    // Color lock for consistency with provided design parameters
+    prompt += `\n\n${buildColorLock(color)}`;
+
   } else if (customOptimizedPrompt && customOptimizedPrompt.trim()) {
     // User provided a custom optimized prompt - use it directly
     console.log(`Using user-provided optimized prompt for ${productName}...`);
@@ -94,6 +106,9 @@ CRITICAL SHAPE PRESERVATION RULES:
 View angle: Create a ${angle === "top" ? "top-down view showing the upper surface" : "45-degree angled view showing both top and side profile"} of the ${productName}.
 
 REMEMBER: Think of this as applying a "skin" or "wrap" to the exact template shape. The underlying 3D form must remain 100% identical to the template. Only the surface appearance changes.`;
+
+    // Enforce requested color palette
+    prompt += `\n\n${buildColorLock(color)}`;
 
   } else {
     // FIRST generation - Use LLM to generate optimized professional prompt
@@ -147,6 +162,9 @@ View angle: Create a ${angle === "top" ? "top-down view showing the upper surfac
 
 REMEMBER: Think of this as applying a "skin" or "wrap" to the exact template shape. The underlying 3D form must remain 100% identical to the template. Only the surface appearance changes.`;
 
+      // Enforce requested color palette
+      prompt += `\n\n${buildColorLock(color)}`;
+
     } catch (error) {
       console.error("Stage 1 failed, using fallback prompt:", error);
       // Fallback to basic prompt if LLM optimizer fails
@@ -178,11 +196,14 @@ DESIGN SPECIFICATIONS:
       if (designDescription && designDescription.trim()) {
         prompt += `\n- Design Notes: ${designDescription}`;
       }
+
+      // Enforce requested color palette
+      prompt += `\n\n${buildColorLock(color)}`;
     }
   }
 
   try {
-    console.log("Stage 2: Generating image with gemini-2.5-flash-image...");
+    console.log("Stage 2: Generating image with gemini-2.5-flash-image-preview...");
     
     // Build parts array - order matters for prompt clarity
     const parts: any[] = [{ text: prompt }];
@@ -252,7 +273,7 @@ DESIGN SPECIFICATIONS:
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-2.5-flash-image-preview",
       contents: [
         {
           role: "user",
@@ -435,10 +456,10 @@ ${viewAngle ? `11. IMPORTANT: Capture the scene from the ${viewAngle} perspectiv
   }
 
   try {
-    console.log("Stage 2: Generating model wearing scene with gemini-2.5-flash-image...");
+    console.log("Stage 2: Generating model wearing scene with gemini-2.5-flash-image-preview...");
     
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-2.5-flash-image-preview",
       contents: [
         {
           role: "user",

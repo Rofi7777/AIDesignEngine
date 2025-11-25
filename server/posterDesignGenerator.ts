@@ -3,7 +3,7 @@ import { GoogleGenAI, Modality, HarmCategory, HarmBlockThreshold } from "@google
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
   httpOptions: {
-    apiVersion: "",
+    apiVersion: "v1beta",
     baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
   },
 });
@@ -345,7 +345,7 @@ async function generatePosterImage(
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-image",
+    model: "gemini-2.5-flash-image-preview",
     contents: [
       {
         role: "user",

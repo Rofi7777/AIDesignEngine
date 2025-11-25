@@ -1,12 +1,12 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { generateProductDesignEnhanced, generateModelSceneEnhanced } from "./geminiEnhanced";
-import { extractDesignSpecification, type DesignSpecification } from "./designSpecExtractor";
-import { generateModelTryOn } from "./modelTryOnGenerator";
-import { generateVirtualTryOn } from "./virtualTryOnGenerator";
-import { generateEcommerceScene } from "./ecommerceSceneGenerator";
-import { generatePosterDesign } from "./posterDesignGenerator";
+import { storage } from "./storage.ts";
+import { generateProductDesignEnhanced, generateModelSceneEnhanced } from "./geminiEnhanced.ts";
+import { extractDesignSpecification, type DesignSpecification } from "./designSpecExtractor.ts";
+import { generateModelTryOn } from "./modelTryOnGenerator.ts";
+import { generateVirtualTryOn } from "./virtualTryOnGenerator.ts";
+import { generateEcommerceScene } from "./ecommerceSceneGenerator.ts";
+import { generatePosterDesign } from "./posterDesignGenerator.ts";
 import multer from "multer";
 import { readFileSync } from "fs";
 
@@ -121,8 +121,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('[Prompt Optimizer API] Optimizing design prompt...');
       
-      const { generateOptimizedPrompts } = await import("./promptOptimizer");
-      const { getProductConfig } = await import("../shared/productConfig");
+      const { generateOptimizedPrompts } = await import("./promptOptimizer.ts");
+      const { getProductConfig } = await import("../shared/productConfig.ts");
       
       const config = getProductConfig(productType);
       const productName = productType === 'custom' && customProductType 
@@ -190,8 +190,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('[Model Prompt Optimizer API] Optimizing model try-on prompt...');
       
-      const { generateOptimizedPrompts } = await import("./promptOptimizer");
-      const { getProductConfig } = await import("../shared/productConfig");
+      const { generateOptimizedPrompts } = await import("./promptOptimizer.ts");
+      const { getProductConfig } = await import("../shared/productConfig.ts");
       
       const config = getProductConfig(productType || 'slippers');
       const productName = productType === 'custom' && customProductType 
@@ -255,7 +255,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('[Virtual Try-on Prompt Optimizer API] Optimizing virtual try-on prompt...');
       
-      const { generateOptimizedPrompts } = await import("./promptOptimizer");
+      const { generateOptimizedPrompts } = await import("./promptOptimizer.ts");
       
       const productName = tryonType === 'custom' && customTryonType 
         ? customTryonType 
@@ -321,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('[Scene Prompt Optimizer API] Optimizing e-commerce scene prompt...');
       
-      const { generateOptimizedPrompts } = await import("./promptOptimizer");
+      const { generateOptimizedPrompts } = await import("./promptOptimizer.ts");
       
       const sceneName = sceneType === 'custom' && customSceneType 
         ? customSceneType 
@@ -393,7 +393,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('[Poster Prompt Optimizer API] Optimizing e-commerce poster prompt...');
       
-      const { generateOptimizedPrompts } = await import("./promptOptimizer");
+      const { generateOptimizedPrompts } = await import("./promptOptimizer.ts");
       
       const campaignName = campaignType === 'custom' && customCampaignType 
         ? customCampaignType 
@@ -1196,7 +1196,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   ]), async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const { sceneType, customSceneType, lighting, customLighting, composition, customComposition, aspectRatio, outputQuantity, assetTypes, assetNames } = req.body;
+      const { sceneType, customSceneType, lighting, customLighting, composition, customComposition, aspectRatio, outputQuantity, assetTypes, assetNames, description, customOptimizedPrompt } = req.body;
 
       console.log('[E-commerce Scene API] Request received');
       console.log('[E-commerce Scene API] Scene Type:', sceneType);
@@ -1328,10 +1328,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             sceneType,
             customSceneType,
             lighting: effectiveLighting,
+            customLighting: customLighting || undefined,
             composition: effectiveComposition,
+            customComposition: customComposition || undefined,
             aspectRatio,
             customWidth: customWidth ?? undefined,
             customHeight: customHeight ?? undefined,
+            designDescription: description,
+            customOptimizedPrompt: customOptimizedPrompt,
+            totalOutputs: quantity,
+            currentIndex: i + 1,
           }
         );
         

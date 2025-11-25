@@ -3,7 +3,7 @@ import { GoogleGenAI, Modality, HarmCategory, HarmBlockThreshold } from "@google
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
   httpOptions: {
-    apiVersion: "",
+    apiVersion: "v1beta",
     baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
   },
 });
@@ -61,7 +61,7 @@ export async function generateVirtualTryOn(
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-2.5-flash-image-preview",
       contents: [
         {
           role: "user",
@@ -69,7 +69,8 @@ export async function generateVirtualTryOn(
         },
       ],
       config: {
-        responseModalities: [Modality.TEXT, Modality.IMAGE],
+        // Force image output to avoid text-only responses
+        responseModalities: [Modality.IMAGE],
       },
       safetySettings: [
         {
@@ -92,9 +93,19 @@ export async function generateVirtualTryOn(
     } as any);
 
     const candidate = response.candidates?.[0];
+    const partsSummary = candidate?.content?.parts?.map((p: any) => ({
+      hasText: !!p.text,
+      hasInlineData: !!p.inlineData,
+      keys: Object.keys(p),
+      mime: p.inlineData?.mimeType,
+      dataLength: p.inlineData?.data?.length,
+    }));
     const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
 
     if (!imagePart?.inlineData?.data) {
+      console.error("[Virtual Try-On] No image data found. PromptFeedback:", response.promptFeedback);
+      console.error("[Virtual Try-On] Candidate parts summary:", JSON.stringify(partsSummary, null, 2));
+      console.error("[Virtual Try-On] Full response:", JSON.stringify(response, null, 2));
       throw new Error("No image data in response from Gemini");
     }
 
@@ -115,7 +126,12 @@ function buildVirtualTryOnPrompt(
   const preservePose = options.preservePose === 'yes';
   const isNaturalStyle = options.style === 'natural';
 
-  let prompt = `You are an expert AI fashion designer specializing in virtual try-on technology. Generate a photorealistic image where the provided model is wearing the provided product(s).
+  const layeringRule = `LAYERING & LOGIC (CRITICAL):
+- Maintain natural clothing order. Underwear/bras/lingerie must stay UNDER outerwear (shirts, blouses, jackets). Never place underwear on top of tops.
+- Bags stay on shoulder/hand, hats on head, accessories integrated naturally.
+- Do NOT invent extra garments; only replace the specified item(s).`;
+
+  let prompt = `You are an expert AI fashion designer specializing in virtual try-on technology. Generate a photorealistic image where the provided model is wearing the provided product(s). Respond with exactly ONE image (no text).
 
 🚫 WATERMARK REMOVAL (CRITICAL):
 - COMPLETELY IGNORE and DO NOT reproduce any watermarks, text overlays, logos, QR codes, or platform branding from product or model images.
@@ -188,6 +204,8 @@ STYLE DIRECTION: ${isNaturalStyle ? 'Natural & Realistic' : 'Fashion Editorial'}
 - Fashion magazine quality
 `;
   }
+
+  prompt += `\n${layeringRule}\n`;
 
   prompt += `
 TECHNICAL SPECIFICATIONS:

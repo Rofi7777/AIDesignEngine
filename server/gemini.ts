@@ -6,7 +6,7 @@ import { GoogleGenAI, Modality } from "@google/genai";
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
   httpOptions: {
-    apiVersion: "",
+    apiVersion: "v1beta",
     baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
   },
 });
@@ -181,7 +181,7 @@ Create a stunning, market-ready slipper design that maintains the exact template
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-2.5-flash-image-preview",
       contents: [
         {
           role: "user",
@@ -248,7 +248,7 @@ Create a stunning, photorealistic image that demonstrates how beautiful these sl
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-2.5-flash-image-preview",
       contents: [
         {
           role: "user",

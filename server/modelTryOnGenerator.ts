@@ -3,7 +3,7 @@ import { GoogleGenAI, Modality, HarmCategory, HarmBlockThreshold } from "@google
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
   httpOptions: {
-    apiVersion: "",
+    apiVersion: "v1beta",
     baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
   },
 });
@@ -69,7 +69,7 @@ export async function generateModelTryOn(
 
     // Generate image with Gemini API
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
+      model: "gemini-2.5-flash-image-preview",
       contents: [
         {
           role: "user",
@@ -77,7 +77,8 @@ export async function generateModelTryOn(
         },
       ],
       config: {
-        responseModalities: [Modality.TEXT, Modality.IMAGE],
+        // Force image output to avoid text-only responses
+        responseModalities: [Modality.IMAGE],
       },
       safetySettings: [
         {
@@ -103,6 +104,7 @@ export async function generateModelTryOn(
     const imagePart = candidate?.content?.parts?.find((part: any) => part.inlineData);
 
     if (!imagePart?.inlineData?.data) {
+      console.error("[Model Try-On] No image data found. Full response:", JSON.stringify(response, null, 2));
       throw new Error("No image data in response from Gemini");
     }
 

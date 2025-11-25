@@ -1,4 +1,4 @@
-import { PRODUCT_TYPES, PRODUCT_ANGLES } from "./schema";
+import { PRODUCT_TYPES, PRODUCT_ANGLES } from "./schema.ts";
 
 export type ProductType = typeof PRODUCT_TYPES[number];
 

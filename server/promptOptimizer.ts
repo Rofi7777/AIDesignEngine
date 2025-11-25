@@ -1,20 +1,48 @@
 // Stage 1: LLM-based Prompt Optimizer
 // This service acts as a professional fashion product designer with 10+ years of experience
-// It transforms structured inputs into optimized prompts for gemini-3-pro-image-preview
+// It transforms structured inputs into optimized prompts for gemini-2.5-flash-image-preview
 
 import { GoogleGenAI, HarmCategory, HarmBlockThreshold } from "@google/genai";
-import { ProductType, getProductConfig } from "../shared/productConfig";
+import type { ProductType } from "../shared/productConfig.ts";
+import { getProductConfig } from "../shared/productConfig.ts";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
   httpOptions: {
-    apiVersion: "",
+    apiVersion: "v1beta",
     baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
   },
 });
 
-function buildDesignerSystemPrompt(productType: ProductType, customProductType?: string): string {
-  const config = getProductConfig(productType);
+function getSafeProductConfig(productType: ProductType | string, customProductType?: string) {
+  try {
+    return getProductConfig(productType as ProductType);
+  } catch {
+    const fallbackName = productType === 'custom' && customProductType ? customProductType : (customProductType || String(productType));
+    return {
+      displayName: { en: fallbackName, zhTW: fallbackName, vi: fallbackName },
+      angles: ["front"],
+      angleLabels: { front: { en: "Front View", zhTW: "前視角", vi: "Góc trước" } },
+      designerExpertise: "fashion design",
+      shapePreservationRules: "Maintain the product's shape, proportions, and structural integrity from the template. Only change surface appearance (colors, patterns, textures, materials, logos).",
+      designFocusAreas: [
+        "Color palette and material",
+        "Pattern/graphic details",
+        "Fit and silhouette consistency",
+        "Logo/branding placement (if provided)",
+      ],
+      templateHint: {
+        en: "Upload a clear template image of the product",
+        zhTW: "上傳產品的清晰模板圖片",
+        vi: "Tải ảnh mẫu sản phẩm rõ nét",
+      },
+      modelSceneContext: "Model or user naturally wearing/using the product",
+    };
+  }
+}
+
+function buildDesignerSystemPrompt(productType: ProductType | string, customProductType?: string): string {
+  const config = getSafeProductConfig(productType, customProductType);
   const productName = productType === 'custom' && customProductType ? customProductType : config.displayName.en.toLowerCase();
   const expertise = config.designerExpertise;
   const anglesList = config.angles.map((a, i) => config.angleLabels[a].en).join(' and ');
@@ -39,7 +67,7 @@ Output format:
 You MUST always respond in valid JSON with two main fields:
 
 {
-  "product_design_prompt": "<string: final prompt for gemini-3-pro-image-preview to generate ${productName} design images>",
+  "product_design_prompt": "<string: final prompt for gemini-2.5-flash-image-preview to generate ${productName} design images>",
   "model_scene_prompt": "<string: final prompt for image generation model to generate model wearing/using scene>",
   "debug_notes": "<optional string: short design rationale for developers, not sent to the image model>"
 }
@@ -99,7 +127,7 @@ Turn structured options + template into two excellent, production-quality image 
 }
 
 export interface DesignInputs {
-  productType: ProductType;
+  productType: ProductType | string;
   customProductType?: string;
   templateDescription?: string;
   theme: string;
@@ -113,7 +141,7 @@ export interface DesignInputs {
 
 export interface ModelSceneInputs {
   productDesignSummary: string;
-  productType: ProductType;
+  productType: ProductType | string;
   nationality: string;
   familyCombination: string;
   scenario: string;
@@ -131,7 +159,7 @@ export async function generateOptimizedPrompts(
   designInputs: DesignInputs,
   modelSceneInputs: ModelSceneInputs
 ): Promise<OptimizedPrompts> {
-  const config = getProductConfig(designInputs.productType);
+  const config = getSafeProductConfig(designInputs.productType, designInputs.customProductType);
   const productName = designInputs.productType === 'custom' && designInputs.customProductType 
     ? designInputs.customProductType 
     : config.displayName.en;
