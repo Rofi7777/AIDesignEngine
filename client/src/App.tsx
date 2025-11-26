@@ -6,12 +6,16 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import MainLayout from "@/pages/main-layout";
 import NotFound from "@/pages/not-found";
+import { Redirect } from "wouter";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={MainLayout} />
-      <Route component={NotFound} />
+      <Route path="/404" component={NotFound} />
+      <Route>
+        <Redirect to="/404" />
+      </Route>
     </Switch>
   );
 }
