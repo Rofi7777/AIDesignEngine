@@ -9,20 +9,34 @@ import type { ProductType } from "../shared/productConfig.ts";
 import { getProductConfig } from "../shared/productConfig.ts";
 import { extractDesignSpecification, createConsistencyPrompt, type DesignSpecification } from "./designSpecExtractor.ts";
 
+const GEMINI_API_KEY =
+  process.env.AI_INTEGRATIONS_GEMINI_API_KEY ||
+  process.env.GEMINI_API_KEY ||
+  process.env.GOOGLE_API_KEY;
+
+if (!GEMINI_API_KEY) {
+  throw new Error(
+    "Gemini API key is missing. Set AI_INTEGRATIONS_GEMINI_API_KEY (preferred) or GEMINI_API_KEY.",
+  );
+}
+
 const ai = new GoogleGenAI({
-  apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
+  apiKey: GEMINI_API_KEY,
   httpOptions: {
     apiVersion: "v1beta",
-    baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
+    baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL || process.env.GEMINI_API_BASE_URL,
   },
 });
 
 function buildColorLock(color: string): string {
+  const palette = color?.trim() || "the requested palette";
+  const lowered = color ? color.toLowerCase() : "";
+
   return `🎨 COLOR LOCK (CRITICAL):
-- The product surface must use ONLY this color palette: ${color}
+- The product surface must use ONLY this color palette: ${palette}
 - Absolutely NO additional hues, tints, or gradients outside this palette
 - Shadows/highlights may only be neutral (gray/white) to indicate form
-- If ${color.toLowerCase().includes("white") ? "white" : "the specified color"} is requested, do NOT introduce beige/cream/gray tints—keep it clean and pure`;
+- If ${lowered.includes("white") ? "white" : "the specified color"} is requested, do NOT introduce beige/cream/gray tints—keep it clean and pure`;
 }
 
 export async function generateProductDesignEnhanced(
