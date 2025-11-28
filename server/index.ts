@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes.ts";
+import { ensureDatabaseReady } from "./db.ts";
 import { setupVite, serveStatic, log } from "./vite.ts";
 
 const app = express();
@@ -81,6 +82,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  await ensureDatabaseReady();
   const server = await registerRoutes(app);
 
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
